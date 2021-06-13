@@ -1,9 +1,9 @@
-name: Cypress
+name: Jest
 
 on: push
 
 jobs:
-  cypress:
+  jest:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +29,6 @@ jobs:
       - name: npm run build
         run: |
           npm run build
-      - name: Run Cypress Tests
+      - name: Run Jest Tests
         run: |
-          yarn test:integration
+          yarn test
