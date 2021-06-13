@@ -1,0 +1,22 @@
+# Dependencies
+/node_modules
+
+# Jest
+/coverage
+
+# Cypress
+/cypress/videos
+/cypress/screenshots
+
+# IDE - VSCode
+.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Various
+npm-debug.log*
+yarn-error.log
