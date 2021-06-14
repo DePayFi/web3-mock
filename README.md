@@ -36,7 +36,6 @@ Web3Mock({
 })
 ```
 
-
 ## Development
 
 ### Get started
