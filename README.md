@@ -32,17 +32,7 @@ await signer.sendTransaction({
   to: "vitalik.eth",
   value: ethers.utils.parseEther("1")
 });
-//
-
-await DePayRouterV1Contract().connect(signer).route(
-  path,
-  [amountIn, amountOut, deadline],
-  [receiver],
-  plugins,
-  [],
-  { value: value }
-)
-//
+// transaction { hash: '0xbb8d9e2262cd2d93d9bf7854d35f8e016dd985e7b3eb715d0d7faf7290a0ff4d', ... }
 ```
 
 ### Complex
@@ -94,6 +84,16 @@ await contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390") // "10000
 
 await uniswapV2RouterInstance.getAmountsIn("1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"])
 // ["773002376389189", "1000000000000000000"]
+
+await DePayRouterV1Contract().connect(signer).route(
+  path,
+  [amountIn, amountOut, deadline],
+  [receiver],
+  plugins,
+  [],
+  { value: value }
+)
+// transaction { hash: '0xbb8d9e2262cd2d93d9bf7854d35f8e016dd985e7b3eb715d0d7faf7290a0ff4d', ... }
 ```
 
 ## Functionalities
