@@ -17,7 +17,7 @@ describe('Web3Mock Ethereum', ()=> {
   it('fails if requested method is not implemented', ()=>{
     expect(()=>{
       window.ethereum.request({ method: 'nonexisting' })
-    }).toThrow('Web3Mock Ethereum request: Unknown request method!')
+    }).toThrow('Web3Mock Ethereum request: Unknown request method nonexisting!')
   })
   
   it('mocks default request for eth_chainId', async ()=> {
@@ -44,14 +44,14 @@ describe('Web3Mock Ethereum', ()=> {
   it('mocks default request for eth_requestAccounts', async ()=>{
 
     let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-    expect(accounts).toEqual([]);
+    expect(accounts).toEqual(['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']);
 
   })
 
   it('mocks default request for eth_accounts', async ()=>{
 
     let accounts = await window.ethereum.request({ method: 'eth_accounts' })
-    expect(accounts).toEqual([]);
+    expect(accounts).toEqual(['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']);
 
   })
 
