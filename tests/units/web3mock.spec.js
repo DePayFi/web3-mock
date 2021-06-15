@@ -37,7 +37,7 @@ describe('Web3Mock', () => {
 
     expect(() => {
       Web3Mock({ mocks: [1] });
-    }).toThrow('Web3Mock: Unknown mock type!');
+    }).toThrow('Web3Mock: Unknown mock configuration type!');
 
   });
 
@@ -45,7 +45,7 @@ describe('Web3Mock', () => {
 
     expect(() => {
       Web3Mock({ mocks: [{}] });
-    }).toThrow('Web3Mock: Mock entries are supposed to exactly have 1 key, e.g. mocks: [ { ethereum: ... } ]');
+    }).toThrow('Web3Mock: Mock configurations are empty!');
 
   });
 

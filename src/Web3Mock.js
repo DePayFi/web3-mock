@@ -1,31 +1,48 @@
 import { Ethereum } from './blockchains'
 
+let mock = function({ configuration, window }){
+  let blockchain
+
+  if (typeof configuration === 'string') {
+    blockchain = configuration
+  } else if (typeof configuration === 'object') {
+    blockchain = Object.keys(configuration)[0]
+  } else {
+    throw 'Web3Mock: Unknown mock configuration type!'
+  }
+
+  switch (blockchain) {
+    case 'ethereum':
+      Ethereum({ configuration: configuration['ethereum'], window })
+      break
+    default:
+      throw 'Web3Mock: Unknown blockchain!'
+  }
+}
+
 export default ({ mocks, window = window }) => {
   if (mocks === undefined || mocks.length === 0) {
     throw 'Web3Mock: No mocks defined!'
   }
 
-  mocks.forEach(function (mock) {
-    let blockchain
-
-    if (typeof mock === 'string') {
-      blockchain = mock
-    } else if (typeof mock === 'object') {
-      if (Object.keys(mock).length != 1) {
-        throw 'Web3Mock: Mock entries are supposed to exactly have 1 key, e.g. mocks: [ { ethereum: ... } ]'
-      } else {
-        blockchain = Object.keys(mock)[0]
+  if(mocks instanceof Array) {
+    mocks.forEach((configuration)=>{ 
+      if(typeof configuration === 'object' && Object.keys(configuration).length === 0) {
+        throw 'Web3Mock: Mock configurations are empty!'
       }
-    } else {
-      throw 'Web3Mock: Unknown mock type!'
+      mock({ configuration, window }) 
+    })
+  } else if (typeof mocks === 'string') {
+    mock({ configuration: mocks, window })
+  } else if (typeof mocks === 'object') {
+    if(Object.keys(mocks).length === 0) {
+      throw 'Web3Mock: Mock configurations are empty!'
     }
+    for (const [blockchain, configuration] of Object.entries(mocks)) {
+      mock({ configuration: {[blockchain]: configuration}, window })
+    }
+  } else {
+    throw 'Web3Mock: Unknown mock configuration type!'
+  }
 
-    switch (blockchain) {
-      case 'ethereum':
-        Ethereum({ ...mock, window })
-        break
-      default:
-        throw 'Web3Mock: Unknown blockchain!'
-    }
-  })
 }

@@ -10,14 +10,23 @@ export default {
   output: [
     {
       format: 'cjs',
+      globals: {
+        'ethers': 'ethers'
+      },
       file: 'dist/cjs/index.js'
     },
     {
       format: 'es',
+      globals: {
+        'ethers': 'ethers'
+      },
       file: 'dist/es/index.js'
     },
     {
       format: 'umd',
+      globals: {
+        'ethers': 'ethers'
+      },
       name: pkg.moduleName,
       file: 'dist/umd/index.js'
     },
