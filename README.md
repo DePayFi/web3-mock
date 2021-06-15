@@ -29,7 +29,7 @@ let provider = new ethers.providers.Web3Provider(window.ethereum);
 let signer = provider.getSigner();
 
 await signer.sendTransaction({
-  to: "vitalik.eth",
+  to: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
   value: ethers.utils.parseEther("1")
 });
 // transaction { hash: '0xbb8d9e2262cd2d93d9bf7854d35f8e016dd985e7b3eb715d0d7faf7290a0ff4d', ... }
