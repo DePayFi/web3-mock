@@ -285,4 +285,24 @@ describe('Web3Mock Ethereum transactions', ()=> {
       )
     ).rejects.toEqual('Web3Mock Ethereum transactions: Please mock the contract call transaction: { transactions: { \"0xae60ac8e69414c2dc362d0e6a03af643d1d85b92\": { method: \"route\", params: {\"path\":[\"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"],\"amounts\":[\"773002376389189\",\"1000000000000000000\",\"3623748721\"],\"addresses\":[],\"plugins\":[],\"data\":[]} } }')
   })
+
+  it('also mocks transaction receipts', async ()=> {
+    
+    Web3Mock({ window: window,
+      mocks: ['ethereum']
+    })
+
+    let provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    let signer = provider.getSigner();
+
+    let transactionReceipt = await signer.sendTransaction({
+        to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+        value: ethers.utils.parseEther("1")
+    }).then(async function(transaction){
+      return await transaction.wait(1)
+    })
+
+    expect(transactionReceipt).toBeDefined()
+  })
 });

@@ -1,8 +1,8 @@
-let normalize = function(input) {
-  if(input instanceof Array) {
-    return input.map((element)=>normalize(element))
+let normalize = function (input) {
+  if (input instanceof Array) {
+    return input.map((element) => normalize(element))
   } else {
-    if(input.toString){
+    if (input.toString) {
       return input.toString().toLowerCase()
     } else if (typeof argument === 'string' && input.match('0x')) {
       return input.toLowerCase()

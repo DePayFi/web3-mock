@@ -6,12 +6,11 @@ import { mockTransactions } from './request/transactions'
 import { request } from './request'
 
 export default ({ configuration, window }) => {
-
   mockCalls(configuration?.calls)
   mockTransactions(configuration?.transactions)
 
-  window.ethereum = { 
+  window.ethereum = {
     ...window.ethereum,
-    request: (configuration)=>request({ request: configuration, window })
+    request: (configuration) => request({ request: configuration, window }),
   }
 }
