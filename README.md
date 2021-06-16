@@ -98,7 +98,7 @@ await DePayRouterV1Contract().connect(signer).route(
 
 ## Functionalities
 
-### Basic Mocks
+### Basic Implicit Mocks
 
 Mocks basic blockchain functionalities without explicit mocking:
 
@@ -267,6 +267,18 @@ let transaction = await contract.connect(signer).route(
   { value: 0 }
 )
 ````
+
+### Mock Events
+
+Once `Web3Mock` has been initialized (e.g. with `Web3Mock({ mocks: 'ethereum' })`) it starts registering event callbacks from your implementation that you can trigger afterwards in your tests:
+
+```javascript
+Web3Mock({ mocks: 'ethereum' })
+
+// some other prep and test code
+
+Web3Mock.trigger('accountsChanged', ['0xb0252f13850a4823706607524de0b146820F2240', '0xEcA533Ef096f191A35DE76aa4580FA3A722724bE'])
+```
 
 ### window
 

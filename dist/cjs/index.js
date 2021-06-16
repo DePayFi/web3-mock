@@ -224,6 +224,23 @@ let sendTransaction = function ({ params, window }) {
   }
 };
 
+let events;
+
+let resetEvents = () => {
+  events = {};
+};
+
+let triggerEvent = (eventName, value) => {
+  events[eventName].forEach(function(callback){
+    callback(value);
+  });
+};
+
+let on = (eventName, callback) => {
+  if(events[eventName] === undefined) { events[eventName] = []; }
+  events[eventName].push(callback);
+};
+
 let request = ({ request, window }) => {
   switch (request.method) {
     case 'eth_chainId':
@@ -291,15 +308,23 @@ let request = ({ request, window }) => {
 
 function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
-var Ethereum = ({ configuration, window }) => {
+let Ethereum = ({ configuration, window }) => {
   mockCalls(_optionalChain$1([configuration, 'optionalAccess', _ => _.calls]));
   mockTransactions(_optionalChain$1([configuration, 'optionalAccess', _2 => _2.transactions]));
+  resetEvents();
 
   window.ethereum = {
     ...window.ethereum,
+    on,
     request: (configuration) => request({ request: configuration, window }),
   };
+
+  return Ethereum;
 };
+
+Ethereum.trigger = triggerEvent;
+
+let mocks$2 = [];
 
 let mock = function ({ configuration, window }) {
   let blockchain;
@@ -314,14 +339,14 @@ let mock = function ({ configuration, window }) {
 
   switch (blockchain) {
     case 'ethereum':
-      Ethereum({ configuration: configuration['ethereum'], window });
+      mocks$2.push(Ethereum({ configuration: configuration['ethereum'], window }));
       break
     default:
       throw 'Web3Mock: Unknown blockchain!'
   }
 };
 
-var Web3Mock = ({ mocks, window = window }) => {
+let Web3Mock = ({ mocks, window = window }) => {
   if (mocks === undefined || mocks.length === 0) {
     throw 'Web3Mock: No mocks defined!'
   }
@@ -345,6 +370,10 @@ var Web3Mock = ({ mocks, window = window }) => {
   } else {
     throw 'Web3Mock: Unknown mock configuration type!'
   }
+};
+
+Web3Mock.trigger = (eventName, value)=> {
+  mocks$2.forEach((blockchainMock)=>blockchainMock.trigger(eventName, value));
 };
 
 exports.Web3Mock = Web3Mock;

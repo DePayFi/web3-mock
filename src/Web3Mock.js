@@ -1,5 +1,7 @@
 import { Ethereum } from './blockchains'
 
+let mocks = [];
+
 let mock = function ({ configuration, window }) {
   let blockchain
 
@@ -13,14 +15,14 @@ let mock = function ({ configuration, window }) {
 
   switch (blockchain) {
     case 'ethereum':
-      Ethereum({ configuration: configuration['ethereum'], window })
+      mocks.push(Ethereum({ configuration: configuration['ethereum'], window }))
       break
     default:
       throw 'Web3Mock: Unknown blockchain!'
   }
 }
 
-export default ({ mocks, window = window }) => {
+let Web3Mock = ({ mocks, window = window }) => {
   if (mocks === undefined || mocks.length === 0) {
     throw 'Web3Mock: No mocks defined!'
   }
@@ -45,3 +47,9 @@ export default ({ mocks, window = window }) => {
     throw 'Web3Mock: Unknown mock configuration type!'
   }
 }
+
+Web3Mock.trigger = (eventName, value)=> {
+  mocks.forEach((blockchainMock)=>blockchainMock.trigger(eventName, value))
+};
+
+export default Web3Mock
