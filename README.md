@@ -338,8 +338,5 @@ npm publish
 
 #### Jest
 
-In your jest test environment `global` is `window`, so in order to have your implementation still rely on `window` (e.g. `window.ethereum`) pass `global` as `window` to `Web3Mock`:
-
-```javascript
-Web3Mock({ window: global, mocks: 'ethereum' });
-```
+In your jest test environment `global` is `window`
+so `Web3Mock` takes jest's `global` automatically when using `Web3Mock` in a jest test environment.

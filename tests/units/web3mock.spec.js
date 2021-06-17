@@ -8,7 +8,6 @@ describe('Web3Mock', () => {
 
   });
 
-
   it('does not change existing values in the passed window object', () => {
 
     let window = { someVar: 1, ethereum: { existedAlready: 1 } }
@@ -54,6 +53,12 @@ describe('Web3Mock', () => {
     expect(() => {
       Web3Mock({ mocks: ['nonexistingblockchain'] });
     }).toThrow('Web3Mock: Unknown blockchain!');
+
+  });
+
+  it('takes jest "global" automatically if there is no window but a global', () => {
+
+    Web3Mock({ mocks: ['ethereum'] });
 
   });
 });
