@@ -2,7 +2,8 @@ import { ethers } from 'ethers'
 import { call } from './call'
 import { sendTransaction } from './transactions'
 
-let request = ({ request, window }) => {
+let request = ({ request, provider }) => {
+
   switch (request.method) {
     case 'eth_chainId':
       return Promise.resolve('0x1')
@@ -30,11 +31,11 @@ let request = ({ request, window }) => {
       break
 
     case 'eth_call':
-      return call({ params: request.params, window })
+      return call({ params: request.params, provider })
       break
 
     case 'eth_sendTransaction':
-      return sendTransaction({ params: request.params, window })
+      return sendTransaction({ params: request.params, provider })
       break
 
     case 'eth_getTransactionByHash':

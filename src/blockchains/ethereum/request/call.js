@@ -15,7 +15,7 @@ let mockCalls = function (configurations) {
   Object.assign(mocks, configurationWithLowerCaseAddress)
 }
 
-let call = function ({ params, window }) {
+let call = function ({ params, provider }) {
   let callParams = params[0]
   let address = normalize(callParams.to)
   if (mocks[address] === undefined) {
@@ -28,7 +28,7 @@ let call = function ({ params, window }) {
     let contract = new ethers.Contract(
       address,
       mocks[address].abi,
-      new ethers.providers.Web3Provider(window.ethereum),
+      provider,
     )
 
     let contractFunction = contract.interface.getFunction(methodSelector)

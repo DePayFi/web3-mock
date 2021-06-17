@@ -280,6 +280,34 @@ Web3Mock({ mocks: 'ethereum' })
 Web3Mock.trigger('accountsChanged', ['0xb0252f13850a4823706607524de0b146820F2240', '0xEcA533Ef096f191A35DE76aa4580FA3A722724bE'])
 ```
 
+### Mock for specific providers
+
+If you want to mock Web3 calls and transactions for other providers but the usual, implicit ones (like window.ethereum),
+you can pass them explicitly to `Web3Mock`:
+
+```javascript
+
+let provider = new ethers.providers.JsonRpcProvider('https://example.com');
+    
+Web3Mock({
+  provider,
+  mocks: {
+    ethereum: {
+      calls: {
+        [contractAddress]: {
+          abi: abi,
+          getAmountsIn: {
+            [
+              ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
+            ]: ["773002376389189", "1000000000000000000"]
+          }
+        }
+      }
+    }
+  },
+})
+```
+
 ### window
 
 Pass a window object in case it is not supposed to be the implicit `window`.

@@ -28,7 +28,7 @@ let mockCalls = function (configurations) {
   Object.assign(mocks, configurationWithLowerCaseAddress);
 };
 
-let call = function ({ params, window }) {
+let call = function ({ params, provider }) {
   let callParams = params[0];
   let address = normalize(callParams.to);
   if (mocks[address] === undefined) {
@@ -41,7 +41,7 @@ let call = function ({ params, window }) {
     let contract = new ethers.Contract(
       address,
       mocks[address].abi,
-      new ethers.providers.Web3Provider(window.ethereum),
+      provider,
     );
 
     let contractFunction = contract.interface.getFunction(methodSelector);
@@ -105,31 +105,31 @@ let mockTransactions = function (configuration) {
   Object.assign(mocks$1, configurationWithLowerCaseAddress);
 };
 
-let getContract = function ({ params, mock, window }) {
+let getContract = function ({ params, mock, provider }) {
   return new ethers.Contract(
     params.to,
     mock.abi,
-    new ethers.providers.Web3Provider(window.ethereum),
+    provider,
   )
 };
 
-let getContractFunction = function ({ data, params, mock, window }) {
-  let contract = getContract({ params, mock, window });
+let getContractFunction = function ({ data, params, mock, provider }) {
+  let contract = getContract({ params, mock, provider });
   let methodSelector = data.split('000000000000000000000000')[0];
   return contract.interface.getFunction(methodSelector)
 };
 
-let decodeTransactionArguments = function ({ params, mock, window }) {
+let decodeTransactionArguments = function ({ params, mock, provider }) {
   let data = params.data;
-  let contract = getContract({ params, mock, window });
-  let contractFunction = getContractFunction({ data, params, mock, window });
+  let contract = getContract({ params, mock, provider });
+  let contractFunction = getContractFunction({ data, params, mock, provider });
   if (_optionalChain([mock, 'optionalAccess', _ => _.method]) && contractFunction.name != mock.method) {
     return undefined
   }
   return contract.interface.decodeFunctionData(contractFunction, data)
 };
 
-let findMock = function ({ params, mocks, window }) {
+let findMock = function ({ params, mocks, provider }) {
   params = params[0];
   let mock = mocks[params.to];
   if (_optionalChain([mock, 'optionalAccess', _2 => _2.value]) && ethers.BigNumber.from(params.value).toString() !== mock.value) {
@@ -146,7 +146,7 @@ let findMock = function ({ params, mocks, window }) {
         '": { abi: ABI } } }'
       )
     } else {
-      let transactionArguments = decodeTransactionArguments({ params, mock, window });
+      let transactionArguments = decodeTransactionArguments({ params, mock, provider });
       let allArgumentsMatch = Object.keys(_optionalChain([mock, 'optionalAccess', _4 => _4.params])).every((key) => {
         if (mock.params[key]) {
           return (
@@ -169,22 +169,22 @@ let transactionHash = function () {
   return '0xbb8d9e2262cd2d93d9bf7854d35f8e016dd985e7b3eb715d0d7faf7290a0ff4d'
 };
 
-let sendTransaction = function ({ params, window }) {
+let sendTransaction = function ({ params, provider }) {
   if (mocks$1 === undefined) {
     return Promise.resolve(transactionHash())
   } else {
-    let mock = findMock({ params, mocks: mocks$1, window });
+    let mock = findMock({ params, mocks: mocks$1, provider });
     if (mock) {
       return Promise.resolve(transactionHash())
     } else if (params[0].data) {
       let mock = mocks$1[params[0].to];
       if (mock && mock.abi) {
-        let transactionArguments = decodeTransactionArguments({ params: params[0], mock, window });
+        let transactionArguments = decodeTransactionArguments({ params: params[0], mock, provider });
         let contractFunction = getContractFunction({
           data: params[0].data,
           params: params[0],
           mock,
-          window,
+          provider,
         });
         let transactionArgumentsToParams = {};
         Object.keys(transactionArguments).forEach((key) => {
@@ -239,7 +239,8 @@ let on = (eventName, callback) => {
   events[eventName].push(callback);
 };
 
-let request = ({ request, window }) => {
+let request = ({ request, provider }) => {
+
   switch (request.method) {
     case 'eth_chainId':
       return Promise.resolve('0x1')
@@ -261,10 +262,10 @@ let request = ({ request, window }) => {
       return Promise.resolve('0x5daf3b')
 
     case 'eth_call':
-      return call({ params: request.params, window })
+      return call({ params: request.params, provider })
 
     case 'eth_sendTransaction':
-      return sendTransaction({ params: request.params, window })
+      return sendTransaction({ params: request.params, provider })
 
     case 'eth_getTransactionByHash':
       return Promise.resolve({
@@ -304,18 +305,28 @@ let request = ({ request, window }) => {
   }
 };
 
-function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }// https://docs.metamask.io/guide/ethereum-provider.html
 
-let Ethereum = ({ configuration, window }) => {
+let Ethereum = ({ configuration, window, provider }) => {
   mockCalls(_optionalChain$1([configuration, 'optionalAccess', _ => _.calls]));
   mockTransactions(_optionalChain$1([configuration, 'optionalAccess', _2 => _2.transactions]));
   resetEvents();
 
-  window.ethereum = {
-    ...window.ethereum,
-    on,
-    request: (configuration) => request({ request: configuration, window }),
-  };
+  if(provider) {
+    if(provider.send) { provider.send = (method, params)=>request({ provider, request: { method: method, params: params } }); }
+    if(provider.sendTransaction) { provider.sendTransaction = (method, params)=>request({ provider, request: { method: method, params: params } }); }
+  } else {
+    window.ethereum = {
+      ...window.ethereum,
+      on,
+      request: (configuration) => {
+        return request({
+          request: configuration,
+          provider: new ethers.providers.Web3Provider(window.ethereum)
+      })
+      },
+    };
+  }
 
   return Ethereum
 };
@@ -324,7 +335,7 @@ Ethereum.trigger = triggerEvent;
 
 let mocks$2 = [];
 
-let mock = function ({ configuration, window }) {
+let mock = function ({ configuration, window, provider }) {
   let blockchain;
 
   if (typeof configuration === 'string') {
@@ -337,14 +348,14 @@ let mock = function ({ configuration, window }) {
 
   switch (blockchain) {
     case 'ethereum':
-      mocks$2.push(Ethereum({ configuration: configuration['ethereum'], window }));
+      mocks$2.push(Ethereum({ configuration: configuration['ethereum'], window, provider }));
       break
     default:
       throw 'Web3Mock: Unknown blockchain!'
   }
 };
 
-let Web3Mock = ({ mocks, window = window }) => {
+let Web3Mock = ({ mocks, provider, window = window }) => {
   if (mocks === undefined || mocks.length === 0) {
     throw 'Web3Mock: No mocks defined!'
   }
@@ -354,16 +365,16 @@ let Web3Mock = ({ mocks, window = window }) => {
       if (typeof configuration === 'object' && Object.keys(configuration).length === 0) {
         throw 'Web3Mock: Mock configurations are empty!'
       }
-      mock({ configuration, window });
+      mock({ configuration, window, provider });
     });
   } else if (typeof mocks === 'string') {
-    mock({ configuration: mocks, window });
+    mock({ configuration: mocks, window, provider });
   } else if (typeof mocks === 'object') {
     if (Object.keys(mocks).length === 0) {
       throw 'Web3Mock: Mock configurations are empty!'
     }
     for (const [blockchain, configuration] of Object.entries(mocks)) {
-      mock({ configuration: { [blockchain]: configuration }, window });
+      mock({ configuration: { [blockchain]: configuration }, window, provider });
     }
   } else {
     throw 'Web3Mock: Unknown mock configuration type!'

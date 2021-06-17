@@ -19,31 +19,31 @@ let mockTransactions = function (configuration) {
   Object.assign(mocks, configurationWithLowerCaseAddress)
 }
 
-let getContract = function ({ params, mock, window }) {
+let getContract = function ({ params, mock, provider }) {
   return new ethers.Contract(
     params.to,
     mock.abi,
-    new ethers.providers.Web3Provider(window.ethereum),
+    provider,
   )
 }
 
-let getContractFunction = function ({ data, params, mock, window }) {
-  let contract = getContract({ params, mock, window })
+let getContractFunction = function ({ data, params, mock, provider }) {
+  let contract = getContract({ params, mock, provider })
   let methodSelector = data.split('000000000000000000000000')[0]
   return contract.interface.getFunction(methodSelector)
 }
 
-let decodeTransactionArguments = function ({ params, mock, window }) {
+let decodeTransactionArguments = function ({ params, mock, provider }) {
   let data = params.data
-  let contract = getContract({ params, mock, window })
-  let contractFunction = getContractFunction({ data, params, mock, window })
+  let contract = getContract({ params, mock, provider })
+  let contractFunction = getContractFunction({ data, params, mock, provider })
   if (mock?.method && contractFunction.name != mock.method) {
     return undefined
   }
   return contract.interface.decodeFunctionData(contractFunction, data)
 }
 
-let findMock = function ({ params, mocks, window }) {
+let findMock = function ({ params, mocks, provider }) {
   params = params[0]
   let mock = mocks[params.to]
   if (mock?.value && ethers.BigNumber.from(params.value).toString() !== mock.value) {
@@ -60,7 +60,7 @@ let findMock = function ({ params, mocks, window }) {
         '": { abi: ABI } } }'
       )
     } else {
-      let transactionArguments = decodeTransactionArguments({ params, mock, window })
+      let transactionArguments = decodeTransactionArguments({ params, mock, provider })
       let allArgumentsMatch = Object.keys(mock?.params).every((key) => {
         if (mock.params[key]) {
           return (
@@ -83,22 +83,22 @@ let transactionHash = function () {
   return '0xbb8d9e2262cd2d93d9bf7854d35f8e016dd985e7b3eb715d0d7faf7290a0ff4d'
 }
 
-let sendTransaction = function ({ params, window }) {
+let sendTransaction = function ({ params, provider }) {
   if (mocks === undefined) {
     return Promise.resolve(transactionHash())
   } else {
-    let mock = findMock({ params, mocks, window })
+    let mock = findMock({ params, mocks, provider })
     if (mock) {
       return Promise.resolve(transactionHash())
     } else if (params[0].data) {
       let mock = mocks[params[0].to]
       if (mock && mock.abi) {
-        let transactionArguments = decodeTransactionArguments({ params: params[0], mock, window })
+        let transactionArguments = decodeTransactionArguments({ params: params[0], mock, provider })
         let contractFunction = getContractFunction({
           data: params[0].data,
           params: params[0],
           mock,
-          window,
+          provider,
         })
         let transactionArgumentsToParams = {}
         Object.keys(transactionArguments).forEach((key) => {

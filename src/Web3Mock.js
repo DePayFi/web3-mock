@@ -2,7 +2,7 @@ import { Ethereum } from './blockchains'
 
 let mocks = []
 
-let mock = function ({ configuration, window }) {
+let mock = function ({ configuration, window, provider }) {
   let blockchain
 
   if (typeof configuration === 'string') {
@@ -15,14 +15,14 @@ let mock = function ({ configuration, window }) {
 
   switch (blockchain) {
     case 'ethereum':
-      mocks.push(Ethereum({ configuration: configuration['ethereum'], window }))
+      mocks.push(Ethereum({ configuration: configuration['ethereum'], window, provider }))
       break
     default:
       throw 'Web3Mock: Unknown blockchain!'
   }
 }
 
-let Web3Mock = ({ mocks, window = window }) => {
+let Web3Mock = ({ mocks, provider, window = window }) => {
   if (mocks === undefined || mocks.length === 0) {
     throw 'Web3Mock: No mocks defined!'
   }
@@ -32,16 +32,16 @@ let Web3Mock = ({ mocks, window = window }) => {
       if (typeof configuration === 'object' && Object.keys(configuration).length === 0) {
         throw 'Web3Mock: Mock configurations are empty!'
       }
-      mock({ configuration, window })
+      mock({ configuration, window, provider })
     })
   } else if (typeof mocks === 'string') {
-    mock({ configuration: mocks, window })
+    mock({ configuration: mocks, window, provider })
   } else if (typeof mocks === 'object') {
     if (Object.keys(mocks).length === 0) {
       throw 'Web3Mock: Mock configurations are empty!'
     }
     for (const [blockchain, configuration] of Object.entries(mocks)) {
-      mock({ configuration: { [blockchain]: configuration }, window })
+      mock({ configuration: { [blockchain]: configuration }, window, provider })
     }
   } else {
     throw 'Web3Mock: Unknown mock configuration type!'
