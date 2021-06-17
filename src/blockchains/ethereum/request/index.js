@@ -3,7 +3,6 @@ import { call } from './call'
 import { sendTransaction } from './transactions'
 
 let request = ({ request, provider }) => {
-
   switch (request.method) {
     case 'eth_chainId':
       return Promise.resolve('0x1')

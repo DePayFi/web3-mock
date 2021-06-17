@@ -25,11 +25,7 @@ let call = function ({ params, provider }) {
   } else {
     let data = callParams.data
     let methodSelector = data.split('000000000000000000000000')[0]
-    let contract = new ethers.Contract(
-      address,
-      mocks[address].abi,
-      provider,
-    )
+    let contract = new ethers.Contract(address, mocks[address].abi, provider)
 
     let contractFunction = contract.interface.getFunction(methodSelector)
     if (mocks[address][contractFunction.name]) {

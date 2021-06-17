@@ -11,9 +11,15 @@ let Ethereum = ({ configuration, window, provider }) => {
   mockTransactions(configuration?.transactions)
   resetEvents()
 
-  if(provider) {
-    if(provider.send) { provider.send = (method, params)=>request({ provider, request: { method: method, params: params } }) }
-    if(provider.sendTransaction) { provider.sendTransaction = (method, params)=>request({ provider, request: { method: method, params: params } }) }
+  if (provider) {
+    if (provider.send) {
+      provider.send = (method, params) =>
+        request({ provider, request: { method: method, params: params } })
+    }
+    if (provider.sendTransaction) {
+      provider.sendTransaction = (method, params) =>
+        request({ provider, request: { method: method, params: params } })
+    }
   } else {
     window.ethereum = {
       ...window.ethereum,
@@ -21,8 +27,8 @@ let Ethereum = ({ configuration, window, provider }) => {
       request: (configuration) => {
         return request({
           request: configuration,
-          provider: new ethers.providers.Web3Provider(window.ethereum)
-      })
+          provider: new ethers.providers.Web3Provider(window.ethereum),
+        })
       },
     }
   }

@@ -20,11 +20,7 @@ let mockTransactions = function (configuration) {
 }
 
 let getContract = function ({ params, mock, provider }) {
-  return new ethers.Contract(
-    params.to,
-    mock.abi,
-    provider,
-  )
+  return new ethers.Contract(params.to, mock.abi, provider)
 }
 
 let getContractFunction = function ({ data, params, mock, provider }) {
