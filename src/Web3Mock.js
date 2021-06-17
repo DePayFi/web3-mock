@@ -1,6 +1,6 @@
 import { Ethereum } from './blockchains'
 
-let mocks = [];
+let mocks = []
 
 let mock = function ({ configuration, window }) {
   let blockchain
@@ -48,8 +48,8 @@ let Web3Mock = ({ mocks, window = window }) => {
   }
 }
 
-Web3Mock.trigger = (eventName, value)=> {
-  mocks.forEach((blockchainMock)=>blockchainMock.trigger(eventName, value))
-};
+Web3Mock.trigger = (eventName, value) => {
+  mocks.forEach((blockchainMock) => blockchainMock.trigger(eventName, value))
+}
 
 export default Web3Mock

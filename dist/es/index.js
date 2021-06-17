@@ -227,13 +227,15 @@ let resetEvents = () => {
 };
 
 let triggerEvent = (eventName, value) => {
-  events[eventName].forEach(function(callback){
+  events[eventName].forEach(function (callback) {
     callback(value);
   });
 };
 
 let on = (eventName, callback) => {
-  if(events[eventName] === undefined) { events[eventName] = []; }
+  if (events[eventName] === undefined) {
+    events[eventName] = [];
+  }
   events[eventName].push(callback);
 };
 
@@ -315,7 +317,7 @@ let Ethereum = ({ configuration, window }) => {
     request: (configuration) => request({ request: configuration, window }),
   };
 
-  return Ethereum;
+  return Ethereum
 };
 
 Ethereum.trigger = triggerEvent;
@@ -368,8 +370,8 @@ let Web3Mock = ({ mocks, window = window }) => {
   }
 };
 
-Web3Mock.trigger = (eventName, value)=> {
-  mocks$2.forEach((blockchainMock)=>blockchainMock.trigger(eventName, value));
+Web3Mock.trigger = (eventName, value) => {
+  mocks$2.forEach((blockchainMock) => blockchainMock.trigger(eventName, value));
 };
 
 export { Web3Mock };

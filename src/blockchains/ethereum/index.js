@@ -17,7 +17,7 @@ let Ethereum = ({ configuration, window }) => {
     request: (configuration) => request({ request: configuration, window }),
   }
 
-  return Ethereum;
+  return Ethereum
 }
 
 Ethereum.trigger = triggerEvent
