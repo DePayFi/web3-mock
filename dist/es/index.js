@@ -16,13 +16,13 @@ let normalize = function (input) {
 
 let mocks;
 
-let mockCalls = function (configuration) {
+let mockCalls = function (configurations) {
   mocks = {};
-  if (configuration === undefined) {
+  if (configurations === undefined) {
     return
   }
   let configurationWithLowerCaseAddress = {};
-  for (const [address, configuration] of Object.entries(configuration)) {
+  for (const [address, configuration] of Object.entries(configurations)) {
     configurationWithLowerCaseAddress[normalize(address)] = configuration;
   }
   Object.assign(mocks, configurationWithLowerCaseAddress);
