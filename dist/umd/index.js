@@ -359,7 +359,7 @@
   let Web3Mock = ({
     mocks,
     provider,
-    window = typeof window == 'object' ? window : typeof global == 'object' ? global : undefined,
+    window = typeof global == 'object' ? global : typeof window == 'object' ? window : undefined,
   }) => {
     if (mocks === undefined || mocks.length === 0) {
       throw 'Web3Mock: No mocks defined!'
