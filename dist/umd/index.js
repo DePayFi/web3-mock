@@ -42,11 +42,7 @@
     } else {
       let data = callParams.data;
       let methodSelector = data.split('000000000000000000000000')[0];
-      let contract = new ethers.ethers.Contract(
-        address,
-        mocks[address].abi,
-        provider,
-      );
+      let contract = new ethers.ethers.Contract(address, mocks[address].abi, provider);
 
       let contractFunction = contract.interface.getFunction(methodSelector);
       if (mocks[address][contractFunction.name]) {
@@ -110,11 +106,7 @@
   };
 
   let getContract = function ({ params, mock, provider }) {
-    return new ethers.ethers.Contract(
-      params.to,
-      mock.abi,
-      provider,
-    )
+    return new ethers.ethers.Contract(params.to, mock.abi, provider)
   };
 
   let getContractFunction = function ({ data, params, mock, provider }) {
@@ -244,7 +236,6 @@
   };
 
   let request = ({ request, provider }) => {
-
     switch (request.method) {
       case 'eth_chainId':
         return Promise.resolve('0x1')
@@ -316,9 +307,15 @@
     mockTransactions(_optionalChain$1([configuration, 'optionalAccess', _2 => _2.transactions]));
     resetEvents();
 
-    if(provider) {
-      if(provider.send) { provider.send = (method, params)=>request({ provider, request: { method: method, params: params } }); }
-      if(provider.sendTransaction) { provider.sendTransaction = (method, params)=>request({ provider, request: { method: method, params: params } }); }
+    if (provider) {
+      if (provider.send) {
+        provider.send = (method, params) =>
+          request({ provider, request: { method: method, params: params } });
+      }
+      if (provider.sendTransaction) {
+        provider.sendTransaction = (method, params) =>
+          request({ provider, request: { method: method, params: params } });
+      }
     } else {
       window.ethereum = {
         ...window.ethereum,
@@ -326,8 +323,8 @@
         request: (configuration) => {
           return request({
             request: configuration,
-            provider: new ethers.ethers.providers.Web3Provider(window.ethereum)
-        })
+            provider: new ethers.ethers.providers.Web3Provider(window.ethereum),
+          })
         },
       };
     }
