@@ -1,70 +1,65 @@
 import { ethers } from 'ethers'
-import { Web3Mock } from '../../../src'
+import { mock } from '../../../src'
 
-describe('Web3Mock Ethereum', ()=> {
+describe('mock Ethereum', ()=> {
 
   let window;
 
   beforeEach(()=>{
-    window = {};
-    
-    Web3Mock({
-      window: window,
-      mocks: ['ethereum']
-    })
+    mock('ethereum')
   })
 
   it('fails if requested method is not implemented', ()=>{
     expect(()=>{
-      window.ethereum.request({ method: 'nonexisting' })
+      global.ethereum.request({ method: 'nonexisting' })
     }).toThrow('Web3Mock Ethereum request: Unknown request method nonexisting!')
   })
   
   it('mocks default request for eth_chainId', async ()=> {
 
-    let chainId = await window.ethereum.request({ method: 'eth_chainId' })
+    let chainId = await global.ethereum.request({ method: 'eth_chainId' })
     expect(chainId).toEqual('0x1');
 
   });
 
   it('mocks default request for eth_getBalance', async ()=> {
 
-    let balance = await window.ethereum.request({ method: 'eth_getBalance' })
+    let balance = await global.ethereum.request({ method: 'eth_getBalance' })
     expect(balance).toEqual(ethers.BigNumber.from('0'));
 
   });
 
   it('mocks default request for net_version', async ()=>{
 
-    let networkVersion = await window.ethereum.request({ method: 'net_version' })
+    let networkVersion = await global.ethereum.request({ method: 'net_version' })
     expect(networkVersion).toEqual(1);
 
   })
 
   it('mocks default request for eth_requestAccounts', async ()=>{
 
-    let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+    let accounts = await global.ethereum.request({ method: 'eth_requestAccounts' })
     expect(accounts).toEqual(['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']);
 
   })
 
   it('mocks default request for eth_accounts', async ()=>{
 
-    let accounts = await window.ethereum.request({ method: 'eth_accounts' })
+    let accounts = await global.ethereum.request({ method: 'eth_accounts' })
     expect(accounts).toEqual(['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']);
 
   })
 
   it('mocks default request for eth_estimateGas', async ()=>{
 
-    let gas = await window.ethereum.request({ method: 'eth_estimateGas' })
+    let gas = await global.ethereum.request({ method: 'eth_estimateGas' })
     expect(gas).toEqual('0x2c4a0');
 
   })
   
   it('mocks default request for eth_blockNumber', async ()=>{
 
-    let block = await window.ethereum.request({ method: 'eth_blockNumber' })
+    let block = await global.ethereum.request({ method: 'eth_blockNumber' })
     expect(block).toEqual('0x5daf3b');
 
   })

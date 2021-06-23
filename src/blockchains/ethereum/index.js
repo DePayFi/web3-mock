@@ -1,14 +1,14 @@
 // https://docs.metamask.io/guide/ethereum-provider.html
 
 import { ethers } from 'ethers'
-import { mockCalls } from './request/call'
-import { mockTransactions } from './request/transactions'
+import { mockCall } from './request/call'
+import { mockTransaction } from './request/transactions'
 import { on, resetEvents, triggerEvent } from './on'
 import { request } from './request'
 
 let Ethereum = ({ configuration, window, provider }) => {
-  mockCalls(configuration?.calls)
-  mockTransactions(configuration?.transactions)
+  mockCall(configuration?.call)
+  mockTransaction(configuration?.transaction)
   resetEvents()
 
   if (provider) {

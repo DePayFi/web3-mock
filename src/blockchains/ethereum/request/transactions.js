@@ -3,17 +3,17 @@ import { ethers } from 'ethers'
 
 let mocks
 
-let mockTransactions = function (configurations) {
-  if (configurations === undefined) {
+let mockTransaction = function (configuration) {
+  if (configuration === undefined) {
     mocks = undefined
   } else {
     mocks = {}
   }
-  if (configurations === undefined) {
+  if (configuration === undefined) {
     return
   }
   let configurationWithLowerCaseAddress = {}
-  for (const [address, configuration] of Object.entries(configurations)) {
+  for (const [address, configuration] of Object.entries(configuration)) {
     configurationWithLowerCaseAddress[normalize(address)] = configuration
   }
   Object.assign(mocks, configurationWithLowerCaseAddress)
@@ -133,4 +133,4 @@ let sendTransaction = function ({ params, provider }) {
   }
 }
 
-export { sendTransaction, mockTransactions }
+export { sendTransaction, mockTransaction }

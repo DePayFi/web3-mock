@@ -1,2 +1,4 @@
-import Web3Mock from './Web3Mock'
-export { Web3Mock }
+import mock from './mock'
+import trigger from './trigger'
+
+export { mock, trigger }
