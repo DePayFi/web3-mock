@@ -30,7 +30,7 @@ let request = ({ request, provider }) => {
       break
 
     case 'eth_call':
-      // return call({ params: request.params, provider })
+      return call({ params: request.params, provider })
       break
 
     case 'eth_sendTransaction':

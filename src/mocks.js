@@ -1,3 +1,9 @@
 let mocks = [];
 
-export default mocks
+let resetMocks = ()=>{
+  mocks = []
+}
+
+resetMocks();
+
+export { mocks, resetMocks }

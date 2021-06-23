@@ -1,7 +1,10 @@
 import { ethers } from 'ethers'
-import { Web3Mock } from '../../../src'
+import { mock, resetMocks } from '../../../src'
 
-describe('Web3Mock Ethereum for given provider', ()=> {
+describe('mock Ethereum for given provider', ()=> {
+
+  beforeEach(resetMocks)
+  afterEach(resetMocks)
 
   it('allows you to mock web3 calls for a given provider', async ()=>{
 
@@ -10,22 +13,18 @@ describe('Web3Mock Ethereum for given provider', ()=> {
 
     let provider = new ethers.providers.JsonRpcProvider('https://example.com');
     
-    Web3Mock({
+    mock({
       provider,
-      mocks: {
-        ethereum: {
-          calls: {
-            [contractAddress]: {
-              abi: abi,
-              getAmountsIn: {
-                [
-                  ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
-                ]: ["773002376389189", "1000000000000000000"]
-              }
-            }
-          }
+      blockchain: 'ethereum',
+      address: contractAddress,
+      abi: abi,
+      call: {
+        getAmountsIn: {
+          [
+            ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
+          ]: ["773002376389189", "1000000000000000000"]
         }
-      },
+      }
     })
 
     let contract = new ethers.Contract(

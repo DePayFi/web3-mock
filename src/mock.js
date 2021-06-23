@@ -1,5 +1,5 @@
-import { Ethereum } from './blockchains'
-import mocks from './mocks'
+import { mock as mockEthereum } from './blockchains/ethereum'
+import { mocks } from './mocks'
 
 let getWindow = (configuration)=> {
   if(configuration.window) return configuration.window;
@@ -10,8 +10,8 @@ let getWindow = (configuration)=> {
 let getBlockchain = (configuration)=> {
   if (typeof configuration === 'string') {
     return configuration
-  } else if (typeof configuration === 'object' && Object.keys(configuration)[0]) {
-    return Object.keys(configuration)[0]
+  } else if (typeof configuration === 'object') {
+    return configuration.blockchain
   } else {
     throw 'Web3Mock: Unknown mock configuration type!'
   }
@@ -27,18 +27,22 @@ let preflight = (configuration)=> {
   }
 }
 
-export default (configuration)=> {
+export default (configuration, call)=> {
   preflight(configuration);
 
   let window = getWindow(configuration);
   let blockchain = getBlockchain(configuration);
   let provider = configuration.provider;
+  let mock;
 
   switch (blockchain) {
     case 'ethereum':
-      mocks.push(Ethereum({ configuration: configuration['ethereum'], window, provider }))
+      mock = mockEthereum({ configuration: configuration, window, provider })
+      mocks.push(mock)
       break
     default:
       throw 'Web3Mock: Unknown blockchain!'
   }
+
+  return mock;
 }
