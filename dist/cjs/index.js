@@ -128,10 +128,11 @@ let decodeTransactionArguments = function ({ params, mock, provider }) {
 let findMock = function ({ params, mocks, provider }) {
   params = params[0];
   let mock = mocks[params.to];
-  if (_optionalChain([mock, 'optionalAccess', _2 => _2.value]) && ethers.ethers.BigNumber.from(params.value).toString() !== mock.value) {
+  if(mock === undefined) { return }
+  if (mock.value && ethers.ethers.BigNumber.from(params.value).toString() !== mock.value) {
     return undefined
   }
-  if (_optionalChain([mock, 'optionalAccess', _3 => _3.from]) && normalize(params.from) !== normalize(mock.from)) {
+  if (mock.from && normalize(params.from) !== normalize(mock.from)) {
     return undefined
   }
   if (params.data !== undefined) {
@@ -143,7 +144,7 @@ let findMock = function ({ params, mocks, provider }) {
       )
     } else {
       let transactionArguments = decodeTransactionArguments({ params, mock, provider });
-      let allArgumentsMatch = Object.keys(_optionalChain([mock, 'optionalAccess', _4 => _4.params])).every((key) => {
+      let allArgumentsMatch = Object.keys(_optionalChain([mock, 'optionalAccess', _2 => _2.params])).every((key) => {
         if (mock.params[key]) {
           return (
             JSON.stringify(normalize(mock.params[key])) ==

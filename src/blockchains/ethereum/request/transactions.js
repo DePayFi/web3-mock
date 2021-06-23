@@ -42,10 +42,11 @@ let decodeTransactionArguments = function ({ params, mock, provider }) {
 let findMock = function ({ params, mocks, provider }) {
   params = params[0]
   let mock = mocks[params.to]
-  if (mock?.value && ethers.BigNumber.from(params.value).toString() !== mock.value) {
+  if(mock === undefined) { return }
+  if (mock.value && ethers.BigNumber.from(params.value).toString() !== mock.value) {
     return undefined
   }
-  if (mock?.from && normalize(params.from) !== normalize(mock.from)) {
+  if (mock.from && normalize(params.from) !== normalize(mock.from)) {
     return undefined
   }
   if (params.data !== undefined) {
