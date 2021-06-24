@@ -9,11 +9,11 @@ let mockCall = (configuration)=> {
   return configuration
 }
 
-let findMockedCall = (address, callParams, provider)=> {
+let findMockedCall = (address, params, provider)=> {
   return mocks.find((mock)=>{
     if(typeof mock !== 'object') { return }
     if(normalize(mock.address) !== normalize(address)) { return }
-    let data = callParams.data
+    let data = params.data
     let methodSelector = data.split('000000000000000000000000')[0]
     let contract = new ethers.Contract(address, mock.abi, provider)
     let contractFunction = contract.interface.getFunction(methodSelector)
@@ -47,11 +47,10 @@ let formatResult = (result, callArguments, address)=> {
 }
 
 let call = function ({ params, provider }) {
-  let callParams = params[0]
-  let address = normalize(callParams.to)
-  let mock = findMockedCall(address, callParams, provider);
+  let address = normalize(params.to)
+  let mock = findMockedCall(address, params, provider);
   if(mock) {
-    let data = callParams.data
+    let data = params.data
     let methodSelector = data.split('000000000000000000000000')[0]
     let contract = new ethers.Contract(address, mock.abi, provider)
     let contractFunction = contract.interface.getFunction(methodSelector)

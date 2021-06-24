@@ -3,11 +3,13 @@
 import { ethers } from 'ethers'
 import { on } from './on'
 import { mockCall } from './request/call'
+import { mockTransaction } from './request/transaction'
 import { request } from './request'
 
 let mock = ({ configuration, window, provider }) => {
 
   if(configuration?.call) mockCall(configuration)
+  if(configuration?.transaction) mockTransaction(configuration)
 
   if (provider) {
     if (provider.send) {

@@ -56,7 +56,7 @@ describe('mock Ethereum contract calls', ()=> {
           name: 'DePay'
         }
       })
-    }).toThrow('Web3Mock: Please mock the abi of the contract at: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
+    }).toThrowError('Web3Mock: Please mock the abi of the contract at: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
   })
 
   it('fails if mocked contract does not implement called function', async ()=>{

@@ -10,7 +10,7 @@ let getWindow = (configuration)=> {
 let getBlockchain = (configuration)=> {
   if (typeof configuration === 'string') {
     return configuration
-  } else if (typeof configuration === 'object') {
+  } else if (typeof configuration === 'object' && !Array.isArray(configuration)) {
     return configuration.blockchain
   } else {
     throw 'Web3Mock: Unknown mock configuration type!'
@@ -27,6 +27,19 @@ let preflight = (configuration)=> {
   }
 }
 
+let spy = (mock)=> {
+  if(typeof mock != 'object') { return mock }
+  let all = [];
+  mock.calls = {
+    add: (call)=> {
+      all.push(call)
+    },
+    all: ()=>all,
+    count: ()=>all.length
+  }
+  return mock
+}
+
 export default (configuration, call)=> {
   preflight(configuration);
 
@@ -37,7 +50,7 @@ export default (configuration, call)=> {
 
   switch (blockchain) {
     case 'ethereum':
-      mock = mockEthereum({ configuration: configuration, window, provider })
+      mock = spy(mockEthereum({ configuration: configuration, window, provider }))
       mocks.push(mock)
       break
     default:

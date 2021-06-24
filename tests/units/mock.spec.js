@@ -3,7 +3,6 @@ import { mock } from '../../src'
 describe('mock', () => {
   
   it('should be a defined function', () => {
-    console.log(mock)
     expect(typeof(mock)).toBe('function');
   });
 
@@ -22,11 +21,11 @@ describe('mock', () => {
 
     expect(() => {
       mock()
-    }).toThrow('Web3Mock: No mock defined!');
+    }).toThrowError('Web3Mock: No mock defined!');
 
     expect(() => {
       mock(undefined);
-    }).toThrow('Web3Mock: No mock defined!');
+    }).toThrowError('Web3Mock: No mock defined!');
 
   });
 
@@ -34,7 +33,7 @@ describe('mock', () => {
 
     expect(() => {
       mock([1]);
-    }).toThrow('Web3Mock: Unknown mock configuration type!');
+    }).toThrowError('Web3Mock: Unknown mock configuration type!');
 
   });
 
@@ -42,7 +41,7 @@ describe('mock', () => {
 
     expect(() => {
       mock({});
-    }).toThrow('Web3Mock: Mock configuration is empty!');
+    }).toThrowError('Web3Mock: Mock configuration is empty!');
 
   });
 
@@ -50,7 +49,7 @@ describe('mock', () => {
 
     expect(() => {
       mock('nonexistingblockchain')
-    }).toThrow('Web3Mock: Unknown blockchain!');
+    }).toThrowError('Web3Mock: Unknown blockchain!');
 
   });
 

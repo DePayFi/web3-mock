@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import { call } from './call'
-import { sendTransaction } from './transactions'
+import { sendTransaction } from './transaction'
 
 let request = ({ request, provider }) => {
   switch (request.method) {
@@ -30,11 +30,11 @@ let request = ({ request, provider }) => {
       break
 
     case 'eth_call':
-      return call({ params: request.params, provider })
+      return call({ params: request.params[0], provider })
       break
 
     case 'eth_sendTransaction':
-      return sendTransaction({ params: request.params, provider })
+      return sendTransaction({ params: request.params[0], provider })
       break
 
     case 'eth_getTransactionByHash':

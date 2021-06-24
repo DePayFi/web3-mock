@@ -12,7 +12,7 @@ describe('mock Ethereum', ()=> {
   it('fails if requested method is not implemented', ()=>{
     expect(()=>{
       global.ethereum.request({ method: 'nonexisting' })
-    }).toThrow('Web3Mock Ethereum request: Unknown request method nonexisting!')
+    }).toThrowError('Web3Mock Ethereum request: Unknown request method nonexisting!')
   })
   
   it('mocks default request for eth_chainId', async ()=> {
