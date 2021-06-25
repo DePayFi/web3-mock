@@ -16,9 +16,9 @@ describe('mock Ethereum for given provider', ()=> {
     mock({
       provider,
       blockchain: 'ethereum',
-      address: contractAddress,
-      abi: abi,
       call: {
+        address: contractAddress,
+        abi: abi,
         getAmountsIn: {
           [
             ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]

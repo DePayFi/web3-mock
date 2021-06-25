@@ -13,9 +13,9 @@ describe('mock Ethereum contract calls', ()=> {
 
     let callMock = mock({
       blockchain: 'ethereum',
-      address: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
-      abi: abi,
       call: {
+        address: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+        abi: abi,
         name: 'DePay'
       }
     })
@@ -52,8 +52,8 @@ describe('mock Ethereum contract calls', ()=> {
     expect(()=>{
       mock({
         blockchain: 'ethereum',
-        address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
         call: {
+          address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
           name: 'DePay'
         }
       })
@@ -64,9 +64,9 @@ describe('mock Ethereum contract calls', ()=> {
 
     let callMock = mock({
       blockchain: 'ethereum',
-      address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
-      abi: abi.filter((fragment)=>{ fragment.name != 'vestingRewardPerSecond' }),
       call: {
+        address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+        abi: abi.filter((fragment)=>{ fragment.name != 'vestingRewardPerSecond' }),
         name: 'DePay'
       }
     })
@@ -90,9 +90,9 @@ describe('mock Ethereum contract calls', ()=> {
 
     mock({
       blockchain: 'ethereum',
-      address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
-      abi: abi,
       call: {
+        address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+        abi: abi,
         name: 'DePay'
       }
     })
@@ -114,9 +114,9 @@ describe('mock Ethereum contract calls', ()=> {
 
     mock({
       blockchain: 'ethereum',
-      address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
-      abi: abi,
       call: {
+        address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+        abi: abi,
         balanceOf: {
           "0x5Af489c8786A018EC4814194dC8048be1007e390": "1000000000000000000"
         }
@@ -140,9 +140,9 @@ describe('mock Ethereum contract calls', ()=> {
 
     let tokenMock = mock({
       blockchain: 'ethereum',
-      address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
-      abi: abi,
       call: {
+        address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+        abi: abi,
         name: 'DePay',
         symbol: 'DEPAY',
         balanceOf: {
@@ -181,9 +181,9 @@ describe('mock Ethereum contract calls', ()=> {
     
     mock({
       blockchain: 'ethereum',
-      abi: abi,
-      address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
       call: {
+        abi: abi,
+        address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
         getAmountsIn: {
           [
             ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
@@ -216,9 +216,9 @@ describe('mock Ethereum contract calls', ()=> {
     
     mock({
       blockchain: 'ethereum',
-      address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
-      abi: abi,
       call: {
+        address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
+        abi: abi,
         getAmountsIn: {
           [
             ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]

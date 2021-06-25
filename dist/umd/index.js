@@ -223,9 +223,10 @@
     events[eventName].push(callback);
   };
 
+  function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   let mockCall = (configuration) => {
-    if (configuration.abi === undefined) {
-      throw 'Web3Mock: Please mock the abi of the contract at: ' + configuration.address
+    if (_optionalChain$2([configuration, 'optionalAccess', _ => _.call, 'optionalAccess', _2 => _2.abi]) === undefined) {
+      throw 'Web3Mock: Please mock the abi of the contract at: ' + _optionalChain$2([configuration, 'optionalAccess', _3 => _3.call, 'optionalAccess', _4 => _4.address])
     }
     return configuration
   };
@@ -235,12 +236,12 @@
       if (typeof mock !== 'object') {
         return
       }
-      if (normalize(mock.address) !== normalize(address)) {
+      if (normalize(mock.call.address) !== normalize(address)) {
         return
       }
       let data = params.data;
       let methodSelector = data.split('000000000000000000000000')[0];
-      let contract = new ethers.ethers.Contract(address, mock.abi, provider);
+      let contract = new ethers.ethers.Contract(address, mock.call.abi, provider);
       let contractFunction = contract.interface.getFunction(methodSelector);
       if (!Object.keys(mock.call).includes(contractFunction.name)) {
         return
@@ -283,7 +284,7 @@
       mock.calls.add(params);
       let data = params.data;
       let methodSelector = data.split('000000000000000000000000')[0];
-      let contract = new ethers.ethers.Contract(address, mock.abi, provider);
+      let contract = new ethers.ethers.Contract(address, mock.call.abi, provider);
       let contractFunction = contract.interface.getFunction(methodSelector);
       let callArguments = contract.interface.decodeFunctionData(contractFunction, data);
       let result = formatResult(mock.call[contractFunction.name], callArguments, address);
@@ -332,11 +333,11 @@
     }
   };
 
-  function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }// https://docs.metamask.io/guide/ethereum-provider.html
+  function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }// https://docs.metamask.io/guide/ethereum-provider.html
 
   let mock = ({ configuration, window, provider }) => {
-    if (_optionalChain$2([configuration, 'optionalAccess', _ => _.call])) mockCall(configuration);
-    if (_optionalChain$2([configuration, 'optionalAccess', _2 => _2.transaction])) mockTransaction(configuration);
+    if (_optionalChain$3([configuration, 'optionalAccess', _ => _.call])) mockCall(configuration);
+    if (_optionalChain$3([configuration, 'optionalAccess', _2 => _2.transaction])) mockTransaction(configuration);
 
     if (provider) {
       if (provider.send) {

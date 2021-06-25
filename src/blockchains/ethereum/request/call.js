@@ -3,8 +3,8 @@ import { ethers } from 'ethers'
 import { mocks } from '../../../mocks'
 
 let mockCall = (configuration) => {
-  if (configuration.abi === undefined) {
-    throw 'Web3Mock: Please mock the abi of the contract at: ' + configuration.address
+  if (configuration?.call?.abi === undefined) {
+    throw 'Web3Mock: Please mock the abi of the contract at: ' + configuration?.call?.address
   }
   return configuration
 }
@@ -14,12 +14,12 @@ let findMockedCall = (address, params, provider) => {
     if (typeof mock !== 'object') {
       return
     }
-    if (normalize(mock.address) !== normalize(address)) {
+    if (normalize(mock.call.address) !== normalize(address)) {
       return
     }
     let data = params.data
     let methodSelector = data.split('000000000000000000000000')[0]
-    let contract = new ethers.Contract(address, mock.abi, provider)
+    let contract = new ethers.Contract(address, mock.call.abi, provider)
     let contractFunction = contract.interface.getFunction(methodSelector)
     if (!Object.keys(mock.call).includes(contractFunction.name)) {
       return
@@ -62,7 +62,7 @@ let call = function ({ params, provider }) {
     mock.calls.add(params)
     let data = params.data
     let methodSelector = data.split('000000000000000000000000')[0]
-    let contract = new ethers.Contract(address, mock.abi, provider)
+    let contract = new ethers.Contract(address, mock.call.abi, provider)
     let contractFunction = contract.interface.getFunction(methodSelector)
     let callArguments = contract.interface.decodeFunctionData(contractFunction, data)
     let result = formatResult(mock.call[contractFunction.name], callArguments, address)

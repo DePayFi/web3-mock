@@ -48,7 +48,7 @@ describe('something', ()=> {
     let tokenMock = mock({
       blockchain: 'ethereum',
       call: {
-        to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb'
+        to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
         abi: TokenAbi,
         name: "DePay",
         symbol: "DEPAY",
@@ -143,9 +143,9 @@ await window.ethereum.request(method: 'eth_blockNumber') // '0x5daf3b'
 ```javascript
 let callMock = mock({
   blockchain: 'ethereum',
-  address: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
-  abi: abi,
   call: {
+    address: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+    abi: abi,
     name: 'DePay'
   }
 })
@@ -165,9 +165,9 @@ expect(callMock).toHaveBeenCalled()
 ```javascript
 mock({
   blockchain: 'ethereum',
-  address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
-  abi: abi,
   call: {
+    address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+    abi: abi,
     balanceOf: {
       "0x5Af489c8786A018EC4814194dC8048be1007e390": "1000000000000000000"
     }
@@ -192,9 +192,9 @@ expect(
 ```javascript
 let contractMock = mock({
   blockchain: 'ethereum',
-  abi: abi,
-  address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
   call: {
+    abi: abi,
+    address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
     getAmountsIn: {
       [
         ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]

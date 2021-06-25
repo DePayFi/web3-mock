@@ -1,7 +1,7 @@
 {
   "name": "depay-web3mock",
   "moduleName": "Web3Mock",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JavaScript library to mock web3 responses either by emulating blockchain wallets or RPC calls.",
   "main": "./dist/cjs/index.js",
   "files": [
