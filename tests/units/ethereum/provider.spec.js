@@ -1,7 +1,10 @@
 import { ethers } from 'ethers'
-import { Web3Mock } from '../../../src'
+import { mock, resetMocks } from '../../../src'
 
-describe('Web3Mock Ethereum for given provider', ()=> {
+describe('mock Ethereum for given provider', ()=> {
+
+  beforeEach(resetMocks)
+  afterEach(resetMocks)
 
   it('allows you to mock web3 calls for a given provider', async ()=>{
 
@@ -10,22 +13,18 @@ describe('Web3Mock Ethereum for given provider', ()=> {
 
     let provider = new ethers.providers.JsonRpcProvider('https://example.com');
     
-    Web3Mock({
+    mock({
       provider,
-      mocks: {
-        ethereum: {
-          calls: {
-            [contractAddress]: {
-              abi: abi,
-              getAmountsIn: {
-                [
-                  ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
-                ]: ["773002376389189", "1000000000000000000"]
-              }
-            }
-          }
+      blockchain: 'ethereum',
+      address: contractAddress,
+      abi: abi,
+      call: {
+        getAmountsIn: {
+          [
+            ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
+          ]: ["773002376389189", "1000000000000000000"]
         }
-      },
+      }
     })
 
     let contract = new ethers.Contract(
@@ -48,21 +47,17 @@ it('allows you to mock web3 transactions for a given provider', async ()=>{
     let abi = [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
     let provider = new ethers.providers.JsonRpcProvider('https://example.com');
 
-    Web3Mock({ 
+    mock({ 
       provider,
-      mocks: {
-        ethereum: {
-          transactions: {
-            '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92': {
-              abi: abi,
-              from: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
-              method: 'route',
-              params: {
-                path: ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"],
-                amounts: ["773002376389189", "1000000000000000000", "3623748721"]
-              }
-            }
-          }
+      blockchain: 'ethereum',
+      transaction: {
+        to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
+        abi: abi,
+        from: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+        method: 'route',
+        params: {
+          path: ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"],
+          amounts: ["773002376389189", "1000000000000000000", "3623748721"]
         }
       }
     })

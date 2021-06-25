@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
-import { Web3Mock } from '../../../src'
+import { mock, trigger } from '../../../src'
 
-describe('Web3Mock Ethereum events', ()=> {
+describe('mock Ethereum events', ()=> {
 
   let window;
   let provider;
@@ -12,16 +12,16 @@ describe('Web3Mock Ethereum events', ()=> {
 
   it('allows to trigger events', async ()=> {
     
-    Web3Mock({ mocks: 'ethereum', window })
+    mock('ethereum')
 
     let accounts = ['0xb0252f13850a4823706607524de0b146820F2240', '0xEcA533Ef096f191A35DE76aa4580FA3A722724bE'];
     let accountsChangedTo;
 
-    window.ethereum.on('accountsChanged', (accounts)=>{
+    global.ethereum.on('accountsChanged', (accounts)=>{
       accountsChangedTo = accounts
     })
 
-    Web3Mock.trigger('accountsChanged', accounts)
+    trigger('accountsChanged', accounts)
 
     expect(accountsChangedTo).toEqual(accounts)
   })

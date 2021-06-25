@@ -1,2 +1,7 @@
-import Web3Mock from './Web3Mock'
-export { Web3Mock }
+import confirm from './confirm'
+import { increaseBlock } from './block'
+import mock from './mock'
+import trigger from './trigger'
+import { resetMocks } from './mocks'
+
+export { mock, trigger, resetMocks, confirm, increaseBlock }
