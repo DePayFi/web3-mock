@@ -7,9 +7,8 @@ import { mockTransaction } from './request/transaction'
 import { request } from './request'
 
 let mock = ({ configuration, window, provider }) => {
-
-  if(configuration?.call) mockCall(configuration)
-  if(configuration?.transaction) mockTransaction(configuration)
+  if (configuration?.call) mockCall(configuration)
+  if (configuration?.transaction) mockTransaction(configuration)
 
   if (provider) {
     if (provider.send) {

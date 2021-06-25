@@ -1,12 +1,12 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks } from '../../../src'
+import { mock, resetMocks, confirm } from '../../../src'
 
 describe('mock Ethereum transactions', ()=> {
 
   beforeEach(resetMocks)
   afterEach(resetMocks)
 
-  it('mocks all transactions per default', async ()=> {
+  it('does not mock transactions per default', async ()=> {
     
     mock('ethereum')
 
@@ -14,12 +14,14 @@ describe('mock Ethereum transactions', ()=> {
 
     let signer = provider.getSigner();
 
-    let transaction = await signer.sendTransaction({
+    await expect(
+      signer.sendTransaction({
         to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
         value: ethers.utils.parseEther("1")
-    });
-
-    expect(transaction).toBeDefined()
+      })
+    ).rejects.toEqual(
+      "Web3Mock: Please mock the transaction to: 0x5af489c8786a018ec4814194dc8048be1007e390"
+    )
   })
 
   it('mocks a simple transaction', async ()=> {
@@ -90,20 +92,40 @@ describe('mock Ethereum transactions', ()=> {
 
   it('also mocks transaction receipts for simple transactions', async ()=> {
     
-    mock('ethereum')
+    let mockedTransaction = mock({
+      blockchain: 'ethereum',
+      transaction: {
+        to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+        value: '1000000000000000000'
+      }
+    })
 
     let provider = new ethers.providers.Web3Provider(global.ethereum);
 
     let signer = provider.getSigner();
 
-    let transactionReceipt = await signer.sendTransaction({
+    let waitedFor1Confirmation;
+    let sentTransaction;
+    let transactionReceipt;
+
+    await signer.sendTransaction({
       to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
       value: ethers.utils.parseEther("1")
     }).then(async function(transaction){
-      return await transaction.wait(1)
+      sentTransaction = transaction
     })
 
+    confirm(mockedTransaction)
+    
+    await sentTransaction.wait(1).then(function(receipt){
+      transactionReceipt = receipt
+      waitedFor1Confirmation = true
+    })
+
+    expect(waitedFor1Confirmation).toEqual(true)
+    expect(sentTransaction.hash).toBeDefined()
     expect(transactionReceipt.transactionHash).toBeDefined()
+    expect(sentTransaction.hash).toEqual(transactionReceipt.transactionHash)
   })
 
   it('requires you to mock contract call transactions', async ()=> {
@@ -167,11 +189,15 @@ describe('mock Ethereum transactions', ()=> {
 
     let signer = provider.getSigner();
 
-    await signer.sendTransaction({
-      to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-      value: ethers.utils.parseEther("1")
-    });
-      
+    await expect(
+      signer.sendTransaction({
+        to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+        value: ethers.utils.parseEther("1")
+      })
+    ).rejects.toEqual(
+      "Web3Mock: Please mock the transaction to: 0x5af489c8786a018ec4814194dc8048be1007e390"
+    )
+
     expect(mockedTransaction).not.toHaveBeenCalled();
   })
 
@@ -189,10 +215,40 @@ describe('mock Ethereum transactions', ()=> {
 
     let signer = provider.getSigner();
 
-    await signer.sendTransaction({
-      to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-      value: ethers.utils.parseEther("1")
+    await expect(
+      signer.sendTransaction({
+        to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+        value: ethers.utils.parseEther("1")
+      })
+    ).rejects.toEqual(
+      "Web3Mock: Please mock the transaction to: 0x5af489c8786a018ec4814194dc8048be1007e390"
+    )
+    
+    expect(mockedTransaction).not.toHaveBeenCalled()
+  })
+
+  it('does not call the mock if `value` of the transaction mock is not matching', async ()=> {
+    
+    let mockedTransaction = mock({
+      blockchain: 'ethereum',
+      transaction: {
+        to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+        value: "9000000000000000000"
+      }
     })
+
+    let provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    let signer = provider.getSigner();
+
+    await expect(
+      signer.sendTransaction({
+        to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+        value: ethers.utils.parseEther("1")
+      })
+    ).rejects.toEqual(
+      "Web3Mock: Please mock the transaction to: 0x5af489c8786a018ec4814194dc8048be1007e390"
+    )
     
     expect(mockedTransaction).not.toHaveBeenCalled()
   })

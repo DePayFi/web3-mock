@@ -60,7 +60,7 @@ describe('mock Ethereum', ()=> {
   it('mocks default request for eth_blockNumber', async ()=>{
 
     let block = await global.ethereum.request({ method: 'eth_blockNumber' })
-    expect(block).toEqual('0x5daf3b');
+    expect(block).toEqual('0x01');
 
   })
 });

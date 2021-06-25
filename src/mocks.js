@@ -1,9 +1,9 @@
-let mocks = [];
+let mocks = []
 
-let resetMocks = ()=>{
+let resetMocks = () => {
   mocks = []
 }
 
-resetMocks();
+resetMocks()
 
 export { mocks, resetMocks }

@@ -12,7 +12,7 @@ or
 npm install --save depay-web3mock
 ```
 
-### Simple
+### Basic
 
 ```javascript
 import { mock } from '../../../src'
@@ -29,20 +29,11 @@ describe('something', ()=> {
     await window.ethereum.request(method: 'eth_accounts') // ["0xd8da6bf26964af9d7eed9e03e53415d37aa96045"]
     await window.ethereum.request(method: 'eth_requestAccounts') // ["0xd8da6bf26964af9d7eed9e03e53415d37aa96045"]
 
-    let provider = new ethers.providers.Web3Provider(window.ethereum);
-    let signer = provider.getSigner();
-
-    await signer.sendTransaction({
-      to: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
-      value: ethers.utils.parseEther("1")
-    }) // transaction { hash: '0xbb8d9e2262cd2d93d9bf7854d35f8e016dd985e7b3eb715d0d7faf7290a0ff4d', ... }
   })
 })
-
-
 ```
 
-### Complex
+### Advanced
 
 ```javascript
 import { mock, resetMocks } from 'depay-web3mock'
@@ -52,77 +43,89 @@ describe('something', ()=> {
   beforeEach(resetMocks)
   afterEach(resetMocks)
 
-  it('does something', ()=>{
+  it('mocks contract calls', ()=>{
     
-  })
-})
-
-Web3Mock({
-  mocks: {
-    ethereum: {
-      calls: {
-        "0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb": {
-          abi: TokenAbi,
-          name: "DePay",
-          symbol: "DEPAY",
-          balanceOf: {
-            "0x5Af489c8786A018EC4814194dC8048be1007e390": "1000000000000000000"
-          }
-        },
-        "0x7a250d5630b4cf539739df2c5dacb4c659f2488d": {
-          abi: UniswapV2RouterAbi,
-          getAmountsIn: {
-            [
-              ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
-            ]: ["773002376389189", "1000000000000000000"]
-          }
-        }
-      },
-      transactions: {
-        "0x5Af489c8786A018EC4814194dC8048be1007e390": {
-          value: "1000000000000000000"
-        },
-        "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92": {
-          abi: DePayRouterV1Abi,
-          method: 'route',
-          params: {
-            path: ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"],
-            amounts: ["773002376389189", "1000000000000000000", "3623748721"]
-          }
+    let tokenMock = mock({
+      blockchain: 'ethereum'
+      call: {
+        to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb'
+        abi: TokenAbi,
+        name: "DePay",
+        symbol: "DEPAY",
+        balanceOf: {
+          "0x5Af489c8786A018EC4814194dC8048be1007e390": "1000000000000000000"
         }
       }
-    }
-  }
-})
+    })
 
-await contract.name() // DePay
-await contract.symbol() // DEPAY
-await contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390") // "1000000000000000000"
+    await token.name() // DePay
+    await token.symbol() // DEPAY
+    await token.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390") // "1000000000000000000"
 
-await uniswapV2RouterInstance.getAmountsIn("1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"])
-// ["773002376389189", "1000000000000000000"]
+    expect(tokenMock).toHaveBeenCalled()
+    expect(tokenMock).toHaveBeenCalledTimes(3)
+  })
 
-await DePayRouterV1Contract().connect(signer).route(
-  path,
-  [amountIn, amountOut, deadline],
-  [receiver],
-  plugins,
-  [],
-  { value: value }
-)
-// transaction { hash: '0xbb8d9e2262cd2d93d9bf7854d35f8e016dd985e7b3eb715d0d7faf7290a0ff4d', ... }
+  it('mocks transactions', ()=>{
+    
+    let mockedTransaction = mock({
+      blockchain: 'ethereum',
+      transaction: {
+        to: '0x5Af489c8786A018EC4814194dC8048be1007e390',
+        from: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+        value: "2000000000000000000"
+      }
+    })
+
+    let provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    let signer = provider.getSigner();
+
+    let transaction = await signer.sendTransaction({
+      to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+      value: ethers.utils.parseEther("2")
+    })
+
+    expect(transaction).toBeDefined()
+    expect(mockedTransaction).toHaveBeenCalled()
+  })
+
+  it('mocks contract transactions', ()=>{
+    
+    let transactionMock = mock({
+      blockchain: 'ethereum',
+      transaction: {
+        to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
+        abi: DePayRouterV1Abi,
+        method: 'route',
+        params: {
+          path: ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"],
+          amounts: ["773002376389189", "1000000000000000000", "3623748721"]
+        }
+      }
+    }}
+
+    await DePayRouterV1Contract().connect(signer).route(
+      path,
+      [amountIn, amountOut, deadline],
+      [receiver],
+      plugins,
+      [],
+      { value: value }
+    )
+
+    expect(transactionMock).toHaveBeenCalled()
+  })
 ```
 
 ## Functionalities
 
 ### Basic Implicit Mocks
 
-Mocks basic blockchain functionalities without explicit mocking:
+Mocks basic blockchain functionalities without explicit configuration:
 
 ```javascript
-Web3Mock({
-  mocks: ['ethereum']
-})
+mock('ethereum')
 
 await window.ethereum.request(method: 'eth_chainId') // '0x1'
 await window.ethereum.request(method: 'net_version') // 1
@@ -133,143 +136,146 @@ await window.ethereum.request(method: 'eth_estimateGas') // '0x2c4a0'
 await window.ethereum.request(method: 'eth_blockNumber') // '0x5daf3b'
 ```
 
-### Explicit Mocks
+### Contract Calls
 
-#### Contract Calls
-
-##### Mock Simple Contract Calls
+#### Mock Simple Contract Calls
 
 ```javascript
-Web3Mock({
-  mocks: {
-    ethereum: {
-      calls: {
-        "0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb": {
-          abi: abi,
-          name: "DePay",
-          symbol: "DEPAY"
-        }
-      }
+let callMock = mock({
+  blockchain: 'ethereum',
+  address: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+  abi: abi,
+  call: {
+    name: 'DePay'
+  }
+})
+
+let contract = new ethers.Contract(
+  '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+  abi,
+  provider
+);
+
+expect(await contract.name()).toEqual('DePay')
+expect(callMock).toHaveBeenCalled()
+```
+
+#### Mock Simple Contract Calls with Parameters
+
+```javascript
+mock({
+  blockchain: 'ethereum',
+  address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+  abi: abi,
+  call: {
+    balanceOf: {
+      "0x5Af489c8786A018EC4814194dC8048be1007e390": "1000000000000000000"
     }
   }
 })
+
+provider = new ethers.providers.Web3Provider(global.ethereum);
+
+let contract = new ethers.Contract(
+  '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+  abi,
+  provider
+);
+
+expect(
+  (await contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390")).toString()
+).toEqual("1000000000000000000")
 ```
 
-##### Mock Simple Contract Calls with Parameters
+#### Mock Complex Contract Calls with Complex Parameters
 
 ```javascript
-Web3Mock({
-  mocks: {
-    ethereum: {
-      calls: {
-        "0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb": {
-          abi: abi,
-          balanceOf: {
-            "0x5Af489c8786A018EC4814194dC8048be1007e390": "1000000000000000000"              
-          }
-        }
-      }
+let contractMock = mock({
+  blockchain: 'ethereum',
+  abi: abi,
+  address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
+  call: {
+    getAmountsIn: {
+      [
+        ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
+      ]: ["773002376389189", "1000000000000000000"]
     }
   }
 })
+
+provider = new ethers.providers.Web3Provider(global.ethereum);
+
+let contract = new ethers.Contract(
+  '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
+  abi,
+  provider
+);
+
+expect(
+  (await contract.getAmountsIn(
+    "1000000000000000000",
+    ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]
+  )).map((bigNumber)=>bigNumber.toString())
+).toEqual(["773002376389189", "1000000000000000000"])
+
+expect(contractMock).toHaveBeenCalled()
 ```
 
-##### Mock Complex Contract Calls with Complex Parameters
+### Transactions
 
-```javascript
-Web3Mock({
-  mocks: {
-    ethereum: {
-      calls: {
-        "0x7a250d5630b4cf539739df2c5dacb4c659f2488d": {
-          abi: UniswapV2RouterAbi,
-          getAmountsIn: {
-            [
-              ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
-            ]: ["773002376389189", "1000000000000000000"]
-          }
-        }
-      }
-    }
-  }
-})
-```
-
-#### Transactions
-
-`Web3Mock` mocks all transactions per default (without adding explicit mocking).
-
-```javascript
-WebMock({ mocks: 'ethereum' })
-```
+`Web3Mock` does not implicitly mock transactions.
+You need to mock the transactions before they are executed.
 
 `Web3Mock` mocks `eth_sendTransaction`, `eth_getTransactionByHash`, `eth_getTransactionReceipt` request to cover the full lifecycle of blockchain transactions.
 
-Once you set the `transactions` key in the mock configuration, all transactions are required to be mocked:
+#### Mock Simple Transactions
 
 ```javascript
-WebMock({
-  mocks: {
-    ethereum: {
-      transactions: {}
-    }
+let mockedTransaction = mock({
+  blockchain: 'ethereum',
+  transaction: {
+    to: '0x5Af489c8786A018EC4814194dC8048be1007e390',
+    from: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+    value: "2000000000000000000"
   }
 })
 
-signer.sendTransaction({
+let provider = new ethers.providers.Web3Provider(global.ethereum);
+
+let signer = provider.getSigner();
+
+let transaction = await signer.sendTransaction({
   to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-  value: ethers.utils.parseEther("1")
-})
-// raises: Web3Mock Ethereum transactions: Please mock the transaction: { \"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\": { \"to\": \"0x5af489c8786a018ec4814194dc8048be1007e390\" , \"value\": \"1000000000000000000\"}
-```
-
-##### Mock Simple Transactions
-
-```javascript
-WebMock({
-  mocks: {
-    ethereum: {
-      transactions: {
-        "0x5Af489c8786A018EC4814194dC8048be1007e390": { // to address
-          value: "1000000000000000000"
-        }
-      }
-    }
-  }
+  value: ethers.utils.parseEther("2")
 })
 
-signer.sendTransaction({
-  to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-  value: ethers.utils.parseEther("1")
-})
+expect(transaction).toBeDefined()
+
+expect(mockedTransaction).toHaveBeenCalled()
 ````
 
-##### Mock Complex Contract Transactions
+#### Mock Complex Contract Transactions
 
 ```javascript
-WebMock({
-  mocks: {
-    ethereum: {
-      transactions: {
-        '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92': {
-          from: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
-          abi: DePayRouterV1Abi,
-          method: 'route',
-          params: {
-            path: ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"],
-            amounts: ["773002376389189", "1000000000000000000", "3623748721"]
-          }
-        }
-      }
+let mockedTransaction = mock({
+  blockchain: 'ethereum',
+  transaction: {
+    from: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+    to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
+    abi: abi,
+    method: 'route',
+    params: {
+      path: ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"],
+      amounts: ["773002376389189", "1000000000000000000", "3623748721"]
     }
   }
 })
 
-let provider = new ethers.providers.Web3Provider(window.ethereum);
+let provider = new ethers.providers.Web3Provider(global.ethereum);
 
 let contract = new ethers.Contract(
   "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
-  [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
+  abi,
   provider
 );
 
@@ -283,18 +289,68 @@ let transaction = await contract.connect(signer).route(
   [],
   { value: 0 }
 )
+
+expect(transaction).toBeDefined()
+
+expect(mockedTransaction).toHaveBeenCalled()
 ````
+
+#### Mock transaction confirmations
+
+Mocking transaction confirmations consists of two steps:
+
+1. Confirming the mocked transaction once
+2. Increase the blocknumber after the transaction has been confirmed (to increase transaction confirmation amount)
+
+```javascript
+import { mock, confirm } from 'depay-web3mock'
+
+let mockedTransaction = mock({
+  blockchain: 'ethereum',
+  transaction: {
+    to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+    value: '1000000000000000000'
+  }
+})
+
+confirm(mockedTransaction)
+
+await sentTransaction.wait(1).then(function(receipt){
+  //... will be executed once confirm is called
+})
+```
+
+```javascript
+import { mock, confirm, increaseBlock } from 'depay-web3mock'
+
+let mockedTransaction = mock({
+  blockchain: 'ethereum',
+  transaction: {
+    to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+    value: '1000000000000000000'
+  }
+})
+
+confirm(mockedTransaction)
+increaseBlock(12)
+
+await sentTransaction.wait(12).then(function(receipt){
+  //... will be executed once increaseBlock(12) has been called
+})
+```
 
 ### Mock Events
 
-Once `Web3Mock` has been initialized (e.g. with `Web3Mock({ mocks: 'ethereum' })`) it starts registering event callbacks from your implementation that you can trigger afterwards in your tests:
+`Web3Mock` allows you to trigger events (like `accountsChanged`).
 
 ```javascript
-Web3Mock({ mocks: 'ethereum' })
+import { mock, trigger } from 'depay-web3mock'
+
+mock('ethereum')
 
 // some other prep and test code
 
-Web3Mock.trigger('accountsChanged', ['0xb0252f13850a4823706607524de0b146820F2240', '0xEcA533Ef096f191A35DE76aa4580FA3A722724bE'])
+trigger('accountsChanged', ['0xb0252f13850a4823706607524de0b146820F2240', '0xEcA533Ef096f191A35DE76aa4580FA3A722724bE'])
 ```
 
 ### Mock for specific providers
@@ -306,22 +362,10 @@ you can pass them explicitly to `Web3Mock`:
 
 let provider = new ethers.providers.JsonRpcProvider('https://example.com');
     
-Web3Mock({
+mock({
   provider,
-  mocks: {
-    ethereum: {
-      calls: {
-        [contractAddress]: {
-          abi: abi,
-          getAmountsIn: {
-            [
-              ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
-            ]: ["773002376389189", "1000000000000000000"]
-          }
-        }
-      }
-    }
-  },
+  blockchain: 'ethereum'
+  // ...
 })
 ```
 
@@ -330,9 +374,10 @@ Web3Mock({
 Pass a window object in case it is not supposed to be the implicit `window`.
 
 ```javascript
-Web3Mock({
+mock({
   window: anotherObject,
-  mocks: ['ethereum']
+  blockchain: 'ethereum'
+  // ...
 })
 ```
 

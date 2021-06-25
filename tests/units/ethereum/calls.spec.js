@@ -11,7 +11,7 @@ describe('mock Ethereum contract calls', ()=> {
 
   it('mocks a simple call', async ()=>{
 
-    mock({
+    let callMock = mock({
       blockchain: 'ethereum',
       address: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
       abi: abi,
@@ -29,6 +29,7 @@ describe('mock Ethereum contract calls', ()=> {
     );
 
     expect(await contract.name()).toEqual('DePay')
+    expect(callMock).toHaveBeenCalled()
   })
 
   it('throws an error if the contract was not mocked at all', async ()=>{
@@ -61,7 +62,7 @@ describe('mock Ethereum contract calls', ()=> {
 
   it('fails if mocked contract does not implement called function', async ()=>{
 
-    mock({
+    let callMock = mock({
       blockchain: 'ethereum',
       address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
       abi: abi.filter((fragment)=>{ fragment.name != 'vestingRewardPerSecond' }),
@@ -81,6 +82,8 @@ describe('mock Ethereum contract calls', ()=> {
     await expect(contract.vestingRewardPerSecond()).rejects.toEqual(
       new Error('no matching function (argument="sighash", value="0xa6c99ce2", code=INVALID_ARGUMENT, version=abi/5.3.1)')
     )
+
+    expect(callMock).not.toHaveBeenCalled()
   })
 
   it('fails if mocked contract method was not mocked', async ()=>{
@@ -131,6 +134,44 @@ describe('mock Ethereum contract calls', ()=> {
     expect(
       (await contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390")).toString()
     ).toEqual("1000000000000000000")
+  })
+
+  it('mocks multiple calls at once', async ()=>{
+
+    let tokenMock = mock({
+      blockchain: 'ethereum',
+      address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+      abi: abi,
+      call: {
+        name: 'DePay',
+        symbol: 'DEPAY',
+        balanceOf: {
+          "0x5Af489c8786A018EC4814194dC8048be1007e390": "1000000000000000000"
+        }
+      }
+    })
+    
+    provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    let contract = new ethers.Contract(
+      '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+      abi,
+      provider
+    );
+
+    expect(
+      (await contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390")).toString()
+    ).toEqual('1000000000000000000')
+
+    expect(
+      await contract.name()
+    ).toEqual('DePay')
+
+    expect(
+      await contract.symbol()
+    ).toEqual('DEPAY')
+
+    expect(tokenMock).toHaveBeenCalledTimes(3)
   })
 
   it('mocks a call with multiple parameters and returns mocked value', async ()=>{
