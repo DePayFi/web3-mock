@@ -46,7 +46,7 @@ describe('something', ()=> {
   it('mocks contract calls', ()=>{
     
     let tokenMock = mock({
-      blockchain: 'ethereum'
+      blockchain: 'ethereum',
       call: {
         to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb'
         abi: TokenAbi,
