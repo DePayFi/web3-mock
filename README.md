@@ -48,7 +48,7 @@ describe('something', ()=> {
     let tokenMock = mock({
       blockchain: 'ethereum',
       call: {
-        to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+        address: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
         abi: TokenAbi,
         name: "DePay",
         symbol: "DEPAY",
@@ -71,8 +71,8 @@ describe('something', ()=> {
     let mockedTransaction = mock({
       blockchain: 'ethereum',
       transaction: {
-        to: '0x5Af489c8786A018EC4814194dC8048be1007e390',
         from: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+        to: '0x5Af489c8786A018EC4814194dC8048be1007e390',
         value: "2000000000000000000"
       }
     })
