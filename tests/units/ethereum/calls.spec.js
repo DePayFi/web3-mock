@@ -79,7 +79,7 @@ describe('mock Ethereum contract calls', ()=> {
       provider
     );
 
-    await expect(contract.vestingRewardPerSecond()).rejects.toEqual(
+    await expect(contract.vestingRewardPerSecond).rejects.toEqual(
       new Error('no matching function (argument="sighash", value="0xa6c99ce2", code=INVALID_ARGUMENT, version=abi/5.3.1)')
     )
 
