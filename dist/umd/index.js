@@ -7,13 +7,15 @@
   let normalize = function (input) {
     if (input instanceof Array) {
       return input.map((element) => normalize(element))
+    } else if (typeof input === 'undefined') {
+      return input
     } else {
-      if (input.toString) {
+      if(input.toString) {
         return input.toString().toLowerCase()
-      } else if (typeof argument === 'string' && input.match('0x')) {
+      } else if (typeof input === 'string' && input.match('0x')) {
         return input.toLowerCase()
       } else {
-        return argument
+        return input
       }
     }
   };
@@ -280,16 +282,35 @@
     }
   };
 
+  let getContract$1 = ({ address, api, provider })=> {
+    return new ethers.ethers.Contract(address, api, provider)
+  };
+
+  let getContractFunction$1 = ({ data, contract })=> {
+    let methodSelector = data.split('000000000000000000000000')[0];
+    return contract.interface.getFunction(methodSelector)
+  };
+
+  let getCallArguments = ({ contract, contractFunction, data })=> {
+    return contract.interface.decodeFunctionData(contractFunction, data)
+  };
+
+  let findAnyMockForAddress = (address) => {
+    return mocks.find((mock) => {
+      if (normalize(_optionalChain$2([mock, 'optionalAccess', _5 => _5.call, 'optionalAccess', _6 => _6.address])) !== normalize(address)) { return }
+      return mock
+    })
+  };
+
   let call = function ({ params, provider }) {
     let address = normalize(params.to);
     let mock = findMockedCall(address, params, provider);
+    let data = params.data;
     if (mock) {
       mock.calls.add(params);
-      let data = params.data;
-      let methodSelector = data.split('000000000000000000000000')[0];
-      let contract = new ethers.ethers.Contract(address, mock.call.api, provider);
-      let contractFunction = contract.interface.getFunction(methodSelector);
-      let callArguments = contract.interface.decodeFunctionData(contractFunction, data);
+      let contract = getContract$1({ address, api: mock.call.api, provider });
+      let contractFunction = getContractFunction$1({ data, contract });
+      let callArguments = getCallArguments({ contract, contractFunction, data });
       let result = formatResult(
         contractFunction.name,
         mock.call[contractFunction.name],
@@ -299,7 +320,20 @@
       let encodedResult = contract.interface.encodeFunctionResult(contractFunction.name, [result]);
       return Promise.resolve(encodedResult)
     } else {
-      throw 'Web3Mock: Please mock the contract at: ' + address
+      mock = findAnyMockForAddress(address);
+      if(_optionalChain$2([mock, 'optionalAccess', _7 => _7.call, 'optionalAccess', _8 => _8.api])) {
+        let contract = getContract$1({ address, api: mock.call.api, provider });
+        let contractFunction = getContractFunction$1({ data, contract });
+        let callArguments = getCallArguments({ contract, contractFunction, data });
+        throw 'Web3Mock: Please mock the contract call: ' + JSON.stringify({
+          blockchain: 'ethereum',
+          call: {
+            [contractFunction.name]: 'Your Value'
+          }
+        })
+      } else {
+        throw 'Web3Mock: Please mock the contract at: ' + address
+      }
     }
   };
 
