@@ -138,6 +138,8 @@ await window.ethereum.request(method: 'eth_blockNumber') // '0x5daf3b'
 
 ### Contract Calls
 
+You need to mock calls before they are executed.
+
 #### Mock Simple Contract Calls
 
 ```javascript
@@ -223,8 +225,7 @@ expect(contractMock).toHaveBeenCalled()
 
 ### Transactions
 
-`Web3Mock` does not implicitly mock transactions.
-You need to mock the transactions before they are executed.
+You need to mock transactions before they are executed.
 
 `Web3Mock` mocks `eth_sendTransaction`, `eth_getTransactionByHash`, `eth_getTransactionReceipt` request to cover the full lifecycle of blockchain transactions.
 
