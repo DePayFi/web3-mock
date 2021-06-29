@@ -70,6 +70,9 @@ let findMock = function ({ params, provider }) {
     if (typeof mock !== 'object') {
       return
     }
+    if (mock.transaction === undefined) {
+      return
+    }
     if (transaction.to && normalize(transaction.to) !== normalize(params.to)) {
       return
     }

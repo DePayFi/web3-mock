@@ -156,6 +156,39 @@ describe('mock Ethereum transactions', ()=> {
     )
   })
 
+  it('does not raise an error but asks you to mock the transaction if other mocks exist', async ()=> {
+    
+    mock({
+      blockchain: 'ethereum',
+      call: {
+        api: []
+      }
+    })
+
+    let provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    let contract = new ethers.Contract(
+      "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
+      [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}],
+      provider
+    );
+
+    let signer = provider.getSigner();
+
+    await expect(
+      contract.connect(signer).route(
+        ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"],
+        ["773002376389189", "1000000000000000000", "3623748721"],
+        [],
+        [],
+        [],
+        { value: 0 }
+      )
+    ).rejects.toEqual(
+      "Web3Mock: Please mock the transaction to: 0xae60ac8e69414c2dc362d0e6a03af643d1d85b92"
+    )
+  })
+
   it('raises an error if a complex mock does not provide the abi in the mock configuration', async ()=> {
     
     await expect(()=>{
