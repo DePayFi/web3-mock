@@ -15,7 +15,7 @@ npm install --save depay-web3mock
 ### Basic
 
 ```javascript
-import { mock } from '../../../src'
+import { mock } from 'depay-web3mock'
 
 describe('something', ()=> {
 
