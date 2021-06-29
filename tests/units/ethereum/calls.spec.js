@@ -86,7 +86,7 @@ describe('mock Ethereum contract calls', ()=> {
     expect(callMock).not.toHaveBeenCalled()
   })
 
-  it('fails if mocked contract method was not mocked', async ()=>{
+  it('fails if mocked contract method was not mocked and suggest how to mock it', async ()=>{
 
     mock({
       blockchain: 'ethereum',
@@ -106,6 +106,29 @@ describe('mock Ethereum contract calls', ()=> {
 
     await expect(contract.decimals()).rejects.toEqual(
       "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"decimals\":\"Your Value\"}}"
+    )
+  })
+
+  it('fails if mocked contract method was not mocked and suggest how to mock it with parameters', async ()=>{
+
+    mock({
+      blockchain: 'ethereum',
+      call: {
+        address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+        api: api
+      }
+    })
+    
+    provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    let contract = new ethers.Contract(
+      '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+      api,
+      provider
+    );
+
+    await expect(contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390")).rejects.toEqual(
+      'Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"balanceOf\":{\"0x5Af489c8786A018EC4814194dC8048be1007e390\":\"Your Value\"}}}'
     )
   })
 

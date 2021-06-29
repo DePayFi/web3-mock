@@ -252,17 +252,17 @@
     })
   };
 
-  let formatResult = (methodName, result, callArguments, address) => {
+  let getResult = (methodName, params, callArguments, address) => {
     if (callArguments === undefined || callArguments.length === 0) {
-      return result
+      return params
     }
-    if (typeof result === 'object' && !Array.isArray(result)) {
+    if (typeof params === 'object' && !Array.isArray(params)) {
       if (callArguments.length === 1) {
-        return result[callArguments[0]]
+        return params[callArguments[0]]
       } else {
         let mappedCallArguments = callArguments.map((argument) => normalize(argument));
-        result = result[mappedCallArguments];
-        if (result === undefined) {
+        params = params[mappedCallArguments];
+        if (params === undefined) {
           throw (
             'Web3Mock: Please mock the following contract call: ' +
             JSON.stringify({
@@ -276,7 +276,7 @@
             })
           )
         } else {
-          return result
+          return params
         }
       }
     }
@@ -304,6 +304,26 @@
     })
   };
 
+  let getCallToMock = ({ callArguments, params, contractFunction }) => {
+    if (callArguments !== undefined && callArguments.length === 0) {
+      callArguments = undefined;
+    } else if (Array.isArray(params) && callArguments.length === 1) {
+      callArguments = callArguments[0];
+    }
+
+    if (callArguments) {
+      return {
+        [contractFunction.name]: {
+          [callArguments]: 'Your Value',
+        },
+      }
+    } else {
+      return {
+        [contractFunction.name]: 'Your Value',
+      }
+    }
+  };
+
   let call = function ({ params, provider }) {
     let address = normalize(params.to);
     let mock = findMockedCall(address, params, provider);
@@ -313,7 +333,7 @@
       let contract = getContract$1({ address, api: mock.call.api, provider });
       let contractFunction = getContractFunction$1({ data, contract });
       let callArguments = getCallArguments({ contract, contractFunction, data });
-      let result = formatResult(
+      let result = getResult(
         contractFunction.name,
         mock.call[contractFunction.name],
         callArguments,
@@ -331,9 +351,7 @@
           'Web3Mock: Please mock the contract call: ' +
           JSON.stringify({
             blockchain: 'ethereum',
-            call: {
-              [contractFunction.name]: 'Your Value',
-            },
+            call: getCallToMock({ callArguments, params, contractFunction }),
           })
         )
       } else {
