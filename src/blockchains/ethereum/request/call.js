@@ -28,7 +28,7 @@ let findMockedCall = (address, params, provider) => {
   })
 }
 
-let formatResult = (result, callArguments, address) => {
+let formatResult = (methodName, result, callArguments, address) => {
   if (callArguments === undefined || callArguments.length === 0) {
     return result
   }
@@ -40,13 +40,15 @@ let formatResult = (result, callArguments, address) => {
       result = result[mappedCallArguments]
       if (result === undefined) {
         throw (
-          'Web3Mock: Mock the following contract call: { "' +
-          'address: ' +
-          address +
-          '"call":' +
-          ' { [[' +
-          mappedCallArguments.join(',') +
-          ']] : "Your Value" } }'
+          'Web3Mock: Please mock the following contract call: ' + JSON.stringify({
+            call: {
+              address: address,
+              api: ['...'],
+              [methodName]: {
+                [mappedCallArguments]: 'Your Value'
+              }
+            }
+          })
         )
       } else {
         return result
@@ -65,7 +67,7 @@ let call = function ({ params, provider }) {
     let contract = new ethers.Contract(address, mock.call.api, provider)
     let contractFunction = contract.interface.getFunction(methodSelector)
     let callArguments = contract.interface.decodeFunctionData(contractFunction, data)
-    let result = formatResult(mock.call[contractFunction.name], callArguments, address)
+    let result = formatResult(contractFunction.name, mock.call[contractFunction.name], callArguments, address)
     let encodedResult = contract.interface.encodeFunctionResult(contractFunction.name, [result])
     return Promise.resolve(encodedResult)
   } else {

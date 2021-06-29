@@ -238,7 +238,7 @@ describe('mock Ethereum contract calls', ()=> {
         ["0xdac17f958d2ee523a2206206994597c13d831ec7","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]
       )
     ).rejects.toEqual(
-      'Web3Mock: Mock the following contract call: { \"address: 0x7a250d5630b4cf539739df2c5dacb4c659f2488d\"call\": { [[1000000000000000000,0xdac17f958d2ee523a2206206994597c13d831ec7,0xa0bed124a09ac2bd941b10349d8d224fe3c955eb]] : \"Your Value\" } }'
+      "Web3Mock: Please mock the following contract call: {\"call\":{\"address\":\"0x7a250d5630b4cf539739df2c5dacb4c659f2488d\",\"api\":[\"...\"],\"getAmountsIn\":{\"1000000000000000000,0xdac17f958d2ee523a2206206994597c13d831ec7,0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\":\"Your Value\"}}}"
     )
   })
 });
