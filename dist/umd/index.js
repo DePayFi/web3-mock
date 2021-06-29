@@ -238,8 +238,12 @@
 
   let findMockedCall = (address, params, provider) => {
     return mocks.find((mock) => {
-      if (typeof mock !== 'object') { return }
-      if (mock.call == undefined) { return }
+      if (typeof mock !== 'object') {
+        return
+      }
+      if (mock.call == undefined) {
+        return
+      }
       if (normalize(mock.call.address) !== normalize(address)) {
         return
       }
