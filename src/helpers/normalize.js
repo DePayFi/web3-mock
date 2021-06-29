@@ -4,7 +4,7 @@ let normalize = function (input) {
   } else if (typeof input === 'undefined') {
     return input
   } else {
-    if(input.toString) {
+    if (input.toString) {
       return input.toString().toLowerCase()
     } else if (typeof input === 'string' && input.match('0x')) {
       return input.toLowerCase()

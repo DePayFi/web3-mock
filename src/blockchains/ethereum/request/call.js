@@ -58,22 +58,24 @@ let formatResult = (methodName, result, callArguments, address) => {
   }
 }
 
-let getContract = ({ address, api, provider })=> {
+let getContract = ({ address, api, provider }) => {
   return new ethers.Contract(address, api, provider)
 }
 
-let getContractFunction = ({ data, contract })=> {
+let getContractFunction = ({ data, contract }) => {
   let methodSelector = data.split('000000000000000000000000')[0]
   return contract.interface.getFunction(methodSelector)
 }
 
-let getCallArguments = ({ contract, contractFunction, data })=> {
+let getCallArguments = ({ contract, contractFunction, data }) => {
   return contract.interface.decodeFunctionData(contractFunction, data)
 }
 
 let findAnyMockForAddress = (address) => {
   return mocks.find((mock) => {
-    if (normalize(mock?.call?.address) !== normalize(address)) { return }
+    if (normalize(mock?.call?.address) !== normalize(address)) {
+      return
+    }
     return mock
   })
 }
@@ -97,16 +99,19 @@ let call = function ({ params, provider }) {
     return Promise.resolve(encodedResult)
   } else {
     mock = findAnyMockForAddress(address)
-    if(mock?.call?.api) {
+    if (mock?.call?.api) {
       let contract = getContract({ address, api: mock.call.api, provider })
       let contractFunction = getContractFunction({ data, contract })
       let callArguments = getCallArguments({ contract, contractFunction, data })
-      throw 'Web3Mock: Please mock the contract call: ' + JSON.stringify({
-        blockchain: 'ethereum',
-        call: {
-          [contractFunction.name]: 'Your Value'
-        }
-      })
+      throw (
+        'Web3Mock: Please mock the contract call: ' +
+        JSON.stringify({
+          blockchain: 'ethereum',
+          call: {
+            [contractFunction.name]: 'Your Value',
+          },
+        })
+      )
     } else {
       throw 'Web3Mock: Please mock the contract at: ' + address
     }
