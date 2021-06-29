@@ -19,11 +19,9 @@ describe('mock Ethereum for given provider', ()=> {
       call: {
         address: contractAddress,
         api: api,
-        getAmountsIn: {
-          [
-            ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
-          ]: ["773002376389189", "1000000000000000000"]
-        }
+        method: 'getAmountsIn',
+        params: ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]],
+        return: ["773002376389189", "1000000000000000000"]
       }
     })
 

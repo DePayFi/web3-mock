@@ -245,41 +245,30 @@
       let methodSelector = data.split('000000000000000000000000')[0];
       let contract = new ethers.ethers.Contract(address, mock.call.api, provider);
       let contractFunction = contract.interface.getFunction(methodSelector);
-      if (!Object.keys(mock.call).includes(contractFunction.name)) {
+      if (mock.call.method !== contractFunction.name) {
         return
+      }
+      if (mock.call.params) {
+        let callArguments = getCallArguments({ contract, contractFunction, data });
+
+        if (
+          Array.isArray(mock.call.params) == false &&
+          callArguments.length == 1 &&
+          normalize(mock.call.params) != normalize(callArguments[0])
+        ) {
+          return
+        }
+
+        if (
+          Array.isArray(mock.call.params) &&
+          JSON.stringify(callArguments.map((argument) => normalize(argument))) !==
+            JSON.stringify(mock.call.params.map((argument) => normalize(argument)))
+        ) {
+          return
+        }
       }
       return mock
     })
-  };
-
-  let getResult = (methodName, params, callArguments, address) => {
-    if (callArguments === undefined || callArguments.length === 0) {
-      return params
-    }
-    if (typeof params === 'object' && !Array.isArray(params)) {
-      if (callArguments.length === 1) {
-        return params[callArguments[0]]
-      } else {
-        let mappedCallArguments = callArguments.map((argument) => normalize(argument));
-        params = params[mappedCallArguments];
-        if (params === undefined) {
-          throw (
-            'Web3Mock: Please mock the following contract call: ' +
-            JSON.stringify({
-              call: {
-                address: address,
-                api: ['...'],
-                [methodName]: {
-                  [mappedCallArguments]: 'Your Value',
-                },
-              },
-            })
-          )
-        } else {
-          return params
-        }
-      }
-    }
   };
 
   let getContract$1 = ({ address, api, provider }) => {
@@ -305,23 +294,20 @@
   };
 
   let getCallToMock = ({ callArguments, params, contractFunction }) => {
-    if (callArguments !== undefined && callArguments.length === 0) {
-      callArguments = undefined;
-    } else if (Array.isArray(params) && callArguments.length === 1) {
-      callArguments = callArguments[0];
+    let call = {
+      name: contractFunction.name,
+      return: 'Your Value',
+    };
+
+    if (callArguments && callArguments.length) {
+      if (Array.isArray(callArguments) && callArguments.length === 1) {
+        call['params'] = normalize(callArguments[0]);
+      } else {
+        call['params'] = callArguments.map((argument) => normalize(argument));
+      }
     }
 
-    if (callArguments) {
-      return {
-        [contractFunction.name]: {
-          [callArguments]: 'Your Value',
-        },
-      }
-    } else {
-      return {
-        [contractFunction.name]: 'Your Value',
-      }
-    }
+    return call
   };
 
   let call = function ({ params, provider }) {
@@ -333,12 +319,7 @@
       let contract = getContract$1({ address, api: mock.call.api, provider });
       let contractFunction = getContractFunction$1({ data, contract });
       let callArguments = getCallArguments({ contract, contractFunction, data });
-      let result = getResult(
-        contractFunction.name,
-        mock.call[contractFunction.name],
-        callArguments,
-        address,
-      );
+      let result = mock.call.return;
       let encodedResult = contract.interface.encodeFunctionResult(contractFunction.name, [result]);
       return Promise.resolve(encodedResult)
     } else {

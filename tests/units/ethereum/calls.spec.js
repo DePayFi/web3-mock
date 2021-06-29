@@ -16,7 +16,8 @@ describe('mock Ethereum contract calls', ()=> {
       call: {
         address: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
         api: api,
-        name: 'DePay'
+        method: 'name',
+        return: 'DePay'
       }
     })
 
@@ -54,7 +55,8 @@ describe('mock Ethereum contract calls', ()=> {
         blockchain: 'ethereum',
         call: {
           address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
-          name: 'DePay'
+          method: 'name',
+          return: 'DePay'
         }
       })
     }).toThrowError('Web3Mock: Please mock the api of the contract at: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
@@ -67,7 +69,8 @@ describe('mock Ethereum contract calls', ()=> {
       call: {
         address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
         api: api.filter((fragment)=>{ fragment.name != 'vestingRewardPerSecond' }),
-        name: 'DePay'
+        method: 'name',
+        return: 'DePay'
       }
     })
     
@@ -86,7 +89,7 @@ describe('mock Ethereum contract calls', ()=> {
     expect(callMock).not.toHaveBeenCalled()
   })
 
-  it('fails if mocked contract method was not mocked and suggest how to mock it', async ()=>{
+  it('fails if mocked contract method was not mocked and suggests how to mock it', async ()=>{
 
     mock({
       blockchain: 'ethereum',
@@ -105,11 +108,11 @@ describe('mock Ethereum contract calls', ()=> {
     );
 
     await expect(contract.decimals()).rejects.toEqual(
-      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"decimals\":\"Your Value\"}}"
+      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"name\":\"decimals\",\"return\":\"Your Value\"}}"
     )
   })
 
-  it('fails if mocked contract method was not mocked and suggest how to mock it with parameters', async ()=>{
+  it('fails if mocked contract method was not mocked and suggests how to mock it with parameters', async ()=>{
 
     mock({
       blockchain: 'ethereum',
@@ -128,7 +131,7 @@ describe('mock Ethereum contract calls', ()=> {
     );
 
     await expect(contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390")).rejects.toEqual(
-      'Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"balanceOf\":{\"0x5Af489c8786A018EC4814194dC8048be1007e390\":\"Your Value\"}}}'
+      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"name\":\"balanceOf\",\"return\":\"Your Value\",\"params\":\"0x5af489c8786a018ec4814194dc8048be1007e390\"}}"
     )
   })
 
@@ -139,9 +142,9 @@ describe('mock Ethereum contract calls', ()=> {
       call: {
         address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
         api: api,
-        balanceOf: {
-          "0x5Af489c8786A018EC4814194dC8048be1007e390": "1000000000000000000"
-        }
+        method: 'balanceOf',
+        params: '0x5af489c8786a018ec4814194dc8048be1007e390',
+        return: '1000000000000000000'
       }
     })
     
@@ -158,44 +161,6 @@ describe('mock Ethereum contract calls', ()=> {
     ).toEqual("1000000000000000000")
   })
 
-  it('mocks multiple calls at once', async ()=>{
-
-    let tokenMock = mock({
-      blockchain: 'ethereum',
-      call: {
-        address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
-        api: api,
-        name: 'DePay',
-        symbol: 'DEPAY',
-        balanceOf: {
-          "0x5Af489c8786A018EC4814194dC8048be1007e390": "1000000000000000000"
-        }
-      }
-    })
-    
-    provider = new ethers.providers.Web3Provider(global.ethereum);
-
-    let contract = new ethers.Contract(
-      '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
-      api,
-      provider
-    );
-
-    expect(
-      (await contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390")).toString()
-    ).toEqual('1000000000000000000')
-
-    expect(
-      await contract.name()
-    ).toEqual('DePay')
-
-    expect(
-      await contract.symbol()
-    ).toEqual('DEPAY')
-
-    expect(tokenMock).toHaveBeenCalledTimes(3)
-  })
-
   it('mocks a call with multiple parameters and returns mocked value', async ()=>{
 
     let api = [{"inputs":[{"internalType":"address","name":"_factory","type":"address"},{"internalType":"address","name":"_WETH","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"WETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenA","type":"address"},{"internalType":"address","name":"tokenB","type":"address"},{"internalType":"uint256","name":"amountADesired","type":"uint256"},{"internalType":"uint256","name":"amountBDesired","type":"uint256"},{"internalType":"uint256","name":"amountAMin","type":"uint256"},{"internalType":"uint256","name":"amountBMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"addLiquidity","outputs":[{"internalType":"uint256","name":"amountA","type":"uint256"},{"internalType":"uint256","name":"amountB","type":"uint256"},{"internalType":"uint256","name":"liquidity","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amountTokenDesired","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"addLiquidityETH","outputs":[{"internalType":"uint256","name":"amountToken","type":"uint256"},{"internalType":"uint256","name":"amountETH","type":"uint256"},{"internalType":"uint256","name":"liquidity","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"factory","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"reserveIn","type":"uint256"},{"internalType":"uint256","name":"reserveOut","type":"uint256"}],"name":"getAmountIn","outputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"reserveIn","type":"uint256"},{"internalType":"uint256","name":"reserveOut","type":"uint256"}],"name":"getAmountOut","outputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"}],"name":"getAmountsIn","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"}],"name":"getAmountsOut","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountA","type":"uint256"},{"internalType":"uint256","name":"reserveA","type":"uint256"},{"internalType":"uint256","name":"reserveB","type":"uint256"}],"name":"quote","outputs":[{"internalType":"uint256","name":"amountB","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"tokenA","type":"address"},{"internalType":"address","name":"tokenB","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountAMin","type":"uint256"},{"internalType":"uint256","name":"amountBMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"removeLiquidity","outputs":[{"internalType":"uint256","name":"amountA","type":"uint256"},{"internalType":"uint256","name":"amountB","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"removeLiquidityETH","outputs":[{"internalType":"uint256","name":"amountToken","type":"uint256"},{"internalType":"uint256","name":"amountETH","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"removeLiquidityETHSupportingFeeOnTransferTokens","outputs":[{"internalType":"uint256","name":"amountETH","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"bool","name":"approveMax","type":"bool"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"removeLiquidityETHWithPermit","outputs":[{"internalType":"uint256","name":"amountToken","type":"uint256"},{"internalType":"uint256","name":"amountETH","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountTokenMin","type":"uint256"},{"internalType":"uint256","name":"amountETHMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"bool","name":"approveMax","type":"bool"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"removeLiquidityETHWithPermitSupportingFeeOnTransferTokens","outputs":[{"internalType":"uint256","name":"amountETH","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"tokenA","type":"address"},{"internalType":"address","name":"tokenB","type":"address"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"amountAMin","type":"uint256"},{"internalType":"uint256","name":"amountBMin","type":"uint256"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"bool","name":"approveMax","type":"bool"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"removeLiquidityWithPermit","outputs":[{"internalType":"uint256","name":"amountA","type":"uint256"},{"internalType":"uint256","name":"amountB","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapETHForExactTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactETHForTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactETHForTokensSupportingFeeOnTransferTokens","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForETH","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForETHSupportingFeeOnTransferTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOutMin","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapExactTokensForTokensSupportingFeeOnTransferTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"amountInMax","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapTokensForExactETH","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"amountInMax","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"deadline","type":"uint256"}],"name":"swapTokensForExactTokens","outputs":[{"internalType":"uint256[]","name":"amounts","type":"uint256[]"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
@@ -205,11 +170,9 @@ describe('mock Ethereum contract calls', ()=> {
       call: {
         api: api,
         address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
-        getAmountsIn: {
-          [
-            ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
-          ]: ["773002376389189", "1000000000000000000"]
-        }
+        method: 'getAmountsIn',
+        params: ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]],
+        return: ["773002376389189", "1000000000000000000"]
       }
     })
 
@@ -238,11 +201,9 @@ describe('mock Ethereum contract calls', ()=> {
       call: {
         address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
         api: api,
-        getAmountsIn: {
-          [
-            ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]]
-          ]: ["773002376389189", "1000000000000000000"]
-        }
+        method: 'getAmountsIn',
+        params: ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]],
+        return: ["773002376389189", "1000000000000000000"]
       }
     })
 
@@ -260,7 +221,7 @@ describe('mock Ethereum contract calls', ()=> {
         ["0xdac17f958d2ee523a2206206994597c13d831ec7","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]
       )
     ).rejects.toEqual(
-      "Web3Mock: Please mock the following contract call: {\"call\":{\"address\":\"0x7a250d5630b4cf539739df2c5dacb4c659f2488d\",\"api\":[\"...\"],\"getAmountsIn\":{\"1000000000000000000,0xdac17f958d2ee523a2206206994597c13d831ec7,0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\":\"Your Value\"}}}"
+      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"name\":\"getAmountsIn\",\"return\":\"Your Value\",\"params\":[\"1000000000000000000\",[\"0xdac17f958d2ee523a2206206994597c13d831ec7\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"]]}}"
     )
   })
 });
