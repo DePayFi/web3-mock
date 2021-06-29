@@ -49,6 +49,28 @@ describe('mock Ethereum contract calls', ()=> {
     ).rejects.toEqual('Web3Mock: Please mock the contract at: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
   })
 
+  it('does not raise an error but asks you to mock the call if other mocks exist', async ()=> {
+    
+    mock({
+      blockchain: 'ethereum',
+      transaction: {
+        api: []
+      }
+    })
+
+    provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    let contract = new ethers.Contract(
+      '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+      api,
+      provider
+    );
+    
+    await expect(
+      contract.name()
+    ).rejects.toEqual('Web3Mock: Please mock the contract at: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
+  })
+
   it('throws an error if the api for the called contract was not provided', ()=>{
     expect(()=>{
       mock({
