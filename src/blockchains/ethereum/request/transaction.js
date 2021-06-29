@@ -4,14 +4,14 @@ import { getCurrentBlock } from '../block'
 import { mocks } from '../../../mocks'
 
 let mockTransaction = function (configuration) {
-  if (configuration?.transaction?.method && configuration?.transaction?.abi === undefined) {
-    throw 'Web3Mock: Please mock the abi of the contract at: ' + configuration?.transaction?.to
+  if (configuration?.transaction?.method && configuration?.transaction?.api === undefined) {
+    throw 'Web3Mock: Please mock the api of the contract at: ' + configuration?.transaction?.to
   }
   return configuration
 }
 
 let getContract = function ({ params, mock, provider }) {
-  return new ethers.Contract(params.to, mock?.transaction?.abi, provider)
+  return new ethers.Contract(params.to, mock?.transaction?.api, provider)
 }
 
 let getContractFunction = function ({ data, params, mock, provider }) {
@@ -48,10 +48,10 @@ let findMock = function ({ params, provider }) {
     ) {
       return
     }
-    if (params.data && mock.transaction.abi) {
+    if (params.data && mock.transaction.api) {
       let data = params.data
       let methodSelector = data.split('000000000000000000000000')[0]
-      let contract = new ethers.Contract(params.to, mock.transaction.abi, provider)
+      let contract = new ethers.Contract(params.to, mock.transaction.api, provider)
       let contractFunction = contract.interface.getFunction(methodSelector)
       if (mock.transaction.method != contractFunction.name) {
         return
