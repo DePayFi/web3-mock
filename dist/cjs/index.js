@@ -303,7 +303,7 @@ let getCallToMock = ({ callArguments, params, contractFunction }) => {
   let call = {
     address: params.to,
     method: contractFunction.name,
-    return: 'Your Value'
+    return: 'Your Value',
   };
 
   if (callArguments && callArguments.length) {
