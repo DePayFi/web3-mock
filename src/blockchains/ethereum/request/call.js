@@ -74,7 +74,8 @@ let findAnyMockForAddress = (address) => {
 
 let getCallToMock = ({ callArguments, params, contractFunction }) => {
   let call = {
-    name: contractFunction.name,
+    address: params.to,
+    method: contractFunction.name,
     return: 'Your Value',
   }
 

@@ -130,7 +130,7 @@ describe('mock Ethereum contract calls', ()=> {
     );
 
     await expect(contract.decimals()).rejects.toEqual(
-      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"name\":\"decimals\",\"return\":\"Your Value\"}}"
+      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"address\":\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\",\"method\":\"decimals\",\"return\":\"Your Value\"}}"
     )
   })
 
@@ -153,7 +153,7 @@ describe('mock Ethereum contract calls', ()=> {
     );
 
     await expect(contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390")).rejects.toEqual(
-      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"name\":\"balanceOf\",\"return\":\"Your Value\",\"params\":\"0x5af489c8786a018ec4814194dc8048be1007e390\"}}"
+      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"address\":\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\",\"method\":\"balanceOf\",\"return\":\"Your Value\",\"params\":\"0x5af489c8786a018ec4814194dc8048be1007e390\"}}"
     )
   })
 
@@ -243,7 +243,7 @@ describe('mock Ethereum contract calls', ()=> {
         ["0xdac17f958d2ee523a2206206994597c13d831ec7","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]
       )
     ).rejects.toEqual(
-      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"name\":\"getAmountsIn\",\"return\":\"Your Value\",\"params\":[\"1000000000000000000\",[\"0xdac17f958d2ee523a2206206994597c13d831ec7\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"]]}}"
+      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"address\":\"0x7a250d5630b4cf539739df2c5dacb4c659f2488d\",\"method\":\"getAmountsIn\",\"return\":\"Your Value\",\"params\":[\"1000000000000000000\",[\"0xdac17f958d2ee523a2206206994597c13d831ec7\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"]]}}"
     )
   })
 });

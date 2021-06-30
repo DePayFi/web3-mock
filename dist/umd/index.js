@@ -301,8 +301,9 @@
 
   let getCallToMock = ({ callArguments, params, contractFunction }) => {
     let call = {
-      name: contractFunction.name,
-      return: 'Your Value',
+      address: params.to,
+      method: contractFunction.name,
+      return: 'Your Value'
     };
 
     if (callArguments && callArguments.length) {
