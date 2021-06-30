@@ -1,4 +1,5 @@
 import normalize from '../../../helpers/normalize'
+import anything from '../../../anything'
 import { ethers } from 'ethers'
 import { mocks } from '../../../mocks'
 
@@ -7,6 +8,43 @@ let mockCall = (configuration) => {
     throw 'Web3Mock: Please mock the api of the contract at: ' + configuration?.call?.address
   }
   return configuration
+}
+
+let fillMockParamsWithAnything = ({ callArguments, mockParams }) => {
+  return mockParams.map((element, index) => {
+    if (Array.isArray(element)) {
+      return fillMockParamsWithAnything({
+        callArguments: callArguments[index],
+        mockParams: element,
+      })
+    } else {
+      if (element === anything) {
+        return callArguments[index]
+      } else {
+        return element
+      }
+    }
+  })
+}
+
+let anythingDeepMatch = ({ callArguments, mockParams }) => {
+  let filledMockParams = fillMockParamsWithAnything({ callArguments, mockParams })
+  return (
+    JSON.stringify(callArguments.map((argument) => normalize(argument))) ===
+    JSON.stringify(filledMockParams.map((argument) => normalize(argument)))
+  )
+}
+
+let anythingMatch = ({ callArguments, mockParams }) => {
+  if (mockParams === anything && typeof callArguments !== 'undefined' && callArguments.length > 0) {
+    return true
+  } else if (!JSON.stringify(mockParams).match(anything)) {
+    return false
+  } else if (Array.isArray(mockParams) && anythingDeepMatch({ callArguments, mockParams })) {
+    return true
+  }
+
+  return false
 }
 
 let findMockedCall = (address, params, provider) => {
@@ -33,7 +71,8 @@ let findMockedCall = (address, params, provider) => {
       if (
         Array.isArray(mock.call.params) == false &&
         callArguments.length == 1 &&
-        normalize(mock.call.params) != normalize(callArguments[0])
+        normalize(mock.call.params) != normalize(callArguments[0]) &&
+        !anythingMatch({ callArguments, mockParams: mock.call.params })
       ) {
         return
       }
@@ -41,7 +80,17 @@ let findMockedCall = (address, params, provider) => {
       if (
         Array.isArray(mock.call.params) &&
         JSON.stringify(callArguments.map((argument) => normalize(argument))) !==
-          JSON.stringify(mock.call.params.map((argument) => normalize(argument)))
+          JSON.stringify(mock.call.params.map((argument) => normalize(argument))) &&
+        !anythingMatch({ callArguments, mockParams: mock.call.params })
+      ) {
+        return
+      }
+
+      if (
+        Array.isArray(mock.call.params) == false &&
+        normalize(mock.call.params) != normalize(callArguments[0]) &&
+        JSON.stringify(normalize(callArguments)) !== JSON.stringify(normalize(mock.call.params)) &&
+        !anythingMatch({ callArguments, mockParams: mock.call.params })
       ) {
         return
       }

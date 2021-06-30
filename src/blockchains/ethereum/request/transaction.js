@@ -1,3 +1,4 @@
+import anything from '../../../anything'
 import normalize from '../../../helpers/normalize'
 import { ethers } from 'ethers'
 import { getCurrentBlock } from '../block'
@@ -30,6 +31,42 @@ let decodeTransactionArguments = function ({ params, mock, provider }) {
   return contract.interface.decodeFunctionData(contractFunction, data)
 }
 
+let fillMockParamsWithAnything = ({ transactionArguments, mockParams }) => {
+  if (typeof mockParams === 'object' && !Array.isArray(mockParams)) {
+    let filledMockParams = {}
+    Object.keys(mockParams).forEach((key) => {
+      filledMockParams[key] = fillMockParamsWithAnything({
+        transactionArguments: transactionArguments[key],
+        mockParams: mockParams[key],
+      })
+    })
+    return filledMockParams
+  } else if (Array.isArray(mockParams)) {
+    return mockParams.map((element, index) => {
+      return fillMockParamsWithAnything({
+        transactionArguments: transactionArguments[index],
+        mockParams: element,
+      })
+    })
+  } else {
+    if (mockParams === anything) {
+      return normalize(transactionArguments)
+    } else {
+      return mockParams
+    }
+  }
+}
+
+let deepAnythingMatch = ({ transactionArguments, mockParams }) => {
+  let filledMockParams = fillMockParamsWithAnything({ transactionArguments, mockParams })
+  return Object.keys(filledMockParams).every((key) => {
+    return (
+      JSON.stringify(normalize(filledMockParams[key])) ==
+      JSON.stringify(normalize(transactionArguments[key]))
+    )
+  })
+}
+
 let findMock = function ({ params, provider }) {
   return mocks.find((mock) => {
     let transaction = mock.transaction
@@ -60,16 +97,23 @@ let findMock = function ({ params, provider }) {
         return
       }
       let transactionArguments = decodeTransactionArguments({ params, mock, provider })
-      let allArgumentsMatch = Object.keys(mock?.transaction?.params).every((key) => {
-        if (mock.transaction.params && mock.transaction.params[key]) {
-          return (
-            JSON.stringify(normalize(mock.transaction.params[key])) ==
-            JSON.stringify(normalize(transactionArguments[key]))
-          )
-        } else {
-          return true
-        }
-      })
+      let allArgumentsMatch
+
+      if (mock?.transaction?.params === anything) {
+        allArgumentsMatch = true
+      } else {
+        allArgumentsMatch = Object.keys(mock?.transaction?.params).every((key) => {
+          if (mock.transaction.params && mock.transaction.params[key]) {
+            return (
+              JSON.stringify(normalize(mock.transaction.params[key])) ==
+                JSON.stringify(normalize(transactionArguments[key])) ||
+              deepAnythingMatch({ transactionArguments, mockParams: mock.transaction.params })
+            )
+          } else {
+            return true
+          }
+        })
+      }
       if (!allArgumentsMatch) {
         return
       }

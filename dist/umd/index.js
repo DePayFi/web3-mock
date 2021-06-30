@@ -4,6 +4,8 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Mock = {}, global.ethers));
 }(this, (function (exports, ethers) { 'use strict';
 
+  var anything = '__ANYTHING__';
+
   let normalize = function (input) {
     if (input instanceof Array) {
       return input.map((element) => normalize(element))
@@ -64,6 +66,42 @@
     return contract.interface.decodeFunctionData(contractFunction, data)
   };
 
+  let fillMockParamsWithAnything = ({ transactionArguments, mockParams }) => {
+    if (typeof mockParams === 'object' && !Array.isArray(mockParams)) {
+      let filledMockParams = {};
+      Object.keys(mockParams).forEach((key) => {
+        filledMockParams[key] = fillMockParamsWithAnything({
+          transactionArguments: transactionArguments[key],
+          mockParams: mockParams[key],
+        });
+      });
+      return filledMockParams
+    } else if (Array.isArray(mockParams)) {
+      return mockParams.map((element, index) => {
+        return fillMockParamsWithAnything({
+          transactionArguments: transactionArguments[index],
+          mockParams: element,
+        })
+      })
+    } else {
+      if (mockParams === anything) {
+        return normalize(transactionArguments)
+      } else {
+        return mockParams
+      }
+    }
+  };
+
+  let deepAnythingMatch = ({ transactionArguments, mockParams }) => {
+    let filledMockParams = fillMockParamsWithAnything({ transactionArguments, mockParams });
+    return Object.keys(filledMockParams).every((key) => {
+      return (
+        JSON.stringify(normalize(filledMockParams[key])) ==
+        JSON.stringify(normalize(transactionArguments[key]))
+      )
+    })
+  };
+
   let findMock = function ({ params, provider }) {
     return mocks.find((mock) => {
       let transaction = mock.transaction;
@@ -94,16 +132,23 @@
           return
         }
         let transactionArguments = decodeTransactionArguments({ params, mock, provider });
-        let allArgumentsMatch = Object.keys(_optionalChain([mock, 'optionalAccess', _13 => _13.transaction, 'optionalAccess', _14 => _14.params])).every((key) => {
-          if (mock.transaction.params && mock.transaction.params[key]) {
-            return (
-              JSON.stringify(normalize(mock.transaction.params[key])) ==
-              JSON.stringify(normalize(transactionArguments[key]))
-            )
-          } else {
-            return true
-          }
-        });
+        let allArgumentsMatch;
+
+        if (_optionalChain([mock, 'optionalAccess', _13 => _13.transaction, 'optionalAccess', _14 => _14.params]) === anything) {
+          allArgumentsMatch = true;
+        } else {
+          allArgumentsMatch = Object.keys(_optionalChain([mock, 'optionalAccess', _15 => _15.transaction, 'optionalAccess', _16 => _16.params])).every((key) => {
+            if (mock.transaction.params && mock.transaction.params[key]) {
+              return (
+                JSON.stringify(normalize(mock.transaction.params[key])) ==
+                  JSON.stringify(normalize(transactionArguments[key])) ||
+                deepAnythingMatch({ transactionArguments, mockParams: mock.transaction.params })
+              )
+            } else {
+              return true
+            }
+          });
+        }
         if (!allArgumentsMatch) {
           return
         }
@@ -135,7 +180,7 @@
 
   let findMockedTransaction = function (hash) {
     return mocks.find((mock) => {
-      return _optionalChain([mock, 'optionalAccess', _15 => _15.transaction, 'optionalAccess', _16 => _16._id]) == hash && _optionalChain([mock, 'optionalAccess', _17 => _17.transaction, 'optionalAccess', _18 => _18._confirmed])
+      return _optionalChain([mock, 'optionalAccess', _17 => _17.transaction, 'optionalAccess', _18 => _18._id]) == hash && _optionalChain([mock, 'optionalAccess', _19 => _19.transaction, 'optionalAccess', _20 => _20._confirmed])
     })
   };
 
@@ -236,6 +281,43 @@
     return configuration
   };
 
+  let fillMockParamsWithAnything$1 = ({ callArguments, mockParams }) => {
+    return mockParams.map((element, index) => {
+      if (Array.isArray(element)) {
+        return fillMockParamsWithAnything$1({
+          callArguments: callArguments[index],
+          mockParams: element,
+        })
+      } else {
+        if (element === anything) {
+          return callArguments[index]
+        } else {
+          return element
+        }
+      }
+    })
+  };
+
+  let anythingDeepMatch = ({ callArguments, mockParams }) => {
+    let filledMockParams = fillMockParamsWithAnything$1({ callArguments, mockParams });
+    return (
+      JSON.stringify(callArguments.map((argument) => normalize(argument))) ===
+      JSON.stringify(filledMockParams.map((argument) => normalize(argument)))
+    )
+  };
+
+  let anythingMatch = ({ callArguments, mockParams }) => {
+    if (mockParams === anything && typeof callArguments !== 'undefined' && callArguments.length > 0) {
+      return true
+    } else if (!JSON.stringify(mockParams).match(anything)) {
+      return false
+    } else if (Array.isArray(mockParams) && anythingDeepMatch({ callArguments, mockParams })) {
+      return true
+    }
+
+    return false
+  };
+
   let findMockedCall = (address, params, provider) => {
     return mocks.find((mock) => {
       if (typeof mock !== 'object') {
@@ -260,7 +342,8 @@
         if (
           Array.isArray(mock.call.params) == false &&
           callArguments.length == 1 &&
-          normalize(mock.call.params) != normalize(callArguments[0])
+          normalize(mock.call.params) != normalize(callArguments[0]) &&
+          !anythingMatch({ callArguments, mockParams: mock.call.params })
         ) {
           return
         }
@@ -268,7 +351,17 @@
         if (
           Array.isArray(mock.call.params) &&
           JSON.stringify(callArguments.map((argument) => normalize(argument))) !==
-            JSON.stringify(mock.call.params.map((argument) => normalize(argument)))
+            JSON.stringify(mock.call.params.map((argument) => normalize(argument))) &&
+          !anythingMatch({ callArguments, mockParams: mock.call.params })
+        ) {
+          return
+        }
+
+        if (
+          Array.isArray(mock.call.params) == false &&
+          normalize(mock.call.params) != normalize(callArguments[0]) &&
+          JSON.stringify(normalize(callArguments)) !== JSON.stringify(normalize(mock.call.params)) &&
+          !anythingMatch({ callArguments, mockParams: mock.call.params })
         ) {
           return
         }
@@ -482,6 +575,7 @@
     triggerEvent(eventName, value);
   };
 
+  exports.anything = anything;
   exports.confirm = confirm$1;
   exports.increaseBlock = increaseBlock$1;
   exports.mock = mock$1;
