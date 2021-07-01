@@ -176,13 +176,13 @@ let findAnyMockForAddress = (address) => {
 let getTransactionToMock = ({ transactionArguments, params, contractFunction }) => {
   let transactionToMock = {
     to: params.to,
-    method: contractFunction.name
+    method: contractFunction.name,
   };
 
-  if(transactionArguments && transactionArguments.length) {
+  if (transactionArguments && transactionArguments.length) {
     let paramsToBeMocked = {};
-    Object.keys(transactionArguments).forEach((key)=>{
-      if(key.match(/\D/)) {
+    Object.keys(transactionArguments).forEach((key) => {
+      if (key.match(/\D/)) {
         paramsToBeMocked[key] = normalize(transactionArguments[key]);
       }
     });
