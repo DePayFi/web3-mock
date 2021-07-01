@@ -571,4 +571,4 @@ var trigger = (eventName, value) => {
   triggerEvent(eventName, value);
 };
 
-export { anything, confirm$1 as confirm, increaseBlock$1 as increaseBlock, mock$1 as mock, resetMocks, trigger };
+export { anything, confirm$1 as confirm, increaseBlock$1 as increaseBlock, mock$1 as mock, normalize, resetMocks, trigger };

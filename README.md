@@ -440,6 +440,24 @@ mock({
 })
 ```
 
+### Test Helpers
+
+#### normalize
+
+`normalize` allows you to normalize values to compare them easier in tests:
+
+```javascript
+import { normalize } from 'depay-web3mock'
+
+expect(
+  normalize('0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D')
+).toEqual('0x7a250d5630b4cf539739df2c5dacb4c659f2488d')
+
+expect(
+  normalize(ethers.BigNumber.from('1000'))
+).toEqual('1000')
+```
+
 ### window
 
 Pass a window object in case it is not supposed to be the implicit `window`.
@@ -451,6 +469,7 @@ mock({
   // ...
 })
 ```
+
 
 ## Development
 

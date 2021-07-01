@@ -1,5 +1,5 @@
 import anything from '../../../anything'
-import normalize from '../../../helpers/normalize'
+import normalize from '../../../normalize'
 import { ethers } from 'ethers'
 import { getCurrentBlock } from '../block'
 import { mocks } from '../../../mocks'

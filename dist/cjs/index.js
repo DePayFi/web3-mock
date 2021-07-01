@@ -579,5 +579,6 @@ exports.anything = anything;
 exports.confirm = confirm$1;
 exports.increaseBlock = increaseBlock$1;
 exports.mock = mock$1;
+exports.normalize = normalize;
 exports.resetMocks = resetMocks;
 exports.trigger = trigger;

@@ -1,4 +1,4 @@
-import normalize from '../../../helpers/normalize'
+import normalize from '../../../normalize'
 import anything from '../../../anything'
 import { ethers } from 'ethers'
 import { mocks } from '../../../mocks'
