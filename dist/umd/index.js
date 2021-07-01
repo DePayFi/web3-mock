@@ -68,7 +68,7 @@
   };
 
   let fillMockParamsWithAnything = ({ transactionArguments, mockParams }) => {
-    if (typeof mockParams === 'object' && !Array.isArray(mockParams)) {
+    if (typeof mockParams === 'object' && !Array.isArray(mockParams) && !mockParams._isBigNumber) {
       let filledMockParams = {};
       Object.keys(mockParams).forEach((key) => {
         filledMockParams[key] = fillMockParamsWithAnything({
