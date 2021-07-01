@@ -189,7 +189,7 @@ describe('mock Ethereum transactions', ()=> {
     )
   })
 
-  it('raises an error if a complex mock does not provide the abi in the mock configuration', async ()=> {
+  it('raises an error if a complex mock does not provide the api in the mock configuration', async ()=> {
     
     await expect(()=>{
       mock({
@@ -286,7 +286,7 @@ describe('mock Ethereum transactions', ()=> {
     expect(mockedTransaction).not.toHaveBeenCalled()
   })
 
-  it('raises an error if a complex mock does not match the actual call', async ()=> {
+  it('suggests how to mock if an error if a complex mock does not match the actual call', async ()=> {
 
     let api = [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
     
@@ -324,7 +324,7 @@ describe('mock Ethereum transactions', ()=> {
         { value: 0 }
       )
     ).rejects.toEqual(
-      "Web3Mock: Please mock the transaction to: 0xae60ac8e69414c2dc362d0e6a03af643d1d85b92"
+      "Web3Mock: Please mock the following transaction: {\"blockchain\":\"ethereum\",\"transaction\":{\"to\":\"0xae60ac8e69414c2dc362d0e6a03af643d1d85b92\",\"method\":\"route\",\"params\":{\"path\":[\"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"],\"amounts\":[\"773002376389189\",\"1000000000000000000\",\"3623748721\"],\"addresses\":[],\"plugins\":[],\"data\":[]}}}"
     )
   })
 

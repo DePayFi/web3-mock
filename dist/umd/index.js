@@ -47,7 +47,8 @@
   };
 
   let getContract = function ({ params, mock, provider }) {
-    return new ethers.ethers.Contract(params.to, _optionalChain([mock, 'optionalAccess', _7 => _7.transaction, 'optionalAccess', _8 => _8.api]), provider)
+    let contract = new ethers.ethers.Contract(params.to, _optionalChain([mock, 'optionalAccess', _7 => _7.transaction, 'optionalAccess', _8 => _8.api]), provider);
+    return contract
   };
 
   let getContractFunction = function ({ data, params, mock, provider }) {
@@ -167,6 +168,34 @@
     )._hex
   };
 
+  let findAnyMockForAddress = (address) => {
+    return mocks.find((mock) => {
+      if (normalize(_optionalChain([mock, 'optionalAccess', _17 => _17.transaction, 'optionalAccess', _18 => _18.to])) !== normalize(address)) {
+        return
+      }
+      return mock
+    })
+  };
+
+  let getTransactionToMock = ({ transactionArguments, params, contractFunction }) => {
+    let transactionToMock = {
+      to: params.to,
+      method: contractFunction.name
+    };
+
+    if(transactionArguments && transactionArguments.length) {
+      let paramsToBeMocked = {};
+      Object.keys(transactionArguments).forEach((key)=>{
+        if(key.match(/\D/)) {
+          paramsToBeMocked[key] = normalize(transactionArguments[key]);
+        }
+      });
+      transactionToMock['params'] = paramsToBeMocked;
+    }
+
+    return transactionToMock
+  };
+
   let sendTransaction = function ({ params, provider }) {
     let mock = findMock({ params, provider });
     if (mock) {
@@ -174,13 +203,28 @@
       mock.calls.add(params);
       return Promise.resolve(mock.transaction._id)
     } else {
-      throw ['Web3Mock: Please mock the transaction to: ' + params.to].join('')
+      mock = findAnyMockForAddress(params.to);
+      if (_optionalChain([mock, 'optionalAccess', _19 => _19.transaction, 'optionalAccess', _20 => _20.api])) {
+        let data = params.data;
+        let contract = getContract({ params: params, mock, provider });
+        let contractFunction = getContractFunction({ data, params, mock, provider });
+        let transactionArguments = decodeTransactionArguments({ params, mock, provider });
+        throw (
+          'Web3Mock: Please mock the following transaction: ' +
+          JSON.stringify({
+            blockchain: 'ethereum',
+            transaction: getTransactionToMock({ transactionArguments, params, contractFunction }),
+          })
+        )
+      } else {
+        throw ['Web3Mock: Please mock the transaction to: ' + params.to].join('')
+      }
     }
   };
 
   let findMockedTransaction = function (hash) {
     return mocks.find((mock) => {
-      return _optionalChain([mock, 'optionalAccess', _17 => _17.transaction, 'optionalAccess', _18 => _18._id]) == hash && _optionalChain([mock, 'optionalAccess', _19 => _19.transaction, 'optionalAccess', _20 => _20._confirmed])
+      return _optionalChain([mock, 'optionalAccess', _21 => _21.transaction, 'optionalAccess', _22 => _22._id]) == hash && _optionalChain([mock, 'optionalAccess', _23 => _23.transaction, 'optionalAccess', _24 => _24._confirmed])
     })
   };
 
@@ -383,7 +427,7 @@
     return contract.interface.decodeFunctionData(contractFunction, data)
   };
 
-  let findAnyMockForAddress = (address) => {
+  let findAnyMockForAddress$1 = (address) => {
     return mocks.find((mock) => {
       if (normalize(_optionalChain$2([mock, 'optionalAccess', _5 => _5.call, 'optionalAccess', _6 => _6.address])) !== normalize(address)) {
         return
@@ -423,7 +467,7 @@
       let encodedResult = contract.interface.encodeFunctionResult(contractFunction.name, [result]);
       return Promise.resolve(encodedResult)
     } else {
-      mock = findAnyMockForAddress(address);
+      mock = findAnyMockForAddress$1(address);
       if (_optionalChain$2([mock, 'optionalAccess', _7 => _7.call, 'optionalAccess', _8 => _8.api])) {
         let contract = getContract$1({ address, api: mock.call.api, provider });
         let contractFunction = getContractFunction$1({ data, contract });

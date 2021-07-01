@@ -12,7 +12,8 @@ let mockTransaction = function (configuration) {
 }
 
 let getContract = function ({ params, mock, provider }) {
-  return new ethers.Contract(params.to, mock?.transaction?.api, provider)
+  let contract = new ethers.Contract(params.to, mock?.transaction?.api, provider)
+  return contract
 }
 
 let getContractFunction = function ({ data, params, mock, provider }) {
@@ -132,6 +133,34 @@ let getRandomHash = function () {
   )._hex
 }
 
+let findAnyMockForAddress = (address) => {
+  return mocks.find((mock) => {
+    if (normalize(mock?.transaction?.to) !== normalize(address)) {
+      return
+    }
+    return mock
+  })
+}
+
+let getTransactionToMock = ({ transactionArguments, params, contractFunction }) => {
+  let transactionToMock = {
+    to: params.to,
+    method: contractFunction.name,
+  }
+
+  if (transactionArguments && transactionArguments.length) {
+    let paramsToBeMocked = {}
+    Object.keys(transactionArguments).forEach((key) => {
+      if (key.match(/\D/)) {
+        paramsToBeMocked[key] = normalize(transactionArguments[key])
+      }
+    })
+    transactionToMock['params'] = paramsToBeMocked
+  }
+
+  return transactionToMock
+}
+
 let sendTransaction = function ({ params, provider }) {
   let mock = findMock({ params, provider })
   if (mock) {
@@ -139,7 +168,22 @@ let sendTransaction = function ({ params, provider }) {
     mock.calls.add(params)
     return Promise.resolve(mock.transaction._id)
   } else {
-    throw ['Web3Mock: Please mock the transaction to: ' + params.to].join('')
+    mock = findAnyMockForAddress(params.to)
+    if (mock?.transaction?.api) {
+      let data = params.data
+      let contract = getContract({ params: params, mock, provider })
+      let contractFunction = getContractFunction({ data, params, mock, provider })
+      let transactionArguments = decodeTransactionArguments({ params, mock, provider })
+      throw (
+        'Web3Mock: Please mock the following transaction: ' +
+        JSON.stringify({
+          blockchain: 'ethereum',
+          transaction: getTransactionToMock({ transactionArguments, params, contractFunction }),
+        })
+      )
+    } else {
+      throw ['Web3Mock: Please mock the transaction to: ' + params.to].join('')
+    }
   }
 }
 
