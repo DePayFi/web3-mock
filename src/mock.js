@@ -72,7 +72,18 @@ let spy = (mock) => {
   return mock
 }
 
-export default (configuration, call) => {
+let mockWallet = ({ configuration, window }) => {
+  let wallet = configuration.wallet
+  switch (wallet) {
+    case 'metamask':
+      window.ethereum.isMetaMask = true
+      break
+    default:
+      throw 'Web3Mock: Unknown wallet!'
+  }
+}
+
+let mock = (configuration, call) => {
   preflight(configuration)
 
   let window = getWindow(configuration)
@@ -82,7 +93,10 @@ export default (configuration, call) => {
 
   switch (blockchain) {
     case 'ethereum':
-      mock = spy(mockEthereum({ configuration: configuration, window, provider }))
+      mock = spy(mockEthereum({ configuration, window, provider }))
+      if (configuration.wallet) {
+        mockWallet({ configuration, window })
+      }
       mocks.push(mock)
       break
     default:
@@ -91,3 +105,5 @@ export default (configuration, call) => {
 
   return mock
 }
+
+export default mock

@@ -474,6 +474,19 @@ mock({
 })
 ```
 
+### Wallets
+
+Crypto wallets identify themselfs differently, in order to mock those wallet identifications, you can also use `mock`:
+
+```javascript
+mock({
+  blockchain: 'ethereum',
+  wallet: 'metamask'
+})
+
+window.ethereum.isMetaMask // true
+```
+
 ### Test Helpers
 
 #### normalize

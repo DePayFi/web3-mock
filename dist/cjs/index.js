@@ -173,6 +173,10 @@ let encode = ({ result, params, api, provider }) => {
 let mocks = [];
 
 let resetMocks = () => {
+  let window = global ? global : window;
+  if(window.ethereum) {
+    window.ethereum.isMetaMask = undefined;
+  }
   mocks = [];
 };
 
@@ -666,7 +670,18 @@ let spy = (mock) => {
   return mock
 };
 
-var mock$1 = (configuration, call) => {
+let mockWallet = ({ configuration, window })=>{
+  let wallet = configuration.wallet;
+  switch (wallet) {
+    case 'metamask':
+      window.ethereum.isMetaMask = true;
+      break
+    default:
+      throw 'Web3Mock: Unknown wallet!'
+  }
+};
+
+let mock$1 = (configuration, call)=>{
   preflight(configuration);
 
   let window = getWindow(configuration);
@@ -676,7 +691,8 @@ var mock$1 = (configuration, call) => {
 
   switch (blockchain) {
     case 'ethereum':
-      mock$1 = spy(mock({ configuration: configuration, window, provider }));
+      mock$1 = spy(mock({ configuration, window, provider }));
+      if(configuration.wallet) { mockWallet({ configuration, window }); }
       mocks.push(mock$1);
       break
     default:
