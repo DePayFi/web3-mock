@@ -1,8 +1,10 @@
+import getTransactionByHash from './transaction/getTransactionByHash'
+import getTransactionReceipt from './transaction/getTransactionReceipt'
 import { call } from './call'
+import { estimate } from './estimate'
 import { ethers } from 'ethers'
 import { getCurrentBlock } from '../block'
-import { getTransactionByHash, getTransactionReceipt } from './transaction'
-import { sendTransaction } from './transaction'
+import { transaction } from './transaction'
 
 let request = ({ request, provider }) => {
   switch (request.method) {
@@ -24,7 +26,8 @@ let request = ({ request, provider }) => {
       break
 
     case 'eth_estimateGas':
-      return Promise.resolve('0x2c4a0')
+      let params = request.params ? request.params[0] : undefined
+      return estimate({ params: params, provider })
       break
 
     case 'eth_blockNumber':
@@ -36,15 +39,15 @@ let request = ({ request, provider }) => {
       break
 
     case 'eth_sendTransaction':
-      return sendTransaction({ params: request.params[0], provider })
+      return transaction({ params: request.params[0], provider })
       break
 
     case 'eth_getTransactionByHash':
-      return getTransactionByHash({ hash: request.params[0], provider })
+      return getTransactionByHash(request.params[0])
       break
 
     case 'eth_getTransactionReceipt':
-      return getTransactionReceipt({ hash: request.params[0], provider })
+      return getTransactionReceipt(request.params[0])
       break
 
     default:

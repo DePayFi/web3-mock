@@ -1,4 +1,4 @@
-import { confirm as confirmEthereumTransaction } from './blockchains/ethereum/request/transaction'
+import { confirm as confirmEthereumTransaction } from './blockchains/ethereum/request/transaction/confirm'
 import { mocks } from './mocks'
 
 export default (mock) => {

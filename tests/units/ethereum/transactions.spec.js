@@ -290,7 +290,7 @@ describe('mock Ethereum transactions', ()=> {
           }
         }
       })
-    }).toThrowError('Web3Mock: Please mock the api of the contract at: 0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92')
+    }).toThrowError('Web3Mock: Please provide the api for the transaction: {\"blockchain\":\"ethereum\",\"transaction\":{\"to\":\"0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92\",\"from\":\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"method\":\"route\",\"params\":{\"path\":[\"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"],\"amounts\":[\"773002376389189\",\"1000000000000000000\",\"1\"]},\"api\":[\"PLACE API HERE\"]}}')
   })
 
   it('does not call the mock if `from` of the transaction mock is not matching', async ()=> {
@@ -410,7 +410,7 @@ describe('mock Ethereum transactions', ()=> {
         { value: 0 }
       )
     ).rejects.toEqual(
-      "Web3Mock: Please mock the following transaction: {\"blockchain\":\"ethereum\",\"transaction\":{\"to\":\"0xae60ac8e69414c2dc362d0e6a03af643d1d85b92\",\"method\":\"route\",\"params\":{\"path\":[\"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"],\"amounts\":[\"773002376389189\",\"1000000000000000000\",\"3623748721\"],\"addresses\":[],\"plugins\":[],\"data\":[]}}}"
+      "Web3Mock: Please mock the transaction: {\"blockchain\":\"ethereum\",\"transaction\":{\"to\":\"0xae60ac8e69414c2dc362d0e6a03af643d1d85b92\",\"api\":[\"PLACE API HERE\"],\"method\":\"route\",\"params\":{\"path\":[\"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"],\"amounts\":[\"773002376389189\",\"1000000000000000000\",\"3623748721\"],\"addresses\":[],\"plugins\":[],\"data\":[]}}}"
     )
   })
 

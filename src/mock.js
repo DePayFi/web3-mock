@@ -17,6 +17,29 @@ let getBlockchain = (configuration) => {
   }
 }
 
+let apiIsMissing = (type, configuration) => {
+  if (
+    typeof configuration[type] == 'undefined' ||
+    typeof configuration[type].method == 'undefined'
+  ) {
+    return false
+  }
+  return configuration[type] && configuration[type]?.api === undefined
+}
+
+let apiMissingErrorText = (type, configuration) => {
+  return (
+    'Web3Mock: Please provide the api for the ' +
+    type +
+    ': ' +
+    JSON.stringify(
+      Object.assign(configuration, {
+        [type]: Object.assign(configuration[type], { api: ['PLACE API HERE'] }),
+      }),
+    )
+  )
+}
+
 let preflight = (configuration) => {
   if (configuration === undefined || configuration.length === 0) {
     throw 'Web3Mock: No mock defined!'
@@ -24,6 +47,13 @@ let preflight = (configuration) => {
     throw 'Web3Mock: Mock configuration is empty!'
   } else if (typeof configuration != 'string' && typeof configuration != 'object') {
     throw 'Web3Mock: Unknown mock configuration type!'
+  }
+  if (apiIsMissing('call', configuration)) {
+    throw apiMissingErrorText('call', configuration)
+  } else if (apiIsMissing('transaction', configuration)) {
+    throw apiMissingErrorText('transaction', configuration)
+  } else if (apiIsMissing('estimate', configuration)) {
+    throw apiMissingErrorText('estimate', configuration)
   }
 }
 

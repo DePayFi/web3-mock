@@ -54,8 +54,8 @@ describe('mock', () => {
   });
 
   it('takes jest "global" automatically if there is no window but a global', () => {
-
     mock('ethereum');
-
   });
+
+  
 });

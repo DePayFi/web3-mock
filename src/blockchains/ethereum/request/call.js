@@ -1,173 +1,53 @@
 import normalize from '../../../normalize'
-import anything from '../../../anything'
-import { ethers } from 'ethers'
-import { mocks } from '../../../mocks'
-
-let mockCall = (configuration) => {
-  if (configuration?.call?.api === undefined) {
-    throw 'Web3Mock: Please mock the api of the contract at: ' + configuration?.call?.address
-  }
-  return configuration
-}
-
-let fillMockParamsWithAnything = ({ callArguments, mockParams }) => {
-  return mockParams.map((element, index) => {
-    if (Array.isArray(element)) {
-      return fillMockParamsWithAnything({
-        callArguments: callArguments[index],
-        mockParams: element,
-      })
-    } else {
-      if (element === anything) {
-        return callArguments[index]
-      } else {
-        return element
-      }
-    }
-  })
-}
-
-let anythingDeepMatch = ({ callArguments, mockParams }) => {
-  let filledMockParams = fillMockParamsWithAnything({ callArguments, mockParams })
-  return (
-    JSON.stringify(callArguments.map((argument) => normalize(argument))) ===
-    JSON.stringify(filledMockParams.map((argument) => normalize(argument)))
-  )
-}
-
-let anythingMatch = ({ callArguments, mockParams }) => {
-  if (mockParams === anything && typeof callArguments !== 'undefined' && callArguments.length > 0) {
-    return true
-  } else if (!JSON.stringify(mockParams).match(anything)) {
-    return false
-  } else if (Array.isArray(mockParams) && anythingDeepMatch({ callArguments, mockParams })) {
-    return true
-  }
-
-  return false
-}
-
-let findMockedCall = (address, params, provider) => {
-  return mocks.find((mock) => {
-    if (typeof mock !== 'object') {
-      return
-    }
-    if (mock.call == undefined) {
-      return
-    }
-    if (normalize(mock.call.address) !== normalize(address)) {
-      return
-    }
-    let data = params.data
-    let methodSelector = data.split('000000000000000000000000')[0]
-    let contract = new ethers.Contract(address, mock.call.api, provider)
-    let contractFunction = contract.interface.getFunction(methodSelector)
-    if (mock.call.method !== contractFunction.name) {
-      return
-    }
-    if (mock.call.params) {
-      let callArguments = getCallArguments({ contract, contractFunction, data })
-
-      if (
-        Array.isArray(mock.call.params) == false &&
-        callArguments.length == 1 &&
-        normalize(mock.call.params) != normalize(callArguments[0]) &&
-        !anythingMatch({ callArguments, mockParams: mock.call.params })
-      ) {
-        return
-      }
-
-      if (
-        Array.isArray(mock.call.params) &&
-        JSON.stringify(callArguments.map((argument) => normalize(argument))) !==
-          JSON.stringify(mock.call.params.map((argument) => normalize(argument))) &&
-        !anythingMatch({ callArguments, mockParams: mock.call.params })
-      ) {
-        return
-      }
-
-      if (
-        Array.isArray(mock.call.params) == false &&
-        normalize(mock.call.params) != normalize(callArguments[0]) &&
-        JSON.stringify(normalize(callArguments)) !== JSON.stringify(normalize(mock.call.params)) &&
-        !anythingMatch({ callArguments, mockParams: mock.call.params })
-      ) {
-        return
-      }
-    }
-    return mock
-  })
-}
-
-let getContract = ({ address, api, provider }) => {
-  return new ethers.Contract(address, api, provider)
-}
-
-let getContractFunction = ({ data, contract }) => {
-  let methodSelector = data.split('000000000000000000000000')[0]
-  return contract.interface.getFunction(methodSelector)
-}
-
-let getCallArguments = ({ contract, contractFunction, data }) => {
-  return contract.interface.decodeFunctionData(contractFunction, data)
-}
-
-let findAnyMockForAddress = (address) => {
-  return mocks.find((mock) => {
-    if (normalize(mock?.call?.address) !== normalize(address)) {
-      return
-    }
-    return mock
-  })
-}
-
-let getCallToMock = ({ callArguments, params, contractFunction }) => {
-  let call = {
-    address: params.to,
-    method: contractFunction.name,
-    return: 'Your Value',
-  }
-
-  if (callArguments && callArguments.length) {
-    if (Array.isArray(callArguments) && callArguments.length === 1) {
-      call['params'] = normalize(callArguments[0])
-    } else {
-      call['params'] = callArguments.map((argument) => normalize(argument))
-    }
-  }
-
-  return call
-}
+import { findMock, findAnyMockForThisAddress } from '../mocks/findMock'
+import { encode, getContractFunction, getContractArguments } from '../data'
 
 let call = function ({ params, provider }) {
-  let address = normalize(params.to)
-  let mock = findMockedCall(address, params, provider)
-  let data = params.data
+  let mock = findMock({ type: 'call', params, provider })
+
   if (mock) {
     mock.calls.add(params)
-    let contract = getContract({ address, api: mock.call.api, provider })
-    let contractFunction = getContractFunction({ data, contract })
-    let callArguments = getCallArguments({ contract, contractFunction, data })
-    let result = mock.call.return
-    let encodedResult = contract.interface.encodeFunctionResult(contractFunction.name, [result])
-    return Promise.resolve(encodedResult)
+    return Promise.resolve(
+      encode({ result: mock.call.return, api: mock.call.api, params, provider }),
+    )
   } else {
-    mock = findAnyMockForAddress(address)
-    if (mock?.call?.api) {
-      let contract = getContract({ address, api: mock.call.api, provider })
-      let contractFunction = getContractFunction({ data, contract })
-      let callArguments = getCallArguments({ contract, contractFunction, data })
+    mock = findAnyMockForThisAddress({ type: 'call', params })
+    if (mock && mock.call?.api) {
       throw (
         'Web3Mock: Please mock the contract call: ' +
         JSON.stringify({
           blockchain: 'ethereum',
-          call: getCallToMock({ callArguments, params, contractFunction }),
+          call: getCallToBeMock({ mock, params, provider }),
         })
       )
     } else {
-      throw 'Web3Mock: Please mock the contract at: ' + address
+      throw 'Web3Mock: Please mock the contract call to: ' + params.to
     }
   }
 }
 
-export { call, mockCall }
+let getCallToBeMock = ({ mock, params, provider }) => {
+  let address = params.to
+  let api = mock.call.api
+  let contractFunction = getContractFunction({ data: params.data, address, api, provider })
+  let contractArguments = getContractArguments({ params, api, provider })
+
+  let toBeMocked = {
+    to: address,
+    api: ['PLACE API HERE'],
+    method: contractFunction.name,
+    return: 'Your Value',
+  }
+
+  if (contractArguments && contractArguments.length) {
+    if (Array.isArray(contractArguments) && contractArguments.length === 1) {
+      toBeMocked['params'] = normalize(contractArguments[0])
+    } else {
+      toBeMocked['params'] = contractArguments.map((argument) => normalize(argument))
+    }
+  }
+
+  return toBeMocked
+}
+
+export { call }

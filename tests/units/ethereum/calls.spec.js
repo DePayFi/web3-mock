@@ -14,7 +14,7 @@ describe('mock Ethereum contract calls', ()=> {
     let callMock = mock({
       blockchain: 'ethereum',
       call: {
-        address: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+        to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
         api: api,
         method: 'name',
         return: 'DePay'
@@ -46,7 +46,7 @@ describe('mock Ethereum contract calls', ()=> {
     
     await expect(
       contract.name()
-    ).rejects.toEqual('Web3Mock: Please mock the contract at: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
+    ).rejects.toEqual('Web3Mock: Please mock the contract call to: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
   })
 
   it('does not raise an error but asks you to mock the call if other mocks exist', async ()=> {
@@ -68,7 +68,7 @@ describe('mock Ethereum contract calls', ()=> {
     
     await expect(
       contract.name()
-    ).rejects.toEqual('Web3Mock: Please mock the contract at: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
+    ).rejects.toEqual('Web3Mock: Please mock the contract call to: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
   })
 
   it('throws an error if the api for the called contract was not provided', ()=>{
@@ -76,20 +76,20 @@ describe('mock Ethereum contract calls', ()=> {
       mock({
         blockchain: 'ethereum',
         call: {
-          address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+          to: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
           method: 'name',
           return: 'DePay'
         }
       })
-    }).toThrowError('Web3Mock: Please mock the api of the contract at: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
+    }).toThrowError('Web3Mock: Please provide the api for the call: {\"blockchain\":\"ethereum\",\"call\":{\"to\":\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\",\"method\":\"name\",\"return\":\"DePay\",\"api\":[\"PLACE API HERE\"]}}')
   })
 
-  it('fails if mocked contract does not implement called function', async ()=>{
+  it('fails if mocked contract api does not implement called function', async ()=>{
 
     let callMock = mock({
       blockchain: 'ethereum',
       call: {
-        address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+        to: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
         api: api.filter((fragment)=>{ fragment.name != 'vestingRewardPerSecond' }),
         method: 'name',
         return: 'DePay'
@@ -105,7 +105,7 @@ describe('mock Ethereum contract calls', ()=> {
     );
 
     await expect(contract.vestingRewardPerSecond).rejects.toEqual(
-      new Error('no matching function (argument="sighash", value="0xa6c99ce2", code=INVALID_ARGUMENT, version=abi/5.4.0)')
+      'Web3Mock: method not found in mocked api!'
     )
 
     expect(callMock).not.toHaveBeenCalled()
@@ -116,7 +116,7 @@ describe('mock Ethereum contract calls', ()=> {
     mock({
       blockchain: 'ethereum',
       call: {
-        address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+        to: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
         api: api
       }
     })
@@ -130,7 +130,7 @@ describe('mock Ethereum contract calls', ()=> {
     );
 
     await expect(contract.decimals()).rejects.toEqual(
-      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"address\":\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\",\"method\":\"decimals\",\"return\":\"Your Value\"}}"
+      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"to\":\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\",\"api\":[\"PLACE API HERE\"],\"method\":\"decimals\",\"return\":\"Your Value\"}}"
     )
   })
 
@@ -139,7 +139,7 @@ describe('mock Ethereum contract calls', ()=> {
     mock({
       blockchain: 'ethereum',
       call: {
-        address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+        to: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
         api: api
       }
     })
@@ -153,7 +153,7 @@ describe('mock Ethereum contract calls', ()=> {
     );
 
     await expect(contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390")).rejects.toEqual(
-      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"address\":\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\",\"method\":\"balanceOf\",\"return\":\"Your Value\",\"params\":\"0x5af489c8786a018ec4814194dc8048be1007e390\"}}"
+      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"to\":\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\",\"api\":[\"PLACE API HERE\"],\"method\":\"balanceOf\",\"return\":\"Your Value\",\"params\":\"0x5af489c8786a018ec4814194dc8048be1007e390\"}}"
     )
   })
 
@@ -162,7 +162,7 @@ describe('mock Ethereum contract calls', ()=> {
     mock({
       blockchain: 'ethereum',
       call: {
-        address: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
+        to: '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
         api: api,
         method: 'balanceOf',
         params: '0x5af489c8786a018ec4814194dc8048be1007e390',
@@ -191,7 +191,7 @@ describe('mock Ethereum contract calls', ()=> {
       blockchain: 'ethereum',
       call: {
         api: api,
-        address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
+        to: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
         method: 'getAmountsIn',
         params: ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]],
         return: ["773002376389189", "1000000000000000000"]
@@ -221,7 +221,7 @@ describe('mock Ethereum contract calls', ()=> {
     mock({
       blockchain: 'ethereum',
       call: {
-        address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
+        to: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
         api: api,
         method: 'getAmountsIn',
         params: ["1000000000000000000", ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]],
@@ -243,7 +243,7 @@ describe('mock Ethereum contract calls', ()=> {
         ["0xdac17f958d2ee523a2206206994597c13d831ec7","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]
       )
     ).rejects.toEqual(
-      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"address\":\"0x7a250d5630b4cf539739df2c5dacb4c659f2488d\",\"method\":\"getAmountsIn\",\"return\":\"Your Value\",\"params\":[\"1000000000000000000\",[\"0xdac17f958d2ee523a2206206994597c13d831ec7\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"]]}}"
+      "Web3Mock: Please mock the contract call: {\"blockchain\":\"ethereum\",\"call\":{\"to\":\"0x7a250d5630b4cf539739df2c5dacb4c659f2488d\",\"api\":[\"PLACE API HERE\"],\"method\":\"getAmountsIn\",\"return\":\"Your Value\",\"params\":[\"1000000000000000000\",[\"0xdac17f958d2ee523a2206206994597c13d831ec7\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"]]}}"
     )
   })
 
@@ -254,7 +254,7 @@ describe('mock Ethereum contract calls', ()=> {
     let callMock = mock({
       blockchain: 'ethereum',
       call: {
-        address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
+        to: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
         api: api,
         method: 'getAmountsIn',
         params: anything,
@@ -284,7 +284,7 @@ describe('mock Ethereum contract calls', ()=> {
     let callMock = mock({
       blockchain: 'ethereum',
       call: {
-        address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
+        to: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
         api: api,
         method: 'getAmountsIn',
         params: ["1000000000000000000", [anything,"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]],
