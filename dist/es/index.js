@@ -170,7 +170,7 @@ let mocks = [];
 
 let resetMocks = () => {
   let window = global ? global : window;
-  if(window.ethereum) {
+  if (window.ethereum) {
     window.ethereum.isMetaMask = undefined;
   }
   mocks = [];
@@ -666,7 +666,7 @@ let spy = (mock) => {
   return mock
 };
 
-let mockWallet = ({ configuration, window })=>{
+let mockWallet = ({ configuration, window }) => {
   let wallet = configuration.wallet;
   switch (wallet) {
     case 'metamask':
@@ -677,7 +677,7 @@ let mockWallet = ({ configuration, window })=>{
   }
 };
 
-let mock$1 = (configuration, call)=>{
+let mock$1 = (configuration, call) => {
   preflight(configuration);
 
   let window = getWindow(configuration);
@@ -688,7 +688,9 @@ let mock$1 = (configuration, call)=>{
   switch (blockchain) {
     case 'ethereum':
       mock$1 = spy(mock({ configuration, window, provider }));
-      if(configuration.wallet) { mockWallet({ configuration, window }); }
+      if (configuration.wallet) {
+        mockWallet({ configuration, window });
+      }
       mocks.push(mock$1);
       break
     default:
