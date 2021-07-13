@@ -166,6 +166,16 @@ let encode = ({ result, params, api, provider }) => {
   return contract.interface.encodeFunctionResult(contractFunction.name, [result])
 };
 
+let required = [];
+
+let requireMock = (type) => {
+  required.push(type);
+};
+
+let resetRequire = () => {
+  required = [];
+};
+
 let mocks = [];
 
 let resetMocks = () => {
@@ -174,6 +184,7 @@ let resetMocks = () => {
     window.ethereum.isMetaMask = undefined;
   }
   mocks = [];
+  resetRequire();
 };
 
 resetMocks();
@@ -416,6 +427,16 @@ let getCallToBeMock = ({ mock, params, provider }) => {
 };
 
 function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+let throwSuggestedMock = ({ mock, params, provider }) => {
+  throw (
+    'Web3Mock: Please mock the estimate: ' +
+    JSON.stringify({
+      blockchain: 'ethereum',
+      estimate: getEstimateToBeMocked({ mock, params, provider }),
+    })
+  )
+};
+
 let estimate = ({ params, provider }) => {
   let defaultEstimate = Promise.resolve('0x2c4a0');
 
@@ -431,6 +452,8 @@ let estimate = ({ params, provider }) => {
     } else {
       return defaultEstimate
     }
+  } else if (required.includes('estimate')) {
+    return throwSuggestedMock({ params, provider })
   }
 
   let transactionMock = findMock({ type: 'transaction', params, provider });
@@ -439,15 +462,8 @@ let estimate = ({ params, provider }) => {
   }
 
   let mock = findAnyMockForThisAddress({ type: 'estimate', params });
-
-  if (mock && _optionalChain$3([mock, 'access', _3 => _3.estimate, 'optionalAccess', _4 => _4.api])) {
-    throw (
-      'Web3Mock: Please mock the estimate: ' +
-      JSON.stringify({
-        blockchain: 'ethereum',
-        estimate: getEstimateToBeMocked({ mock, params, provider }),
-      })
-    )
+  if (mock) {
+    return throwSuggestedMock({ mock, params, provider })
   } else {
     return defaultEstimate
   }
@@ -455,25 +471,34 @@ let estimate = ({ params, provider }) => {
 
 let getEstimateToBeMocked = ({ mock, params, provider }) => {
   let address = params.to;
-  let api = mock.estimate.api;
-  let contractFunction = getContractFunction({ data: params.data, address, api, provider });
-  let contractArguments = getContractArguments({ params, api, provider });
 
   let toBeMocked = {
     to: address,
     api: ['PLACE API HERE'],
-    method: contractFunction.name,
     return: 'ESTIMATED GAS',
   };
 
-  if (contractArguments && contractArguments.length) {
-    let paramsToBeMocked = {};
-    Object.keys(contractArguments).forEach((key) => {
-      if (key.match(/\D/)) {
-        paramsToBeMocked[key] = normalize(contractArguments[key]);
-      }
-    });
-    toBeMocked['params'] = paramsToBeMocked;
+  if (mock === undefined) {
+    return toBeMocked
+  }
+
+  let api = _optionalChain$3([mock, 'access', _3 => _3.estimate, 'optionalAccess', _4 => _4.api]);
+
+  if (api) {
+    let contractFunction = getContractFunction({ data: params.data, address, api, provider });
+    let contractArguments = getContractArguments({ params, api, provider });
+
+    toBeMocked['method'] = contractFunction.name;
+
+    if (contractArguments && contractArguments.length) {
+      let paramsToBeMocked = {};
+      Object.keys(contractArguments).forEach((key) => {
+        if (key.match(/\D/)) {
+          paramsToBeMocked[key] = normalize(contractArguments[key]);
+        }
+      });
+      toBeMocked['params'] = paramsToBeMocked;
+    }
   }
 
   return toBeMocked
@@ -688,9 +713,8 @@ let mock$1 = (configuration, call) => {
   switch (blockchain) {
     case 'ethereum':
       mock$1 = spy(mock({ configuration, window, provider }));
-      if (configuration.wallet) {
-        mockWallet({ configuration, window });
-      }
+      if (configuration.wallet) mockWallet({ configuration, window });
+      if (configuration.require) requireMock(configuration.require);
       mocks.push(mock$1);
       break
     default:

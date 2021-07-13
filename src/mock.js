@@ -1,5 +1,6 @@
 import { mock as mockEthereum } from './blockchains/ethereum'
 import { mocks } from './mocks'
+import { requireMock } from './require'
 
 let getWindow = (configuration) => {
   if (configuration.window) return configuration.window
@@ -94,9 +95,8 @@ let mock = (configuration, call) => {
   switch (blockchain) {
     case 'ethereum':
       mock = spy(mockEthereum({ configuration, window, provider }))
-      if (configuration.wallet) {
-        mockWallet({ configuration, window })
-      }
+      if (configuration.wallet) mockWallet({ configuration, window })
+      if (configuration.require) requireMock(configuration.require)
       mocks.push(mock)
       break
     default:

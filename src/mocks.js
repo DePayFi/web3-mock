@@ -1,3 +1,5 @@
+import { resetRequire } from './require'
+
 let mocks = []
 
 let resetMocks = () => {
@@ -6,6 +8,7 @@ let resetMocks = () => {
     window.ethereum.isMetaMask = undefined
   }
   mocks = []
+  resetRequire()
 }
 
 resetMocks()

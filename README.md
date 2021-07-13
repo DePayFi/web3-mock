@@ -412,7 +412,7 @@ expect(mockedTransaction).toHaveBeenCalled()
 
 ### Estimates
 
-Explicit estimate mocks are not required.
+Explicit estimate mocks are not required, they are implicitly mocked with a default value once web3mock is initalized.
 
 In case you want to explicitly want to test that your code performs an estimate and does not perform the transaction, use estimate mocks:
 
@@ -442,6 +442,14 @@ let estimate = await contract.connect(signer).estimateGas.transfer('0xd8da6bf269
 
 expect(estimate.toString()).toEqual('200')
 expect(mockedEstimate).toHaveBeenCalled()
+```
+
+In case you want to require all estimate requests being mocked you need to enable that explicitly (unlike calls or transactions which are always required):
+
+```javascript
+import { mock } from 'depay-web3mock'
+
+mock({ blockchain: 'ethereum', require: 'estimate' })
 ```
 
 ### Events
