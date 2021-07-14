@@ -36,5 +36,6 @@ describe('findMock', () => {
     )
 
     expect(await contract.name()).toEqual('SECOND')
+    expect(await contract.name()).toEqual('SECOND') // returns last all the time
   })
 })

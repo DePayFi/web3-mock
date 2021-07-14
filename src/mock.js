@@ -97,7 +97,7 @@ let mock = (configuration, call) => {
       mock = spy(mockEthereum({ configuration, window, provider }))
       if (configuration.wallet) mockWallet({ configuration, window })
       if (configuration.require) requireMock(configuration.require)
-      mocks.push(mock)
+      mocks.unshift(mock)
       break
     default:
       throw 'Web3Mock: Unknown blockchain!'

@@ -297,7 +297,7 @@
   };
 
   let findMock = ({ type, params, provider }) => {
-    return mocks.reverse().find((mock) => {
+    return mocks.find((mock) => {
       if (mockIsNotAnObject(mock)) {
         return
       }
@@ -331,7 +331,7 @@
   };
 
   let findMockByTransactionHash = (hash) => {
-    return mocks.reverse().find((mock) => {
+    return mocks.find((mock) => {
       return _optionalChain$1([mock, 'optionalAccess', _5 => _5.transaction, 'optionalAccess', _6 => _6._id]) == hash && _optionalChain$1([mock, 'optionalAccess', _7 => _7.transaction, 'optionalAccess', _8 => _8._confirmed])
     })
   };
@@ -747,7 +747,7 @@
         mock$1 = spy(mock({ configuration, window, provider }));
         if (configuration.wallet) mockWallet({ configuration, window });
         if (configuration.require) requireMock(configuration.require);
-        mocks.push(mock$1);
+        mocks.unshift(mock$1);
         break
       default:
         throw 'Web3Mock: Unknown blockchain!'

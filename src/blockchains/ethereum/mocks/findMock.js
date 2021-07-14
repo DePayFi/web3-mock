@@ -108,7 +108,7 @@ let mockHasWrongData = (mock, type, params, provider) => {
 }
 
 let findMock = ({ type, params, provider }) => {
-  return mocks.reverse().find((mock) => {
+  return mocks.find((mock) => {
     if (mockIsNotAnObject(mock)) {
       return
     }
@@ -142,7 +142,7 @@ let findAnyMockForThisAddress = ({ type, params }) => {
 }
 
 let findMockByTransactionHash = (hash) => {
-  return mocks.reverse().find((mock) => {
+  return mocks.find((mock) => {
     return mock?.transaction?._id == hash && mock?.transaction?._confirmed
   })
 }
