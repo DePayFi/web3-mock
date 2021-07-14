@@ -22,6 +22,10 @@ let mockHasWrongTransactionData = (mock, type, params) => {
   )
 }
 
+let mockHasWrongBalanceData = (mock, type, params) => {
+  return mock[type].for && normalize(params) !== normalize(mock[type].for)
+}
+
 let mockHasWrongToAddress = (mock, type, params) => {
   return normalize(mock[type].to) !== normalize(params.to)
 }
@@ -112,6 +116,9 @@ let findMock = ({ type, params, provider }) => {
       return
     }
     if (mockHasWrongTransactionData(mock, type, params)) {
+      return
+    }
+    if (mockHasWrongBalanceData(mock, type, params)) {
       return
     }
     if (mockHasWrongToAddress(mock, type, params)) {

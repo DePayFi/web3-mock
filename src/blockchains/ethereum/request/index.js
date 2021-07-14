@@ -1,5 +1,6 @@
 import getTransactionByHash from './transaction/getTransactionByHash'
 import getTransactionReceipt from './transaction/getTransactionReceipt'
+import { balance } from './balance'
 import { call } from './call'
 import { estimate } from './estimate'
 import { ethers } from 'ethers'
@@ -13,7 +14,7 @@ let request = ({ request, provider }) => {
       break
 
     case 'eth_getBalance':
-      return Promise.resolve(ethers.BigNumber.from('0'))
+      return balance({ params: request.params[0], provider })
       break
 
     case 'net_version':

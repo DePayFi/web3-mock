@@ -25,7 +25,6 @@ describe('something', ()=> {
 
     await window.ethereum.request(method: 'eth_chainId') // '0x1'
     await window.ethereum.request(method: 'net_version') // 1
-    await window.ethereum.request(method: 'eth_getBalance') // '0x0'
     await window.ethereum.request(method: 'eth_accounts') // ["0xd8da6bf26964af9d7eed9e03e53415d37aa96045"]
     await window.ethereum.request(method: 'eth_requestAccounts') // ["0xd8da6bf26964af9d7eed9e03e53415d37aa96045"]
 
@@ -450,6 +449,39 @@ In case you want to require all estimate requests being mocked you need to enabl
 import { mock } from 'depay-web3mock'
 
 mock({ blockchain: 'ethereum', require: 'estimate' })
+```
+
+### Balance
+
+`web3mock` allows you to mock balance requests for signer (connected wallet) or any other wallet:
+
+```javascript
+let balanceMock = mock({
+  blockchain: 'ethereum',
+  balance: {
+    for: '0xb0252f13850a4823706607524de0b146820F2240',
+    return: '232111122321'
+  }
+})
+
+let provider = new ethers.providers.Web3Provider(global.ethereum);
+let balance = await provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
+// BigNumber<'232111122321'>
+```
+
+```javascript
+let balanceMock = mock({
+  blockchain: 'ethereum',
+  balance: {
+    for: '0xb0252f13850a4823706607524de0b146820F2240',
+    return: '123'
+  }
+})
+
+let provider = new ethers.providers.Web3Provider(global.ethereum);
+let signer = provider.getSigner();
+let balance = await signer.getBalance()
+// BigNumber<'123'>
 ```
 
 ### Events
