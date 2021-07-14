@@ -22,13 +22,6 @@ describe('mock Ethereum', ()=> {
 
   });
 
-  it('mocks default request for eth_getBalance', async ()=> {
-
-    let balance = await global.ethereum.request({ method: 'eth_getBalance' })
-    expect(balance).toEqual(ethers.BigNumber.from('0'));
-
-  });
-
   it('mocks default request for net_version', async ()=>{
 
     let networkVersion = await global.ethereum.request({ method: 'net_version' })
