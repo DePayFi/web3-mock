@@ -10,10 +10,6 @@ describe('mock MetaMask wallet specifics', ()=> {
     expect(global.ethereum.isMetaMask).toEqual(true)
   })
 
-  it('resets in between tests thanks to resetMocks', async ()=>{
-    expect(typeof global.ethereum.isMetaMask).toEqual('undefined')
-  })
-
   it('raises an error if given wallet name is not known', async ()=>{
     expect(()=>{
       mock({ blockchain: 'ethereum', wallet: 'notawallet' })

@@ -1,12 +1,7 @@
+import { getWindow } from './window'
 import { mock as mockEthereum } from './blockchains/ethereum'
 import { mocks } from './mocks'
 import { requireMock } from './require'
-
-let getWindow = (configuration) => {
-  if (configuration.window) return configuration.window
-  if (typeof global == 'object') return global
-  if (typeof window == 'object') return window
-}
 
 let getBlockchain = (configuration) => {
   if (typeof configuration === 'string') {

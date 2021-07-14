@@ -1,11 +1,12 @@
 import { resetRequire } from './require'
+import { getWindow } from './window'
 
 let mocks = []
 
 let resetMocks = () => {
-  let window = global ? global : window
+  let window = getWindow()
   if (window.ethereum) {
-    window.ethereum.isMetaMask = undefined
+    window.ethereum = undefined
   }
   mocks = []
   resetRequire()
