@@ -396,7 +396,11 @@ let balance = function ({ params, provider }) {
 
   if (mock && _optionalChain$3([mock, 'access', _ => _.balance, 'optionalAccess', _2 => _2.return])) {
     mock.calls.add(params);
-    return Promise.resolve(ethers$1.BigNumber.from(mock.balance.return))
+    if (_optionalChain$3([mock, 'optionalAccess', _3 => _3.balance, 'optionalAccess', _4 => _4.return]) instanceof Error) {
+      return Promise.reject(mock.balance.return)
+    } else {
+      return Promise.resolve(ethers$1.BigNumber.from(mock.balance.return))
+    }
   } else {
     throw (
       'Web3Mock: Please mock the balance request: ' +
@@ -417,9 +421,13 @@ let call = function ({ params, provider }) {
 
   if (mock) {
     mock.calls.add(params);
-    return Promise.resolve(
-      encode({ result: mock.call.return, api: mock.call.api, params, provider }),
-    )
+    if (mock.call.return instanceof Error) {
+      return Promise.reject(mock.call.return)
+    } else {
+      return Promise.resolve(
+        encode({ result: mock.call.return, api: mock.call.api, params, provider }),
+      )
+    }
   } else {
     mock = findAnyMockForThisAddress({ type: 'call', params });
     if (mock && _optionalChain$4([mock, 'access', _ => _.call, 'optionalAccess', _2 => _2.api])) {
@@ -473,16 +481,19 @@ let throwSuggestedMock = ({ mock, params, provider }) => {
 
 let estimate = ({ params, provider }) => {
   let defaultEstimate = Promise.resolve('0x2c4a0');
+  let mock;
 
   if (params === undefined) {
     return defaultEstimate
   }
 
-  let estimateMock = findMock({ type: 'estimate', params, provider });
-  if (estimateMock) {
-    estimateMock.calls.add(params);
-    if (_optionalChain$5([estimateMock, 'access', _ => _.estimate, 'optionalAccess', _2 => _2.return])) {
-      return Promise.resolve(ethers$1.BigNumber.from(estimateMock.estimate.return))
+  mock = findMock({ type: 'estimate', params, provider });
+  if (mock) {
+    mock.calls.add(params);
+    if (_optionalChain$5([mock, 'optionalAccess', _ => _.estimate, 'optionalAccess', _2 => _2.return]) instanceof Error) {
+      return Promise.reject(mock.estimate.return)
+    } else if (_optionalChain$5([mock, 'access', _3 => _3.estimate, 'optionalAccess', _4 => _4.return])) {
+      return Promise.resolve(ethers$1.BigNumber.from(mock.estimate.return))
     } else {
       return defaultEstimate
     }
@@ -490,12 +501,12 @@ let estimate = ({ params, provider }) => {
     return throwSuggestedMock({ params, provider })
   }
 
-  let transactionMock = findMock({ type: 'transaction', params, provider });
-  if (transactionMock) {
+  mock = findMock({ type: 'transaction', params, provider });
+  if (mock) {
     return defaultEstimate
   }
 
-  let mock = findAnyMockForThisAddress({ type: 'estimate', params });
+  mock = findAnyMockForThisAddress({ type: 'estimate', params });
   if (mock) {
     return throwSuggestedMock({ mock, params, provider })
   } else {
@@ -516,7 +527,7 @@ let getEstimateToBeMocked = ({ mock, params, provider }) => {
     return toBeMocked
   }
 
-  let api = _optionalChain$5([mock, 'access', _3 => _3.estimate, 'optionalAccess', _4 => _4.api]);
+  let api = _optionalChain$5([mock, 'access', _5 => _5.estimate, 'optionalAccess', _6 => _6.api]);
 
   if (api) {
     let contractFunction = getContractFunction({ data: params.data, address, api, provider });
@@ -544,7 +555,11 @@ let transaction = ({ params, provider }) => {
   if (mock) {
     mock.transaction._id = getRandomTransactionHash();
     mock.calls.add(params);
-    return Promise.resolve(mock.transaction._id)
+    if (mock.transaction.return instanceof Error) {
+      return Promise.reject(mock.transaction.return)
+    } else {
+      return Promise.resolve(mock.transaction._id)
+    }
   } else {
     mock = findAnyMockForThisAddress({ type: 'transaction', params });
     if (mock && _optionalChain$6([mock, 'access', _ => _.transaction, 'optionalAccess', _2 => _2.api])) {

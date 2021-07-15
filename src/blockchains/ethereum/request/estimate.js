@@ -16,16 +16,19 @@ let throwSuggestedMock = ({ mock, params, provider }) => {
 
 let estimate = ({ params, provider }) => {
   let defaultEstimate = Promise.resolve('0x2c4a0')
+  let mock
 
   if (params === undefined) {
     return defaultEstimate
   }
 
-  let estimateMock = findMock({ type: 'estimate', params, provider })
-  if (estimateMock) {
-    estimateMock.calls.add(params)
-    if (estimateMock.estimate?.return) {
-      return Promise.resolve(ethers.BigNumber.from(estimateMock.estimate.return))
+  mock = findMock({ type: 'estimate', params, provider })
+  if (mock) {
+    mock.calls.add(params)
+    if (mock?.estimate?.return instanceof Error) {
+      return Promise.reject(mock.estimate.return)
+    } else if (mock.estimate?.return) {
+      return Promise.resolve(ethers.BigNumber.from(mock.estimate.return))
     } else {
       return defaultEstimate
     }
@@ -33,12 +36,12 @@ let estimate = ({ params, provider }) => {
     return throwSuggestedMock({ params, provider })
   }
 
-  let transactionMock = findMock({ type: 'transaction', params, provider })
-  if (transactionMock) {
+  mock = findMock({ type: 'transaction', params, provider })
+  if (mock) {
     return defaultEstimate
   }
 
-  let mock = findAnyMockForThisAddress({ type: 'estimate', params })
+  mock = findAnyMockForThisAddress({ type: 'estimate', params })
   if (mock) {
     return throwSuggestedMock({ mock, params, provider })
   } else {

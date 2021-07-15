@@ -43,8 +43,6 @@ describe('mock Ethereum estimates', ()=> {
     )
   })
 
-
-
   it('mocks a simple estimate', async ()=> {
     
     let mockedEstimate = mock({
@@ -194,5 +192,33 @@ describe('mock Ethereum estimates', ()=> {
     ).rejects.toEqual(
       "Web3Mock: Please mock the estimate: {\"blockchain\":\"ethereum\",\"estimate\":{\"to\":\"0xae60ac8e69414c2dc362d0e6a03af643d1d85b92\",\"api\":[\"PLACE API HERE\"],\"return\":\"ESTIMATED GAS\",\"method\":\"route\",\"params\":{\"path\":[\"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"],\"amounts\":[\"773002376389189\",\"1000000000000000000\",\"3623748721\"],\"addresses\":[],\"plugins\":[],\"data\":[]}}}"
     )
+  })
+
+  it('fails the estimate if you mock an Error', async ()=> {
+    
+    let mockedEstimate = mock({
+      blockchain: 'ethereum',
+      estimate: {
+        api: ERC20,
+        from: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+        to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+        method: 'transfer',
+        return: Error('Some issue')
+      }
+    })
+
+    let provider = new ethers.providers.Web3Provider(global.ethereum)
+    let signer = provider.getSigner()
+    let contract = new ethers.Contract(
+      '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+      ERC20,
+      provider
+    )
+
+    await expect(
+      contract.connect(signer).estimateGas.transfer('0xd8da6bf26964af9d7eed9e03e53415d37aa96045', '100')
+    ).rejects.toEqual(new Error('Some issue'))
+
+    expect(mockedEstimate).toHaveBeenCalled()
   })
 })

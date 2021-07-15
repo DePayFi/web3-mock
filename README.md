@@ -484,6 +484,20 @@ let balance = await signer.getBalance()
 // BigNumber<'123'>
 ```
 
+### Errors
+
+For all mocking types (`call`, `transaction`, `estimate` & `balance`) you can also test error cases by setting `return` to an `Error`:
+
+```language
+mock({
+  blockchain: 'ethereum',
+  call: {
+    //...
+    return: Error('Some error happened')
+  }
+})
+```
+
 ### Events
 
 `Web3Mock` allows you to trigger events (like `accountsChanged`).

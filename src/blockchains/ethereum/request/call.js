@@ -7,9 +7,13 @@ let call = function ({ params, provider }) {
 
   if (mock) {
     mock.calls.add(params)
-    return Promise.resolve(
-      encode({ result: mock.call.return, api: mock.call.api, params, provider }),
-    )
+    if (mock.call.return instanceof Error) {
+      return Promise.reject(mock.call.return)
+    } else {
+      return Promise.resolve(
+        encode({ result: mock.call.return, api: mock.call.api, params, provider }),
+      )
+    }
   } else {
     mock = findAnyMockForThisAddress({ type: 'call', params })
     if (mock && mock.call?.api) {

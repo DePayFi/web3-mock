@@ -72,4 +72,23 @@ describe('mock Ethereum balances', ()=> {
       "Web3Mock: Please mock the balance request: {\"blockchain\":\"ethereum\",\"balance\":{\"for\":\"0xb0252f13850a4823706607524de0b146820f2240\",\"return\":\"PUT BALANCE AMOUNT HERE\"}}"
     )
   })
+
+  it('fails the balance if you mock an Error', async ()=> {
+    
+    let balanceMock = mock({
+      blockchain: 'ethereum',
+      balance: {
+        for: '0xb0252f13850a4823706607524de0b146820F2240',
+        return: Error('Some issue')
+      }
+    })
+
+    let provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    await expect(
+      provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
+    ).rejects.toEqual(new Error('Some issue'))
+
+    expect(balanceMock).toHaveBeenCalled()
+  })
 });

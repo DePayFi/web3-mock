@@ -536,4 +536,31 @@ describe('mock Ethereum transactions', ()=> {
 
     expect(mockedTransaction).toHaveBeenCalled()
   })
+
+
+  it('fails the transaction if you mock an Error', async ()=>{
+
+    let mockedTransaction = mock({
+      blockchain: 'ethereum',
+      transaction: {
+        to: '0x5Af489c8786A018EC4814194dC8048be1007e390',
+        from: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+        value: "2000000000000000000",
+        return: Error('Some issue')
+      }
+    })
+
+    let provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    let signer = provider.getSigner();
+
+    await expect(
+      signer.sendTransaction({
+        to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+        value: ethers.utils.parseEther("2")
+      })
+    ).rejects.toEqual(new Error('Some issue'))
+
+    expect(mockedTransaction).toHaveBeenCalled()
+  })
 });

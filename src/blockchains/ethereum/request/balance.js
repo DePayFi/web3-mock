@@ -6,7 +6,11 @@ let balance = function ({ params, provider }) {
 
   if (mock && mock.balance?.return) {
     mock.calls.add(params)
-    return Promise.resolve(ethers.BigNumber.from(mock.balance.return))
+    if (mock?.balance?.return instanceof Error) {
+      return Promise.reject(mock.balance.return)
+    } else {
+      return Promise.resolve(ethers.BigNumber.from(mock.balance.return))
+    }
   } else {
     throw (
       'Web3Mock: Please mock the balance request: ' +

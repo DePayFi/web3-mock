@@ -307,4 +307,31 @@ describe('mock Ethereum contract calls', ()=> {
 
     expect(callMock).toHaveBeenCalled()
   })
+
+  it('fails the call if you mock an Error', async ()=>{
+
+    let callMock = mock({
+      blockchain: 'ethereum',
+      call: {
+        to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+        api: api,
+        method: 'name',
+        return: Error('Some issue')
+      }
+    })
+
+    provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    let contract = new ethers.Contract(
+      '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+      api,
+      provider
+    );
+
+    await expect(
+      contract.name()
+    ).rejects.toEqual(new Error('Some issue'))
+
+    expect(callMock).toHaveBeenCalled()
+  })
 });
