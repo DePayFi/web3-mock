@@ -28,10 +28,6 @@ var confirm$1 = (mock) => {
   }
 };
 
-let increaseBlock$1 = (amount) => {
-  increaseBlock(amount);
-};
-
 function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let getWindow = (configuration) => {
   if (_optionalChain$1([configuration, 'optionalAccess', _ => _.window])) return configuration.window
   if (typeof global == 'object') return global
@@ -756,13 +752,14 @@ let mock$1 = (configuration, call) => {
   switch (blockchain) {
     case 'ethereum':
       mock$1 = spy(mock({ configuration, window, provider }));
-      if (configuration.wallet) mockWallet({ configuration, window });
-      if (configuration.require) requireMock(configuration.require);
-      mocks.unshift(mock$1);
       break
     default:
       throw 'Web3Mock: Unknown blockchain!'
   }
+  
+  if (configuration.wallet) mockWallet({ configuration, window });
+  if (configuration.require) requireMock(configuration.require);
+  mocks.unshift(mock$1);
 
   return mock$1
 };
@@ -771,4 +768,4 @@ var trigger = (eventName, value) => {
   triggerEvent(eventName, value);
 };
 
-export { anything, confirm$1 as confirm, increaseBlock$1 as increaseBlock, mock$1 as mock, normalize, resetMocks, trigger };
+export { anything, confirm$1 as confirm, increaseBlock, mock$1 as mock, normalize, resetMocks, trigger };

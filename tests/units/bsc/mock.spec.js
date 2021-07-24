@@ -1,11 +1,7 @@
-import { mock } from '../../src'
+import { mock } from '../../../src'
 
 describe('mock', () => {
   
-  it('should be a defined function', () => {
-    expect(typeof(mock)).toBe('function');
-  });
-
   it('does not change existing values in the window/global object', () => {
 
     global.someVar = 1

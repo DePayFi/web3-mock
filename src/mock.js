@@ -90,13 +90,14 @@ let mock = (configuration, call) => {
   switch (blockchain) {
     case 'ethereum':
       mock = spy(mockEthereum({ configuration, window, provider }))
-      if (configuration.wallet) mockWallet({ configuration, window })
-      if (configuration.require) requireMock(configuration.require)
-      mocks.unshift(mock)
       break
     default:
       throw 'Web3Mock: Unknown blockchain!'
   }
+  
+  if (configuration.wallet) mockWallet({ configuration, window })
+  if (configuration.require) requireMock(configuration.require)
+  mocks.unshift(mock)
 
   return mock
 }

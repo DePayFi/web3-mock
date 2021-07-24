@@ -1,7 +1,7 @@
 {
-  "name": "depay-web3mock",
+  "name": "depay-web3-mock",
   "moduleName": "Web3Mock",
-  "version": "4.4.0",
+  "version": "5.0.0",
   "description": "JavaScript library to mock web3 responses either by emulating blockchain wallets or RPC calls.",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -15,7 +15,7 @@
     "prepublishOnly": "yarn build",
     "test": "yarn build && npx jest --no-cache --forceExit"
   },
-  "repository": "git@github.com:DePayFi/depay-web3mock.git",
+  "repository": "git@github.com:DePayFi/depay-web3-mock.git",
   "keywords": [
     "web3",
     "mock",
@@ -27,9 +27,9 @@
   "author": "depay.fi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/DePayFi/depay-web3mock/issues"
+    "url": "https://github.com/DePayFi/depay-web3-mock/issues"
   },
-  "homepage": "https://github.com/DePayFi/depay-web3mock#readme",
+  "homepage": "https://github.com/DePayFi/depay-web3-mock#readme",
   "private": false,
   "dependencies": {
     "ethers": "^5.4.0"

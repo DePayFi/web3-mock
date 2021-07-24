@@ -1,6 +1,6 @@
-import { mock, resetMocks } from '../../src'
+import { mock, resetMocks } from '../../../src'
 
-describe('resetMocks', ()=> {
+describe('resetMocks on ethereum', ()=> {
 
   beforeEach(resetMocks)
   afterEach(resetMocks)

@@ -1,4 +1,4 @@
-import { getCurrentBlock } from '../../block'
+import { getCurrentBlock } from '../../../../block'
 
 let confirm = (transaction) => {
   transaction._confirmedAtBlock = getCurrentBlock()

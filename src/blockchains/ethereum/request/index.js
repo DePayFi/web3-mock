@@ -4,7 +4,7 @@ import { balance } from './balance'
 import { call } from './call'
 import { estimate } from './estimate'
 import { ethers } from 'ethers'
-import { getCurrentBlock } from '../block'
+import { getCurrentBlock } from '../../../block'
 import { transaction } from './transaction'
 
 let request = ({ request, provider }) => {
