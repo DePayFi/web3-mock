@@ -1,20 +1,20 @@
-import normalize from '../../../normalize'
+import normalize from '../../normalize'
 import { ethers } from 'ethers'
-import { findMock, findAnyMockForThisAddress } from '../mocks/findMock'
-import { getContractFunction, getContractArguments } from '../data'
-import { required } from '../../../require'
+import { findMock, findAnyMockForThisAddress } from './findMock'
+import { getContractFunction, getContractArguments } from './data'
+import { required } from '../../require'
 
-let throwSuggestedMock = ({ mock, params, provider }) => {
+let throwSuggestedMock = ({ blockchain, mock, params, provider }) => {
   throw (
     'Web3Mock: Please mock the estimate: ' +
     JSON.stringify({
-      blockchain: 'ethereum',
+      blockchain,
       estimate: getEstimateToBeMocked({ mock, params, provider }),
     })
   )
 }
 
-let estimate = ({ params, provider }) => {
+let estimate = ({ blockchain, params, provider }) => {
   let defaultEstimate = Promise.resolve('0x2c4a0')
   let mock
 
@@ -33,7 +33,7 @@ let estimate = ({ params, provider }) => {
       return defaultEstimate
     }
   } else if (required.includes('estimate')) {
-    return throwSuggestedMock({ params, provider })
+    return throwSuggestedMock({ blockchain, params, provider })
   }
 
   mock = findMock({ type: 'transaction', params, provider })
@@ -43,7 +43,7 @@ let estimate = ({ params, provider }) => {
 
   mock = findAnyMockForThisAddress({ type: 'estimate', params })
   if (mock) {
-    return throwSuggestedMock({ mock, params, provider })
+    return throwSuggestedMock({ blockchain, mock, params, provider })
   } else {
     return defaultEstimate
   }

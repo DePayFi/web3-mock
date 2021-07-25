@@ -2063,6 +2063,11 @@ define-properties@^1.1.3:
   dependencies:
     object-keys "^1.0.12"
 
+depay-web3-blockchains@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/depay-web3-blockchains/-/depay-web3-blockchains-2.1.0.tgz#1b16e50a027763150d962b498a8d2e60822a0892"
+  integrity sha512-oKoSZaNkIzkSCiiIXZkdogRO41m3RH4Eka1HufDOoLe1p+90WJjPqW9ABVPAkxGItJXrtUaIJs0+gsZ9ZdEzhw==
+
 doctrine@1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/doctrine/-/doctrine-1.5.0.tgz#379dce730f6166f76cefa4e6707a159b02c5a6fa"

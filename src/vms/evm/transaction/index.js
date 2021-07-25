@@ -1,9 +1,9 @@
-import getRandomTransactionHash from './transaction/getRandomTransactionHash'
+import getRandomTransactionHash from './getRandomTransactionHash'
 import normalize from '../../../normalize'
-import { findMock, findAnyMockForThisAddress } from '../mocks/findMock'
+import { findMock, findAnyMockForThisAddress } from '../findMock'
 import { getContractFunction, getContractArguments } from '../data'
 
-let transaction = ({ params, provider }) => {
+let transaction = ({ blockchain, params, provider }) => {
   let mock = findMock({ type: 'transaction', params, provider })
   if (mock) {
     mock.transaction._id = getRandomTransactionHash()
@@ -19,7 +19,7 @@ let transaction = ({ params, provider }) => {
       throw (
         'Web3Mock: Please mock the transaction: ' +
         JSON.stringify({
-          blockchain: 'ethereum',
+          blockchain,
           transaction: getTransactionToBeMocked({ mock, params, provider }),
         })
       )

@@ -1,7 +1,7 @@
-import { findMock } from '../mocks/findMock'
+import { findMock } from './findMock'
 import { ethers } from 'ethers'
 
-let balance = function ({ params, provider }) {
+let balance = function ({ blockchain, params, provider }) {
   let mock = findMock({ type: 'balance', params, provider })
 
   if (mock && mock.balance?.return) {
@@ -15,7 +15,7 @@ let balance = function ({ params, provider }) {
     throw (
       'Web3Mock: Please mock the balance request: ' +
       JSON.stringify({
-        blockchain: 'ethereum',
+        blockchain: blockchain,
         balance: {
           for: params,
           return: 'PUT BALANCE AMOUNT HERE',

@@ -1,9 +1,17 @@
 import confirm from './confirm'
-import { increaseBlock } from './block'
 import mock from './mock'
-import trigger from './trigger'
-import { resetMocks } from './mocks'
-import anything from './anything'
 import normalize from './normalize'
+import trigger from './trigger'
+import { anything } from './anything'
+import { increaseBlock } from './block'
+import { resetMocks } from './mocks'
 
-export { mock, trigger, resetMocks, confirm, increaseBlock, anything, normalize }
+export {
+  mock,
+  trigger,
+  resetMocks,
+  confirm,
+  increaseBlock,
+  anything,
+  normalize
+}

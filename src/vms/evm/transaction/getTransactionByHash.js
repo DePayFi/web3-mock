@@ -1,5 +1,6 @@
 import getRandomTransactionHash from './getRandomTransactionHash'
-import { findMockByTransactionHash } from '../../mocks/findMock'
+import { findMockByTransactionHash } from '../findMock'
+import { getCurrentBlock } from '../../../block'
 
 export default (hash) => {
   let mock = findMockByTransactionHash(hash)

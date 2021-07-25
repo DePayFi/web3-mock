@@ -1,8 +1,8 @@
-import normalize from '../../../normalize'
-import { findMock, findAnyMockForThisAddress } from '../mocks/findMock'
-import { encode, getContractFunction, getContractArguments } from '../data'
+import normalize from '../../normalize'
+import { findMock, findAnyMockForThisAddress } from './findMock'
+import { encode, getContractFunction, getContractArguments } from './data'
 
-let call = function ({ params, provider }) {
+let call = function ({ blockchain, params, provider }) {
   let mock = findMock({ type: 'call', params, provider })
 
   if (mock) {
@@ -20,7 +20,7 @@ let call = function ({ params, provider }) {
       throw (
         'Web3Mock: Please mock the contract call: ' +
         JSON.stringify({
-          blockchain: 'ethereum',
+          blockchain,
           call: getCallToBeMock({ mock, params, provider }),
         })
       )
