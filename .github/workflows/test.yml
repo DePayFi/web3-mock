@@ -1,9 +1,9 @@
-name: Jest
+name: Test
 
 on: push
 
 jobs:
-  jest:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +29,6 @@ jobs:
       - name: npm run build
         run: |
           npm run build
-      - name: Run Jest Tests
+      - name: Run Tests
         run: |
           yarn test
