@@ -1,15 +1,16 @@
 import { ethers as ethers$1 } from 'ethers';
+import { Blockchain } from 'depay-web3-blockchains';
 
 let currentBlock = 1;
 
-let getCurrentBlock$1 = () => currentBlock;
+let getCurrentBlock = () => currentBlock;
 
 let increaseBlock = (amount = 1) => {
   currentBlock += amount;
 };
 
 let confirm = (transaction) => {
-  transaction._confirmedAtBlock = getCurrentBlock$1();
+  transaction._confirmedAtBlock = getCurrentBlock();
   return transaction
 };
 
@@ -22,14 +23,15 @@ var confirm$1 = (mock) => {
       case 'ethereum':
         confirm(mock.transaction);
         break
+      case 'bsc':
+        confirm(mock.transaction);
+        break
+      default:
+        throw 'Web3Mock: Unknown blockchain!'
     }
   } else {
     throw 'Web3Mock: Given mock is not a mocked transaction: ' + mock
   }
-};
-
-let increaseBlock$1 = (amount) => {
-  increaseBlock(amount);
 };
 
 function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let getWindow = (configuration) => {
@@ -63,8 +65,6 @@ var getRandomTransactionHash = () => {
   )._hex
 };
 
-var anything = '__ANYTHING__';
-
 let normalize = function (input) {
   if (input instanceof Array) {
     return input.map((element) => normalize(element))
@@ -84,6 +84,8 @@ let normalize = function (input) {
     }
   }
 };
+
+let anything = '__ANYTHING__';
 
 let fillMockParamsWithAnything = ({ contractArguments, mockParams }) => {
   if (typeof mockParams === 'object' && !Array.isArray(mockParams) && !mockParams._isBigNumber) {
@@ -391,7 +393,7 @@ var getTransactionReceipt = (hash) => {
 };
 
 function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-let balance = function ({ params, provider }) {
+let balance = function ({ blockchain, params, provider }) {
   let mock = findMock({ type: 'balance', params, provider });
 
   if (mock && _optionalChain$3([mock, 'access', _ => _.balance, 'optionalAccess', _2 => _2.return])) {
@@ -405,7 +407,7 @@ let balance = function ({ params, provider }) {
     throw (
       'Web3Mock: Please mock the balance request: ' +
       JSON.stringify({
-        blockchain: 'ethereum',
+        blockchain: blockchain,
         balance: {
           for: params,
           return: 'PUT BALANCE AMOUNT HERE',
@@ -416,7 +418,7 @@ let balance = function ({ params, provider }) {
 };
 
 function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-let call = function ({ params, provider }) {
+let call = function ({ blockchain, params, provider }) {
   let mock = findMock({ type: 'call', params, provider });
 
   if (mock) {
@@ -434,7 +436,7 @@ let call = function ({ params, provider }) {
       throw (
         'Web3Mock: Please mock the contract call: ' +
         JSON.stringify({
-          blockchain: 'ethereum',
+          blockchain,
           call: getCallToBeMock({ mock, params, provider }),
         })
       )
@@ -469,17 +471,17 @@ let getCallToBeMock = ({ mock, params, provider }) => {
 };
 
 function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-let throwSuggestedMock = ({ mock, params, provider }) => {
+let throwSuggestedMock = ({ blockchain, mock, params, provider }) => {
   throw (
     'Web3Mock: Please mock the estimate: ' +
     JSON.stringify({
-      blockchain: 'ethereum',
+      blockchain,
       estimate: getEstimateToBeMocked({ mock, params, provider }),
     })
   )
 };
 
-let estimate = ({ params, provider }) => {
+let estimate = ({ blockchain, params, provider }) => {
   let defaultEstimate = Promise.resolve('0x2c4a0');
   let mock;
 
@@ -498,7 +500,7 @@ let estimate = ({ params, provider }) => {
       return defaultEstimate
     }
   } else if (required.includes('estimate')) {
-    return throwSuggestedMock({ params, provider })
+    return throwSuggestedMock({ blockchain, params, provider })
   }
 
   mock = findMock({ type: 'transaction', params, provider });
@@ -508,7 +510,7 @@ let estimate = ({ params, provider }) => {
 
   mock = findAnyMockForThisAddress({ type: 'estimate', params });
   if (mock) {
-    return throwSuggestedMock({ mock, params, provider })
+    return throwSuggestedMock({ blockchain, mock, params, provider })
   } else {
     return defaultEstimate
   }
@@ -550,7 +552,7 @@ let getEstimateToBeMocked = ({ mock, params, provider }) => {
 };
 
 function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-let transaction = ({ params, provider }) => {
+let transaction = ({ blockchain, params, provider }) => {
   let mock = findMock({ type: 'transaction', params, provider });
   if (mock) {
     mock.transaction._id = getRandomTransactionHash();
@@ -566,7 +568,7 @@ let transaction = ({ params, provider }) => {
       throw (
         'Web3Mock: Please mock the transaction: ' +
         JSON.stringify({
-          blockchain: 'ethereum',
+          blockchain,
           transaction: getTransactionToBeMocked({ mock, params, provider }),
         })
       )
@@ -601,16 +603,16 @@ let getTransactionToBeMocked = ({ mock, params, provider }) => {
   return toBeMocked
 };
 
-let request = ({ request, provider }) => {
+let request = ({ blockchain, request, provider }) => {
   switch (request.method) {
     case 'eth_chainId':
-      return Promise.resolve('0x1')
+      return Promise.resolve(Blockchain.findByName(blockchain).id)
 
     case 'eth_getBalance':
-      return balance({ params: request.params[0], provider })
+      return balance({ blockchain, params: request.params[0], provider })
 
     case 'net_version':
-      return Promise.resolve(1)
+      return Promise.resolve(Blockchain.findByName(blockchain).networkId)
 
     case 'eth_requestAccounts':
     case 'eth_accounts':
@@ -618,16 +620,16 @@ let request = ({ request, provider }) => {
 
     case 'eth_estimateGas':
       let params = request.params ? request.params[0] : undefined;
-      return estimate({ params: params, provider })
+      return estimate({ blockchain, params: params, provider })
 
     case 'eth_blockNumber':
-      return Promise.resolve(ethers$1.BigNumber.from(getCurrentBlock$1())._hex)
+      return Promise.resolve(ethers$1.BigNumber.from(getCurrentBlock())._hex)
 
     case 'eth_call':
-      return call({ params: request.params[0], provider })
+      return call({ blockchain, params: request.params[0], provider })
 
     case 'eth_sendTransaction':
-      return transaction({ params: request.params[0], provider })
+      return transaction({ blockchain, params: request.params[0], provider })
 
     case 'eth_getTransactionByHash':
       return getTransactionByHash(request.params[0])
@@ -636,21 +638,21 @@ let request = ({ request, provider }) => {
       return getTransactionReceipt(request.params[0])
 
     default:
-      throw 'Web3Mock Ethereum request: Unknown request method ' + request.method + '!'
+      throw 'Web3Mock request: Unknown request method ' + request.method + '!'
   }
 };
 
 // https://docs.metamask.io/guide/ethereum-provider.html
 
-let mock = ({ configuration, window, provider }) => {
+let mock = ({ blockchain, configuration, window, provider }) => {
   if (provider) {
     if (provider.send) {
       provider.send = (method, params) =>
-        request({ provider, request: { method: method, params: params } });
+        request({ blockchain, provider, request: { method: method, params: params } });
     }
     if (provider.sendTransaction) {
       provider.sendTransaction = (method, params) =>
-        request({ provider, request: { method: method, params: params } });
+        request({ blockchain, provider, request: { method: method, params: params } });
     }
   } else {
     window.ethereum = {
@@ -658,6 +660,7 @@ let mock = ({ configuration, window, provider }) => {
       on,
       request: (configuration) => {
         return request({
+          blockchain,
           request: configuration,
           provider: new ethers$1.providers.Web3Provider(window.ethereum),
         })
@@ -755,14 +758,18 @@ let mock$1 = (configuration, call) => {
 
   switch (blockchain) {
     case 'ethereum':
-      mock$1 = spy(mock({ configuration, window, provider }));
-      if (configuration.wallet) mockWallet({ configuration, window });
-      if (configuration.require) requireMock(configuration.require);
-      mocks.unshift(mock$1);
+      mock$1 = spy(mock({ blockchain, configuration, window, provider }));
+      break
+    case 'bsc':
+      mock$1 = spy(mock({ blockchain, configuration, window, provider }));
       break
     default:
       throw 'Web3Mock: Unknown blockchain!'
   }
+  
+  if (configuration.wallet) mockWallet({ configuration, window });
+  if (configuration.require) requireMock(configuration.require);
+  mocks.unshift(mock$1);
 
   return mock$1
 };
@@ -771,4 +778,4 @@ var trigger = (eventName, value) => {
   triggerEvent(eventName, value);
 };
 
-export { anything, confirm$1 as confirm, increaseBlock$1 as increaseBlock, mock$1 as mock, normalize, resetMocks, trigger };
+export { anything, confirm$1 as confirm, increaseBlock, mock$1 as mock, normalize, resetMocks, trigger };

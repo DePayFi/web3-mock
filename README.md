@@ -1,21 +1,21 @@
-Simplify testing your dApps by mocking blockchain providers and wallets with Web3Mock.
+Simplify testing your dApps by mocking blockchain providers and wallets with web3-mock.
 
 ## Quickstart
 
 ```
-yarn add depay-web3mock
+yarn add depay-web3-mock
 ```
 
 or 
 
 ```
-npm install --save depay-web3mock
+npm install --save depay-web3-mock
 ```
 
 ### Basic
 
 ```javascript
-import { mock } from 'depay-web3mock'
+import { mock } from 'depay-web3-mock'
 
 describe('something', ()=> {
 
@@ -35,7 +35,7 @@ describe('something', ()=> {
 ### Advanced
 
 ```javascript
-import { mock, resetMocks } from 'depay-web3mock'
+import { mock, resetMocks } from 'depay-web3-mock'
 
 describe('something', ()=> {
 
@@ -112,6 +112,17 @@ describe('something', ()=> {
     expect(transactionMock).toHaveBeenCalled()
   })
 ```
+
+## Support
+
+This library supports the following blockchains:
+
+- [Ethereum](https://ethereum.org)
+- [Binance Smart Chain](https://www.binance.org/en/smartChain)
+
+This library supports the following crypto wallets:
+
+- [MetaMask](https://metamask.io)
 
 ## Functionalities
 
@@ -220,7 +231,7 @@ expect(contractMock).toHaveBeenCalled()
 #### Mock Contract Calls partialy with anything
 
 ```javascript
-import { anything } from 'depay-web3mock'
+import { anything } from 'depay-web3-mock'
 
 let contractMock = mock({
   blockchain: 'ethereum',
@@ -255,7 +266,7 @@ expect(contractMock).toHaveBeenCalled()
 
 You need to mock transactions before they are executed.
 
-`Web3Mock` mocks `eth_sendTransaction`, `eth_getTransactionByHash`, `eth_getTransactionReceipt` request to cover the full lifecycle of blockchain transactions.
+`web3-mock` mocks `eth_sendTransaction`, `eth_getTransactionByHash`, `eth_getTransactionReceipt` request to cover the full lifecycle of blockchain transactions.
 
 #### Simple Transactions
 
@@ -332,7 +343,7 @@ Mocking transaction confirmations consists of two steps:
 2. Increase the blocknumber after the transaction has been confirmed (to increase transaction confirmation amount)
 
 ```javascript
-import { mock, confirm } from 'depay-web3mock'
+import { mock, confirm } from 'depay-web3-mock'
 
 let mockedTransaction = mock({
   blockchain: 'ethereum',
@@ -350,7 +361,7 @@ await sentTransaction.wait(1).then(function(receipt){
 ```
 
 ```javascript
-import { mock, confirm, increaseBlock } from 'depay-web3mock'
+import { mock, confirm, increaseBlock } from 'depay-web3-mock'
 
 let mockedTransaction = mock({
   blockchain: 'ethereum',
@@ -411,12 +422,12 @@ expect(mockedTransaction).toHaveBeenCalled()
 
 ### Estimates
 
-Explicit estimate mocks are not required, they are implicitly mocked with a default value once web3mock is initalized.
+Explicit estimate mocks are not required, they are implicitly mocked with a default value once web3-mock is initalized.
 
 In case you want to explicitly want to test that your code performs an estimate and does not perform the transaction, use estimate mocks:
 
 ```javascript
-import { mock } from 'depay-web3mock'
+import { mock } from 'depay-web3-mock'
 
 let mockedEstimate = mock({
   blockchain: 'ethereum',
@@ -446,14 +457,14 @@ expect(mockedEstimate).toHaveBeenCalled()
 In case you want to require all estimate requests being mocked you need to enable that explicitly (unlike calls or transactions which are always required):
 
 ```javascript
-import { mock } from 'depay-web3mock'
+import { mock } from 'depay-web3-mock'
 
 mock({ blockchain: 'ethereum', require: 'estimate' })
 ```
 
 ### Balance
 
-`web3mock` allows you to mock balance requests for signer (connected wallet) or any other wallet:
+`web3-mock` allows you to mock balance requests for signer (connected wallet) or any other wallet:
 
 ```javascript
 let balanceMock = mock({
@@ -500,10 +511,10 @@ mock({
 
 ### Events
 
-`Web3Mock` allows you to trigger events (like `accountsChanged`).
+`web3-mock` allows you to trigger events (like `accountsChanged`).
 
 ```javascript
-import { mock, trigger } from 'depay-web3mock'
+import { mock, trigger } from 'depay-web3-mock'
 
 mock('ethereum')
 
@@ -515,7 +526,7 @@ trigger('accountsChanged', ['0xb0252f13850a4823706607524de0b146820F2240', '0xEcA
 ### Providers
 
 If you want to mock Web3 calls and transactions for other providers but the usual, implicit ones (like window.ethereum),
-you can pass them explicitly to `Web3Mock`:
+you can pass them explicitly to `web3-mock`:
 
 ```javascript
 
@@ -548,7 +559,7 @@ window.ethereum.isMetaMask // true
 `normalize` allows you to normalize values to compare them easier in tests:
 
 ```javascript
-import { normalize } from 'depay-web3mock'
+import { normalize } from 'depay-web3-mock'
 
 expect(
   normalize('0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D')
@@ -592,4 +603,4 @@ npm publish
 #### Jest
 
 In your jest test environment `global` is `window`
-so `Web3Mock` takes jest's `global` automatically when using `Web3Mock` in a jest test environment.
+so `web3-mock` takes jest's `global` automatically when using `web3-mock` in a jest test environment.

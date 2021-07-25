@@ -1,8 +1,8 @@
 {
-  "name": "depay-web3mock",
+  "name": "depay-web3-mock",
   "moduleName": "Web3Mock",
-  "version": "4.4.0",
-  "description": "JavaScript library to mock web3 responses either by emulating blockchain wallets or RPC calls.",
+  "version": "5.0.0",
+  "description": "JavaScript library to mock web3 responses either by emulating web3 wallets or web3 RPC requests.",
   "main": "./dist/cjs/index.js",
   "files": [
     "dist"
@@ -11,11 +11,10 @@
     "build": "rm -rf dist && rollup -c",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
-    "format": "prettier src --write",
     "prepublishOnly": "yarn build",
     "test": "yarn build && npx jest --no-cache --forceExit"
   },
-  "repository": "git@github.com:DePayFi/depay-web3mock.git",
+  "repository": "git@github.com:DePayFi/depay-web3-mock.git",
   "keywords": [
     "web3",
     "mock",
@@ -27,11 +26,12 @@
   "author": "depay.fi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/DePayFi/depay-web3mock/issues"
+    "url": "https://github.com/DePayFi/depay-web3-mock/issues"
   },
-  "homepage": "https://github.com/DePayFi/depay-web3mock#readme",
+  "homepage": "https://github.com/DePayFi/depay-web3-mock#readme",
   "private": false,
   "dependencies": {
+    "depay-web3-blockchains": "^2.1.0",
     "ethers": "^5.4.0"
   },
   "peerDependencies": {},
@@ -48,11 +48,8 @@
     "babel-loader": "^8.2.2",
     "babel-preset-env": "^1.7.0",
     "eslint": "^7.15.0",
-    "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-prettier": "^3.2.0",
     "eslint-webpack-plugin": "^2.5.4",
-    "prettier": "^2.2.1",
     "regenerator-runtime": "^0.13.7",
     "rollup": "^2.34.2"
   }

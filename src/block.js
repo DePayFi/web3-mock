@@ -1,7 +1,9 @@
-import { increaseBlock as increaseEthereumBlock } from './blockchains/ethereum/block'
+let currentBlock = 1
 
-let increaseBlock = (amount) => {
-  increaseEthereumBlock(amount)
+let getCurrentBlock = () => currentBlock
+
+let increaseBlock = (amount = 1) => {
+  currentBlock += amount
 }
 
-export { increaseBlock }
+export { getCurrentBlock, increaseBlock }

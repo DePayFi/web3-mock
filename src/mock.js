@@ -1,5 +1,6 @@
 import { getWindow } from './window'
-import { mock as mockEthereum } from './blockchains/ethereum'
+import { mock as mockBsc } from './blockchains/bsc/mock'
+import { mock as mockEthereum } from './blockchains/ethereum/mock'
 import { mocks } from './mocks'
 import { requireMock } from './require'
 
@@ -89,14 +90,18 @@ let mock = (configuration, call) => {
 
   switch (blockchain) {
     case 'ethereum':
-      mock = spy(mockEthereum({ configuration, window, provider }))
-      if (configuration.wallet) mockWallet({ configuration, window })
-      if (configuration.require) requireMock(configuration.require)
-      mocks.unshift(mock)
+      mock = spy(mockEthereum({ blockchain, configuration, window, provider }))
+      break
+    case 'bsc':
+      mock = spy(mockBsc({ blockchain, configuration, window, provider }))
       break
     default:
       throw 'Web3Mock: Unknown blockchain!'
   }
+  
+  if (configuration.wallet) mockWallet({ configuration, window })
+  if (configuration.require) requireMock(configuration.require)
+  mocks.unshift(mock)
 
   return mock
 }
