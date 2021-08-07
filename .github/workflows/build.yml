@@ -1,9 +1,9 @@
-name: Test
+name: Build
 
 on: push
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,9 +26,6 @@ jobs:
       - name: npm install
         run: |
           npm install
-      - name: npm run build
+      - name: yarn build
         run: |
-          npm run build
-      - name: Run Tests
-        run: |
-          yarn test
+          yarn build

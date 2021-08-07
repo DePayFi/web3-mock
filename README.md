@@ -602,5 +602,12 @@ npm publish
 
 #### Jest
 
-In your jest test environment `global` is `window`
-so `web3-mock` takes jest's `global` automatically when using `web3-mock` in a jest test environment.
+In your jest test environment `global` is the `window` available to your code.
+
+Hence `depay-web3-mock` takes jest's `global` automatically when using `depay-web3-mock` in a jest test environment.
+
+#### Cypress
+
+In your cypress test environment `cy.window().specWindow.window` is the `window` available to your code.
+
+Hence `depay-web3-mock` takes cypress's `cy.window().specWindow.window` automatically when using `depay-web3-mock` in a jest test environment.

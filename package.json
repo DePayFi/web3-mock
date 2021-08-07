@@ -1,7 +1,7 @@
 {
   "name": "depay-web3-mock",
   "moduleName": "Web3Mock",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "JavaScript library to mock web3 responses either by emulating web3 wallets or web3 RPC requests.",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -12,7 +12,10 @@
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "prepublishOnly": "yarn build",
-    "test": "yarn build && npx jest --no-cache --forceExit"
+    "test:cypress": "yarn cypress run",
+    "test:cypress:debug": "yarn cypress run --headed --no-exit",
+    "test:jest": "npx jest --no-cache --forceExit",
+    "test": "yarn test:jest && yarn test:cypress"
   },
   "repository": "git@github.com:DePayFi/depay-web3-mock.git",
   "keywords": [
@@ -47,6 +50,7 @@
     "@rollup/plugin-sucrase": "^3.1.0",
     "babel-loader": "^8.2.2",
     "babel-preset-env": "^1.7.0",
+    "cypress": "^8.2.0",
     "eslint": "^7.15.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-webpack-plugin": "^2.5.4",
