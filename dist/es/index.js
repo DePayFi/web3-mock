@@ -1,6 +1,11 @@
 import { ethers as ethers$1 } from 'ethers';
 import { Blockchain } from 'depay-web3-blockchains';
 
+var raise = (msg)=>{
+  console.log(msg);
+  throw(msg)
+};
+
 let currentBlock = 1;
 
 let getCurrentBlock = () => currentBlock;
@@ -27,10 +32,10 @@ var confirm$1 = (mock) => {
         confirm(mock.transaction);
         break
       default:
-        throw 'Web3Mock: Unknown blockchain!'
+        raise('Web3Mock: Unknown blockchain!');
     }
   } else {
-    throw 'Web3Mock: Given mock is not a mocked transaction: ' + mock
+    raise('Web3Mock: Given mock is not a mocked transaction: ' + mock);
   }
 };
 
@@ -151,9 +156,9 @@ let getContractFunction = ({ data, address, api, provider }) => {
     return contract.interface.getFunction(methodSelector)
   } catch (error) {
     if (error.reason == 'no matching function') {
-      throw 'Web3Mock: method not found in mocked api!'
+      raise('Web3Mock: method not found in mocked api!');
     } else {
-      throw error
+      raise(error);
     }
   }
 };
@@ -405,7 +410,7 @@ let balance = function ({ blockchain, params, provider }) {
       return Promise.resolve(ethers$1.BigNumber.from(mock.balance.return))
     }
   } else {
-    throw (
+    raise(
       'Web3Mock: Please mock the balance request: ' +
       JSON.stringify({
         blockchain: blockchain,
@@ -414,7 +419,7 @@ let balance = function ({ blockchain, params, provider }) {
           return: 'PUT BALANCE AMOUNT HERE',
         },
       })
-    )
+    );
   }
 };
 
@@ -434,15 +439,15 @@ let call = function ({ blockchain, params, provider }) {
   } else {
     mock = findAnyMockForThisAddress({ type: 'call', params });
     if (mock && _optionalChain$4([mock, 'access', _ => _.call, 'optionalAccess', _2 => _2.api])) {
-      throw (
+      raise(
         'Web3Mock: Please mock the contract call: ' +
         JSON.stringify({
           blockchain,
           call: getCallToBeMock({ mock, params, provider }),
         })
-      )
+      );
     } else {
-      throw 'Web3Mock: Please mock the contract call to: ' + params.to
+      raise('Web3Mock: Please mock the contract call to: ' + params.to);
     }
   }
 };
@@ -473,13 +478,13 @@ let getCallToBeMock = ({ mock, params, provider }) => {
 
 function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 let throwSuggestedMock = ({ blockchain, mock, params, provider }) => {
-  throw (
+  raise(
     'Web3Mock: Please mock the estimate: ' +
     JSON.stringify({
       blockchain,
       estimate: getEstimateToBeMocked({ mock, params, provider }),
     })
-  )
+  );
 };
 
 let estimate = ({ blockchain, params, provider }) => {
@@ -566,15 +571,15 @@ let transaction = ({ blockchain, params, provider }) => {
   } else {
     mock = findAnyMockForThisAddress({ type: 'transaction', params });
     if (mock && _optionalChain$6([mock, 'access', _ => _.transaction, 'optionalAccess', _2 => _2.api])) {
-      throw (
+      raise(
         'Web3Mock: Please mock the transaction: ' +
         JSON.stringify({
           blockchain,
           transaction: getTransactionToBeMocked({ mock, params, provider }),
         })
-      )
+      );
     } else {
-      throw 'Web3Mock: Please mock the transaction to: ' + params.to
+      raise('Web3Mock: Please mock the transaction to: ' + params.to);
     }
   }
 };
@@ -639,7 +644,7 @@ let request = ({ blockchain, request, provider }) => {
       return getTransactionReceipt(request.params[0])
 
     default:
-      throw 'Web3Mock request: Unknown request method ' + request.method + '!'
+      raise('Web3Mock request: Unknown request method ' + request.method + '!');
   }
 };
 
@@ -679,7 +684,7 @@ let getBlockchain = (configuration) => {
   } else if (typeof configuration === 'object' && !Array.isArray(configuration)) {
     return configuration.blockchain
   } else {
-    throw 'Web3Mock: Unknown mock configuration type!'
+    raise('Web3Mock: Unknown mock configuration type!');
   }
 };
 
@@ -708,18 +713,18 @@ let apiMissingErrorText = (type, configuration) => {
 
 let preflight = (configuration) => {
   if (configuration === undefined || configuration.length === 0) {
-    throw 'Web3Mock: No mock defined!'
+    raise('Web3Mock: No mock defined!');
   } else if (typeof configuration === 'object' && Object.keys(configuration).length === 0) {
-    throw 'Web3Mock: Mock configuration is empty!'
+    raise('Web3Mock: Mock configuration is empty!');
   } else if (typeof configuration != 'string' && typeof configuration != 'object') {
-    throw 'Web3Mock: Unknown mock configuration type!'
+    raise('Web3Mock: Unknown mock configuration type!');
   }
   if (apiIsMissing('call', configuration)) {
-    throw apiMissingErrorText('call', configuration)
+    raise(apiMissingErrorText('call', configuration));
   } else if (apiIsMissing('transaction', configuration)) {
-    throw apiMissingErrorText('transaction', configuration)
+    raise(apiMissingErrorText('transaction', configuration));
   } else if (apiIsMissing('estimate', configuration)) {
-    throw apiMissingErrorText('estimate', configuration)
+    raise(apiMissingErrorText('estimate', configuration));
   }
 };
 
@@ -745,7 +750,7 @@ let mockWallet = ({ configuration, window }) => {
       window.ethereum.isMetaMask = true;
       break
     default:
-      throw 'Web3Mock: Unknown wallet!'
+      raise('Web3Mock: Unknown wallet!');
   }
 };
 
@@ -765,7 +770,7 @@ let mock$1 = (configuration, call) => {
       mock$1 = spy(mock({ blockchain, configuration, window, provider }));
       break
     default:
-      throw 'Web3Mock: Unknown blockchain!'
+      raise('Web3Mock: Unknown blockchain!');
   }
   
   if (configuration.wallet) mockWallet({ configuration, window });
