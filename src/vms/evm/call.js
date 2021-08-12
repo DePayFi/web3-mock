@@ -1,3 +1,4 @@
+import raise from '../../raise'
 import normalize from '../../normalize'
 import { findMock, findAnyMockForThisAddress } from './findMock'
 import { encode, getContractFunction, getContractArguments } from './data'
@@ -17,7 +18,7 @@ let call = function ({ blockchain, params, provider }) {
   } else {
     mock = findAnyMockForThisAddress({ type: 'call', params })
     if (mock && mock.call?.api) {
-      throw (
+      raise(
         'Web3Mock: Please mock the contract call: ' +
         JSON.stringify({
           blockchain,
@@ -25,7 +26,7 @@ let call = function ({ blockchain, params, provider }) {
         })
       )
     } else {
-      throw 'Web3Mock: Please mock the contract call to: ' + params.to
+      raise('Web3Mock: Please mock the contract call to: ' + params.to)
     }
   }
 }

@@ -1,5 +1,6 @@
 import getTransactionByHash from './transaction/getTransactionByHash'
 import getTransactionReceipt from './transaction/getTransactionReceipt'
+import raise from '../../raise'
 import { balance } from './balance'
 import { Blockchain } from 'depay-web3-blockchains'
 import { call } from './call'
@@ -53,7 +54,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     default:
-      throw 'Web3Mock request: Unknown request method ' + request.method + '!'
+      raise('Web3Mock request: Unknown request method ' + request.method + '!')
   }
 }
 

@@ -1,3 +1,4 @@
+import raise from '../../raise'
 import { ethers } from 'ethers'
 
 let getContract = ({ address, api, provider }) => {
@@ -11,9 +12,9 @@ let getContractFunction = ({ data, address, api, provider }) => {
     return contract.interface.getFunction(methodSelector)
   } catch (error) {
     if (error.reason == 'no matching function') {
-      throw 'Web3Mock: method not found in mocked api!'
+      raise('Web3Mock: method not found in mocked api!')
     } else {
-      throw error
+      raise(error)
     }
   }
 }

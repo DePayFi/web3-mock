@@ -1,5 +1,6 @@
-import { confirm as confirmEthereumTransaction } from './blockchains/ethereum/confirm'
+import raise from './raise'
 import { confirm as confirmBscTransaction } from './blockchains/bsc/confirm'
+import { confirm as confirmEthereumTransaction } from './blockchains/ethereum/confirm'
 import { mocks } from './mocks'
 
 export default (mock) => {
@@ -13,9 +14,9 @@ export default (mock) => {
         confirmBscTransaction(mock.transaction)
         break
       default:
-        throw 'Web3Mock: Unknown blockchain!'
+        raise('Web3Mock: Unknown blockchain!')
     }
   } else {
-    throw 'Web3Mock: Given mock is not a mocked transaction: ' + mock
+    raise('Web3Mock: Given mock is not a mocked transaction: ' + mock)
   }
 }

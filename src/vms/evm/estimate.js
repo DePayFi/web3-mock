@@ -1,3 +1,4 @@
+import raise from '../../raise'
 import normalize from '../../normalize'
 import { ethers } from 'ethers'
 import { findMock, findAnyMockForThisAddress } from './findMock'
@@ -5,7 +6,7 @@ import { getContractFunction, getContractArguments } from './data'
 import { required } from '../../require'
 
 let throwSuggestedMock = ({ blockchain, mock, params, provider }) => {
-  throw (
+  raise(
     'Web3Mock: Please mock the estimate: ' +
     JSON.stringify({
       blockchain,

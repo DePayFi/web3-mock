@@ -1,3 +1,4 @@
+import raise from '../../raise'
 import { findMock } from './findMock'
 import { ethers } from 'ethers'
 
@@ -12,7 +13,7 @@ let balance = function ({ blockchain, params, provider }) {
       return Promise.resolve(ethers.BigNumber.from(mock.balance.return))
     }
   } else {
-    throw (
+    raise(
       'Web3Mock: Please mock the balance request: ' +
       JSON.stringify({
         blockchain: blockchain,

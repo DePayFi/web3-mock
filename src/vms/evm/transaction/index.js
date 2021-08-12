@@ -1,5 +1,6 @@
 import getRandomTransactionHash from './getRandomTransactionHash'
 import normalize from '../../../normalize'
+import raise from '../../../raise'
 import { findMock, findAnyMockForThisAddress } from '../findMock'
 import { getContractFunction, getContractArguments } from '../data'
 
@@ -16,7 +17,7 @@ let transaction = ({ blockchain, params, provider }) => {
   } else {
     mock = findAnyMockForThisAddress({ type: 'transaction', params })
     if (mock && mock.transaction?.api) {
-      throw (
+      raise(
         'Web3Mock: Please mock the transaction: ' +
         JSON.stringify({
           blockchain,
@@ -24,7 +25,7 @@ let transaction = ({ blockchain, params, provider }) => {
         })
       )
     } else {
-      throw 'Web3Mock: Please mock the transaction to: ' + params.to
+      raise('Web3Mock: Please mock the transaction to: ' + params.to)
     }
   }
 }

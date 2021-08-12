@@ -1,3 +1,4 @@
+import raise from './raise'
 import { getWindow } from './window'
 import { mock as mockBsc } from './blockchains/bsc/mock'
 import { mock as mockEthereum } from './blockchains/ethereum/mock'
@@ -10,7 +11,7 @@ let getBlockchain = (configuration) => {
   } else if (typeof configuration === 'object' && !Array.isArray(configuration)) {
     return configuration.blockchain
   } else {
-    throw 'Web3Mock: Unknown mock configuration type!'
+    raise('Web3Mock: Unknown mock configuration type!')
   }
 }
 
@@ -39,18 +40,18 @@ let apiMissingErrorText = (type, configuration) => {
 
 let preflight = (configuration) => {
   if (configuration === undefined || configuration.length === 0) {
-    throw 'Web3Mock: No mock defined!'
+    raise('Web3Mock: No mock defined!')
   } else if (typeof configuration === 'object' && Object.keys(configuration).length === 0) {
-    throw 'Web3Mock: Mock configuration is empty!'
+    raise('Web3Mock: Mock configuration is empty!')
   } else if (typeof configuration != 'string' && typeof configuration != 'object') {
-    throw 'Web3Mock: Unknown mock configuration type!'
+    raise('Web3Mock: Unknown mock configuration type!')
   }
   if (apiIsMissing('call', configuration)) {
-    throw apiMissingErrorText('call', configuration)
+    raise(apiMissingErrorText('call', configuration))
   } else if (apiIsMissing('transaction', configuration)) {
-    throw apiMissingErrorText('transaction', configuration)
+    raise(apiMissingErrorText('transaction', configuration))
   } else if (apiIsMissing('estimate', configuration)) {
-    throw apiMissingErrorText('estimate', configuration)
+    raise(apiMissingErrorText('estimate', configuration))
   }
 }
 
@@ -76,7 +77,7 @@ let mockWallet = ({ configuration, window }) => {
       window.ethereum.isMetaMask = true
       break
     default:
-      throw 'Web3Mock: Unknown wallet!'
+      raise('Web3Mock: Unknown wallet!')
   }
 }
 
@@ -96,7 +97,7 @@ let mock = (configuration, call) => {
       mock = spy(mockBsc({ blockchain, configuration, window, provider }))
       break
     default:
-      throw 'Web3Mock: Unknown blockchain!'
+      raise('Web3Mock: Unknown blockchain!')
   }
   
   if (configuration.wallet) mockWallet({ configuration, window })
