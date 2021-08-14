@@ -428,17 +428,27 @@ let balance = function ({ blockchain, params, provider }) {
 };
 
 function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+let callMock = ({ mock, params, provider })=> {
+  mock.calls.add(params);
+  if (mock.call.return instanceof Error) {
+    return Promise.reject(mock.call.return)
+  } else {
+    return Promise.resolve(
+      encode({ result: mock.call.return, api: mock.call.api, params, provider }),
+    )
+  }
+};
+
 let call = function ({ blockchain, params, provider }) {
   let mock = findMock({ type: 'call', params, provider });
 
   if (mock) {
-    mock.calls.add(params);
-    if (mock.call.return instanceof Error) {
-      return Promise.reject(mock.call.return)
+    if(mock.call.delay) {
+      return new Promise((resolve)=>{
+        setTimeout(()=>resolve(callMock({ mock, params, provider })), mock.call.delay);
+      })
     } else {
-      return Promise.resolve(
-        encode({ result: mock.call.return, api: mock.call.api, params, provider }),
-      )
+      return callMock({ mock, params, provider })
     }
   } else {
     mock = findAnyMockForThisAddress({ type: 'call', params });
