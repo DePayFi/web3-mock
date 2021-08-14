@@ -334,4 +334,30 @@ describe('mock bsc contract calls', ()=> {
 
     expect(callMock).toHaveBeenCalled()
   })
+
+  it('allows to delay the response of a mocked call', async ()=>{
+
+    let callMock = mock({
+      blockchain: 'bsc',
+      call: {
+        delay: 1000,
+        to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+        api: api,
+        method: 'name',
+        return: 'DePay'
+      }
+    })
+
+    provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    let contract = new ethers.Contract(
+      '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+      api,
+      provider
+    );
+
+    let now = new Date().getTime()
+    expect(await contract.name()).toEqual('DePay')
+    expect((new Date().getTime() - now) > 1000).toEqual(true)
+  })
 });

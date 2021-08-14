@@ -262,6 +262,26 @@ expect(
 expect(contractMock).toHaveBeenCalled()
 ```
 
+#### Delay contract call responses
+
+In order to delay the response of a contract call in your tests (to emulate real life behaviour), you can use `delay`:
+
+```javascript
+
+let callMock = mock({
+  blockchain: 'ethereum',
+  call: {
+    delay: 1000,
+    to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
+    api: api,
+    method: 'name',
+    return: 'DePay'
+  }
+})
+
+await contract.name() // is gonna take at least 1000ms
+```
+
 ### Transactions
 
 You need to mock transactions before they are executed.

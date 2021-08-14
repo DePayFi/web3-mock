@@ -3,17 +3,27 @@ import normalize from '../../normalize'
 import { findMock, findAnyMockForThisAddress } from './findMock'
 import { encode, getContractFunction, getContractArguments } from './data'
 
+let callMock = ({ mock, params, provider })=> {
+  mock.calls.add(params)
+  if (mock.call.return instanceof Error) {
+    return Promise.reject(mock.call.return)
+  } else {
+    return Promise.resolve(
+      encode({ result: mock.call.return, api: mock.call.api, params, provider }),
+    )
+  }
+}
+
 let call = function ({ blockchain, params, provider }) {
   let mock = findMock({ type: 'call', params, provider })
 
   if (mock) {
-    mock.calls.add(params)
-    if (mock.call.return instanceof Error) {
-      return Promise.reject(mock.call.return)
+    if(mock.call.delay) {
+      return new Promise((resolve)=>{
+        setTimeout(()=>resolve(callMock({ mock, params, provider })), mock.call.delay)
+      })
     } else {
-      return Promise.resolve(
-        encode({ result: mock.call.return, api: mock.call.api, params, provider }),
-      )
+      return callMock({ mock, params, provider })
     }
   } else {
     mock = findAnyMockForThisAddress({ type: 'call', params })
