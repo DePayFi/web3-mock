@@ -2,7 +2,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('ethers'), require('depay-web3-blockchains')) :
   typeof define === 'function' && define.amd ? define(['exports', 'ethers', 'depay-web3-blockchains'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Mock = {}, global.ethers, global.Web3Blockchains));
-}(this, (function (exports, ethers$1, depayWeb3Blockchains) { 'use strict';
+}(this, (function (exports, ethers, depayWeb3Blockchains) { 'use strict';
 
   var raise = (msg)=>{
     console.log(msg);
@@ -65,7 +65,7 @@
   };
 
   var getRandomTransactionHash = () => {
-    return ethers$1.ethers.BigNumber.from(
+    return ethers.ethers.BigNumber.from(
       '1' +
         Array(76)
           .fill()
@@ -149,7 +149,7 @@
   };
 
   let getContract = ({ address, api, provider }) => {
-    return new ethers$1.ethers.Contract(address, api, provider)
+    return new ethers.ethers.Contract(address, api, provider)
   };
 
   let getContractFunction = ({ data, address, api, provider }) => {
@@ -220,7 +220,7 @@
       (mock[type].to && normalize(params.to) !== normalize(mock[type].to)) ||
       (mock[type].from && normalize(params.from) !== normalize(mock[type].from)) ||
       (mock[type].value &&
-        ethers$1.ethers.BigNumber.from(params.value).toString() !== normalize(mock[type].value))
+        ethers.ethers.BigNumber.from(params.value).toString() !== normalize(mock[type].value))
     )
   };
 
@@ -372,7 +372,7 @@
     if (mock) {
       Object.assign(transaction, {
         blockHash: getRandomTransactionHash(),
-        blockNumber: ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
+        blockNumber: ethers.ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
           ._hex,
       });
     }
@@ -387,7 +387,7 @@
       return Promise.resolve({
         transactionHash: hash,
         transactionIndex: '0x1',
-        blockNumber: ethers$1.ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
+        blockNumber: ethers.ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
           ._hex,
         blockHash: getRandomTransactionHash(),
         cumulativeGasUsed: '0x33bc',
@@ -410,7 +410,7 @@
       if (_optionalChain$3([mock, 'optionalAccess', _3 => _3.balance, 'optionalAccess', _4 => _4.return]) instanceof Error) {
         return Promise.reject(mock.balance.return)
       } else {
-        return Promise.resolve(ethers$1.ethers.BigNumber.from(mock.balance.return))
+        return Promise.resolve(ethers.ethers.BigNumber.from(mock.balance.return))
       }
     } else {
       raise(
@@ -514,7 +514,7 @@
       if (_optionalChain$5([mock, 'optionalAccess', _ => _.estimate, 'optionalAccess', _2 => _2.return]) instanceof Error) {
         return Promise.reject(mock.estimate.return)
       } else if (_optionalChain$5([mock, 'access', _3 => _3.estimate, 'optionalAccess', _4 => _4.return])) {
-        return Promise.resolve(ethers$1.ethers.BigNumber.from(mock.estimate.return))
+        return Promise.resolve(ethers.ethers.BigNumber.from(mock.estimate.return))
       } else {
         return defaultEstimate
       }
@@ -656,7 +656,7 @@
         return estimate({ blockchain, params: params, provider })
 
       case 'eth_blockNumber':
-        return Promise.resolve(ethers$1.ethers.BigNumber.from(getCurrentBlock())._hex)
+        return Promise.resolve(ethers.ethers.BigNumber.from(getCurrentBlock())._hex)
 
       case 'eth_call':
         return call({ blockchain, params: request.params[0], provider })
@@ -671,7 +671,7 @@
         return getTransactionReceipt(request.params[0])
 
       case 'eth_getTransactionCount':
-        return Promise.resolve(ethers$1.ethers.BigNumber.from('0')._hex)
+        return Promise.resolve(ethers.ethers.BigNumber.from('0')._hex)
 
       default:
         raise('Web3Mock request: Unknown request method ' + request.method + '!');
@@ -698,7 +698,7 @@
           return request({
             blockchain,
             request: configuration,
-            provider: new ethers$1.ethers.providers.Web3Provider(window.ethereum),
+            provider: new ethers.ethers.providers.Web3Provider(window.ethereum),
           })
         },
       };

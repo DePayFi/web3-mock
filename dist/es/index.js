@@ -1,4 +1,4 @@
-import { ethers as ethers$1 } from 'ethers';
+import { ethers } from 'ethers';
 import { Blockchain } from 'depay-web3-blockchains';
 
 var raise = (msg)=>{
@@ -62,7 +62,7 @@ let on = (eventName, callback) => {
 };
 
 var getRandomTransactionHash = () => {
-  return ethers$1.BigNumber.from(
+  return ethers.BigNumber.from(
     '1' +
       Array(76)
         .fill()
@@ -146,7 +146,7 @@ let anythingMatch = ({ contractArguments, mockParams }) => {
 };
 
 let getContract = ({ address, api, provider }) => {
-  return new ethers$1.Contract(address, api, provider)
+  return new ethers.Contract(address, api, provider)
 };
 
 let getContractFunction = ({ data, address, api, provider }) => {
@@ -217,7 +217,7 @@ let mockHasWrongTransactionData = (mock, type, params) => {
     (mock[type].to && normalize(params.to) !== normalize(mock[type].to)) ||
     (mock[type].from && normalize(params.from) !== normalize(mock[type].from)) ||
     (mock[type].value &&
-      ethers$1.BigNumber.from(params.value).toString() !== normalize(mock[type].value))
+      ethers.BigNumber.from(params.value).toString() !== normalize(mock[type].value))
   )
 };
 
@@ -384,7 +384,7 @@ var getTransactionReceipt = (hash) => {
     return Promise.resolve({
       transactionHash: hash,
       transactionIndex: '0x1',
-      blockNumber: ethers$1.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
+      blockNumber: ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
         ._hex,
       blockHash: getRandomTransactionHash(),
       cumulativeGasUsed: '0x33bc',
@@ -407,7 +407,7 @@ let balance = function ({ blockchain, params, provider }) {
     if (_optionalChain$3([mock, 'optionalAccess', _3 => _3.balance, 'optionalAccess', _4 => _4.return]) instanceof Error) {
       return Promise.reject(mock.balance.return)
     } else {
-      return Promise.resolve(ethers$1.BigNumber.from(mock.balance.return))
+      return Promise.resolve(ethers.BigNumber.from(mock.balance.return))
     }
   } else {
     raise(
@@ -511,7 +511,7 @@ let estimate = ({ blockchain, params, provider }) => {
     if (_optionalChain$5([mock, 'optionalAccess', _ => _.estimate, 'optionalAccess', _2 => _2.return]) instanceof Error) {
       return Promise.reject(mock.estimate.return)
     } else if (_optionalChain$5([mock, 'access', _3 => _3.estimate, 'optionalAccess', _4 => _4.return])) {
-      return Promise.resolve(ethers$1.BigNumber.from(mock.estimate.return))
+      return Promise.resolve(ethers.BigNumber.from(mock.estimate.return))
     } else {
       return defaultEstimate
     }
@@ -653,7 +653,7 @@ let request = ({ blockchain, request, provider }) => {
       return estimate({ blockchain, params: params, provider })
 
     case 'eth_blockNumber':
-      return Promise.resolve(ethers$1.BigNumber.from(getCurrentBlock())._hex)
+      return Promise.resolve(ethers.BigNumber.from(getCurrentBlock())._hex)
 
     case 'eth_call':
       return call({ blockchain, params: request.params[0], provider })
@@ -668,7 +668,7 @@ let request = ({ blockchain, request, provider }) => {
       return getTransactionReceipt(request.params[0])
 
     case 'eth_getTransactionCount':
-      return Promise.resolve(ethers$1.BigNumber.from('0')._hex)
+      return Promise.resolve(ethers.BigNumber.from('0')._hex)
 
     default:
       raise('Web3Mock request: Unknown request method ' + request.method + '!');
@@ -695,7 +695,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
         return request({
           blockchain,
           request: configuration,
-          provider: new ethers$1.providers.Web3Provider(window.ethereum),
+          provider: new ethers.providers.Web3Provider(window.ethereum),
         })
       },
     };
