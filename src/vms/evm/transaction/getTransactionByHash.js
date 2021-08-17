@@ -1,4 +1,5 @@
 import getRandomTransactionHash from './getRandomTransactionHash'
+import { ethers } from 'ethers'
 import { findMockByTransactionHash } from '../findMock'
 import { getCurrentBlock } from '../../../block'
 
