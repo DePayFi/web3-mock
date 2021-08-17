@@ -657,6 +657,9 @@ let request = ({ blockchain, request, provider }) => {
     case 'eth_getTransactionReceipt':
       return getTransactionReceipt(request.params[0])
 
+    case 'eth_getTransactionCount':
+      return Promise.resolve(ethers$1.ethers.BigNumber.from('0')._hex)
+
     default:
       raise('Web3Mock request: Unknown request method ' + request.method + '!');
   }
