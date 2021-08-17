@@ -38,7 +38,7 @@
       }
       increaseBlock();
     } else {
-      raise('Web3Mock: Given mock is not a mocked transaction: ' + mock);
+      raise('Web3Mock: Given mock is not a confirmed transaction: ' + JSON.stringify(mock));
     }
   };
 
