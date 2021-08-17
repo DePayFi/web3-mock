@@ -359,8 +359,8 @@ expect(mockedTransaction).toHaveBeenCalled()
 
 Mocking transaction confirmations consists of two steps:
 
-1. Confirming the mocked transaction once
-2. Increase the blocknumber after the transaction has been confirmed (to increase transaction confirmation amount)
+1. Confirming the mocked transaction once (which also increase block number by 1 implicitly)
+2. Increase the blocknumber after the transaction has been confirmed (to increase transaction confirmation amount e.g. for safe amount of confirmations)
 
 ```javascript
 import { mock, confirm } from 'depay-web3-mock'

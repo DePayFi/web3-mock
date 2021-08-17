@@ -2,6 +2,7 @@ import raise from './raise'
 import { confirm as confirmBscTransaction } from './blockchains/bsc/confirm'
 import { confirm as confirmEthereumTransaction } from './blockchains/ethereum/confirm'
 import { mocks } from './mocks'
+import { increaseBlock } from './block'
 
 export default (mock) => {
   if (mock?.transaction?._id) {
@@ -16,6 +17,7 @@ export default (mock) => {
       default:
         raise('Web3Mock: Unknown blockchain!')
     }
+    increaseBlock()
   } else {
     raise('Web3Mock: Given mock is not a mocked transaction: ' + mock)
   }

@@ -24,7 +24,6 @@ let confirm = (transaction) => {
 };
 
 function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-
 var confirm$1 = (mock) => {
   if (_optionalChain([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
     mock.transaction._confirmed = true;
@@ -38,6 +37,7 @@ var confirm$1 = (mock) => {
       default:
         raise('Web3Mock: Unknown blockchain!');
     }
+    increaseBlock();
   } else {
     raise('Web3Mock: Given mock is not a mocked transaction: ' + mock);
   }

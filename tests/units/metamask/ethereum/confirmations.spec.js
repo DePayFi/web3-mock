@@ -54,4 +54,34 @@ describe('mock ethereum transaction confirmations', ()=> {
     expect(transactionReceipt.transactionHash).toBeDefined()
     expect(waitedFor12Confirmations).toEqual(true)
   })
+
+  it('implicitly increase block by one when calling confirm', async ()=> {
+    
+    let mockedTransaction = mock({
+      blockchain: 'ethereum',
+      transaction: {
+        to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+        value: '1000000000000000000'
+      }
+    })
+
+    let provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    let signer = provider.getSigner();
+
+    let waitedFor1Confirmation;
+    let sentTransaction;
+    let transactionReceipt;
+
+    await signer.sendTransaction({
+      to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+      value: ethers.utils.parseEther("1")
+    }).then(async function(transaction){
+      sentTransaction = transaction
+    })
+
+    let blockBefore = await provider.getBlockNumber()    
+    confirm(mockedTransaction)
+    expect(await provider.getBlockNumber()).toEqual(blockBefore+1)
+  })
 })
