@@ -440,6 +440,38 @@ expect(transaction).toBeDefined()
 expect(mockedTransaction).toHaveBeenCalled()
 ```
 
+#### Delay transactions
+
+In order to delay the response of a transaction in your tests (to emulate real life behaviour), you can use `delay`:
+
+```javascript
+
+let callMock = mock({
+  blockchain: 'ethereum',
+  transaction: {
+    delay: 1000,
+    from: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+    to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
+    api: [],
+    method: 'route',
+    params: {
+      path: [anything, "0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"],
+      amounts: anything
+    }
+  }
+})
+
+// this is gonna take at least 1000ms
+let transaction = await contract.connect(signer).route(
+  ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"],
+  ["773002376389189", "1000000000000000000", "3623748721"],
+  [],
+  [],
+  [],
+  { value: 0 }
+)
+```
+
 ### Estimates
 
 Explicit estimate mocks are not required, they are implicitly mocked with a default value once web3-mock is initalized.

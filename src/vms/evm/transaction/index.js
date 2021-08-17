@@ -9,11 +9,25 @@ let transaction = ({ blockchain, params, provider }) => {
   if (mock) {
     mock.transaction._id = getRandomTransactionHash()
     mock.calls.add(params)
-    if (mock.transaction.return instanceof Error) {
-      return Promise.reject(mock.transaction.return)
+
+    if(mock.transaction.delay) {
+      return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+          if (mock.transaction.return instanceof Error) {
+            reject(mock.transaction.return)
+          } else {
+            resolve(mock.transaction._id)
+          }
+        }, mock.transaction.delay)
+      })
     } else {
-      return Promise.resolve(mock.transaction._id)
+      if (mock.transaction.return instanceof Error) {
+        return Promise.reject(mock.transaction.return)
+      } else {
+        return Promise.resolve(mock.transaction._id)
+      }
     }
+
   } else {
     mock = findAnyMockForThisAddress({ type: 'transaction', params })
     if (mock && mock.transaction?.api) {

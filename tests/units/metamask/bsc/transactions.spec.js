@@ -563,4 +563,30 @@ describe('mock bsc transactions', ()=> {
 
     expect(mockedTransaction).toHaveBeenCalled()
   })
+
+  it('allows to delay the transaction', async ()=>{
+
+    let mockedTransaction = mock({
+      blockchain: 'bsc',
+      transaction: {
+        delay: 1000,
+        to: '0x5Af489c8786A018EC4814194dC8048be1007e390',
+        from: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+        value: "2000000000000000000"
+      }
+    })
+
+    let provider = new ethers.providers.Web3Provider(global.ethereum);
+
+    let signer = provider.getSigner();
+
+    let now = new Date().getTime()
+    await signer.sendTransaction({
+      to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+      value: ethers.utils.parseEther("2")
+    })
+    expect((new Date().getTime() - now) > 1000).toEqual(true)
+    
+    expect(mockedTransaction).toHaveBeenCalled()
+  })
 });
