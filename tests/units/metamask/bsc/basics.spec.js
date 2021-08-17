@@ -36,6 +36,13 @@ describe('mock bsc basics', ()=> {
 
   })
 
+  it('mocks default request for eth_getTransactionCount', async ()=>{
+
+    let transactionCount = await global.ethereum.request({ method: 'eth_getTransactionCount', params: ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'] })
+    expect(transactionCount).toEqual('0x00');
+
+  })
+
   it('mocks default request for eth_accounts', async ()=>{
 
     let accounts = await global.ethereum.request({ method: 'eth_accounts' })
