@@ -1,6 +1,6 @@
 // https://docs.metamask.io/guide/ethereum-provider.html
 
-import { ethers } from 'ethers'
+import { Web3Provider } from '@ethersproject/providers'
 import { on } from './on'
 import { request } from './request'
 
@@ -22,7 +22,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
         return request({
           blockchain,
           request: configuration,
-          provider: new ethers.providers.Web3Provider(window.ethereum),
+          provider: new Web3Provider(window.ethereum),
         })
       },
     }
