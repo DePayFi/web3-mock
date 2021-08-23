@@ -399,6 +399,26 @@ await sentTransaction.wait(12).then(function(receipt){
 })
 ```
 
+#### Mock transactions fail/revert
+
+Mocking transactions fail/revert:
+
+```javascript
+import { mock, fail } from 'depay-web3-mock'
+
+let mockedTransaction = mock({
+  blockchain: 'ethereum',
+  transaction: {
+    to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+    value: '1000000000000000000'
+  }
+})
+
+fail(mockedTransaction)
+
+await sentTransaction.wait(1).catch(()=>{ console.log('transaction failed') })
+```
+
 #### Mock Transactions partialy with anything
 
 ```javascript

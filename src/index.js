@@ -1,4 +1,5 @@
 import confirm from './confirm'
+import fail from './fail'
 import mock from './mock'
 import normalize from './normalize'
 import trigger from './trigger'
@@ -11,6 +12,7 @@ export {
   trigger,
   resetMocks,
   confirm,
+  fail,
   increaseBlock,
   anything,
   normalize

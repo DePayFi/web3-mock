@@ -142,7 +142,9 @@ let findAnyMockForThisAddress = ({ type, params }) => {
 
 let findMockByTransactionHash = (hash) => {
   return mocks.find((mock) => {
-    return mock?.transaction?._id == hash && mock?.transaction?._confirmed
+    return mock?.transaction?._id == hash && (
+      mock?.transaction?._confirmed || mock?.transaction?._failed
+    )
   })
 }
 

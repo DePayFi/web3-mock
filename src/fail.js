@@ -1,18 +1,18 @@
-import raise from './raise'
-import { confirm as confirmBscTransaction } from './blockchains/bsc/confirm'
-import { confirm as confirmEthereumTransaction } from './blockchains/ethereum/confirm'
+import { fail as failBscTransaction } from './blockchains/bsc/fail'
+import { fail as failEthereumTransaction } from './blockchains/ethereum/fail'
 import { mocks } from './mocks'
 import { increaseBlock } from './block'
 
 export default (mock) => {
   if (mock?.transaction?._id) {
-    mock.transaction._confirmed = true
+    mock.transaction._failed = true
+    mock.transaction._confirmed = false
     switch (mock.blockchain) {
       case 'ethereum':
-        confirmEthereumTransaction(mock.transaction)
+        failEthereumTransaction(mock.transaction)
         break
       case 'bsc':
-        confirmBscTransaction(mock.transaction)
+        failBscTransaction(mock.transaction)
         break
       default:
         raise('Web3Mock: Unknown blockchain!')
