@@ -43,7 +43,7 @@ let addNetwork = function ({ blockchain, params, provider }) {
     return Promise.resolve()
   } else {
     raise(
-      'Web3Mock: Please mock the network switch: ' +
+      'Web3Mock: Please mock the network addition: ' +
       JSON.stringify({
         blockchain,
         network: {

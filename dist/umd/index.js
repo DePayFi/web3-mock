@@ -340,6 +340,11 @@
     }
   };
 
+  let mockHasWrongNetworkAction = (mock, type, params) => {
+    if(type != 'network') { return false }
+    return Object.keys(mock.network)[0] != Object.keys(params)[0]
+  };
+
   let findMock = ({ type, params, provider }) => {
     return mocks.find((mock) => {
       if (mockIsNotAnObject(mock)) {
@@ -358,6 +363,9 @@
         return
       }
       if (mockHasWrongData(mock, type, params, provider)) {
+        return
+      }
+      if (mockHasWrongNetworkAction(mock, type, params)) {
         return
       }
 
@@ -655,7 +663,7 @@
       return Promise.resolve()
     } else {
       raise$1(
-        'Web3Mock: Please mock the network switch: ' +
+        'Web3Mock: Please mock the network addition: ' +
         JSON.stringify({
           blockchain,
           network: {

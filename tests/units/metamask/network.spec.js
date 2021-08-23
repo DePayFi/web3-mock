@@ -134,7 +134,29 @@ describe('network', ()=> {
     await expect(()=>
       global.ethereum.request({ method: 'wallet_addEthereumChain', params: [addition]})
     ).toThrow(
-      `Web3Mock: Please mock the network switch: {\"blockchain\":\"ethereum\",\"network\":{\"add\":${JSON.stringify(addition)}}}`
+      `Web3Mock: Please mock the network addition: {\"blockchain\":\"ethereum\",\"network\":{\"add\":${JSON.stringify(addition)}}}`
     )
+  })
+
+  it('finds the right network mock even if there are multiple', async ()=>{
+    let switchMock = mock({
+      blockchain: 'ethereum',
+      network: {
+        switchTo: 'bsc'
+      }
+    })
+
+    mock({
+      blockchain: 'ethereum',
+      network: {
+        add: {}
+      }
+    })
+
+    let blockchain = Blockchain.findByName('bsc')
+
+    await global.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: blockchain.id }] })    
+
+    expect(switchMock).toHaveBeenCalled()
   })
 })
