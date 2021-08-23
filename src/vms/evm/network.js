@@ -12,8 +12,16 @@ let switchNetwork = function ({ blockchain, id, provider }) {
   
   if (mock && mock.network?.switchTo) {
     mock.calls.add(params)
-    setCurrentNetwork(toBlockchain.name)
-    return Promise.resolve()
+    if(mock.network.error) {
+      if(typeof mock.network.error == 'function') {
+        return Promise.reject(mock.network.error())
+      } else {
+        return Promise.reject(mock.network.error)
+      }
+    } else {
+      setCurrentNetwork(toBlockchain.name)
+      return Promise.resolve()
+    }
   } else {
     raise(
       'Web3Mock: Please mock the network switch: ' +

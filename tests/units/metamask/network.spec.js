@@ -36,6 +36,32 @@ describe('network', ()=> {
     expect(balanceMock).toHaveBeenCalled()
   })
 
+  it('fails with the given error when switching networks', async ()=>{
+    let errorCallbackCalled
+
+    let switchMock = mock({
+      blockchain: 'ethereum',
+      network: {
+        switchTo: 'bsc',
+        error: ()=> {
+          errorCallbackCalled = true
+          return { code: 4902 }
+        }
+      },
+    })
+
+    let blockchain = Blockchain.findByName('bsc')
+
+    await expect(()=>
+      global.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: blockchain.id }] })
+    ).rejects.toEqual(
+      { code: 4902 }
+    )
+
+    expect(switchMock).toHaveBeenCalled()
+    expect(errorCallbackCalled).toEqual(true)
+  })
+
   it('suggests to mock a network switch', async ()=>{
 
     mock('ethereum')

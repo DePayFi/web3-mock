@@ -624,8 +624,16 @@
     
     if (mock && _optionalChain$2([mock, 'access', _ => _.network, 'optionalAccess', _2 => _2.switchTo])) {
       mock.calls.add(params);
-      setCurrentNetwork(toBlockchain.name);
-      return Promise.resolve()
+      if(mock.network.error) {
+        if(typeof mock.network.error == 'function') {
+          return Promise.reject(mock.network.error())
+        } else {
+          return Promise.reject(mock.network.error)
+        }
+      } else {
+        setCurrentNetwork(toBlockchain.name);
+        return Promise.resolve()
+      }
     } else {
       raise$1(
         'Web3Mock: Please mock the network switch: ' +

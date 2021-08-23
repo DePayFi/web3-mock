@@ -585,6 +585,23 @@ await global.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{
 ```
 
 ```javascript
+let switchMock = mock({
+  blockchain: 'ethereum',
+  network: {
+    switchTo: 'bsc',
+    error: ()=> {
+      return { code: 4902 }
+    }
+  }
+})
+
+let blockchain = Blockchain.findByName('bsc')
+
+await global.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: blockchain.id }] })
+// throws { code: 4902 }
+```
+
+```javascript
 let blockchain = Blockchain.findByName('bsc')
 
 let addMock = mock({
