@@ -567,6 +567,61 @@ let balance = await signer.getBalance()
 // BigNumber<'123'>
 ```
 
+### Network
+
+`web3-mock` allows you to mock interacting with a wallets network setting (like switching or adding networks):
+
+```javascript
+let switchMock = mock({
+  blockchain: 'ethereum',
+  network: {
+    switchTo: 'bsc'
+  }
+})
+
+let blockchain = Blockchain.findByName('bsc')
+
+await global.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: blockchain.id }] })
+```
+
+```javascript
+let blockchain = Blockchain.findByName('bsc')
+
+let addMock = mock({
+  blockchain: 'ethereum',
+  network: {
+    add: {
+      chainId: blockchain.id,
+      chainName: blockchain.fullName,
+      nativeCurrency: {
+        name: blockchain.currency.name,
+        symbol: blockchain.currency.symbol,
+        decimals: blockchain.currency.decimals
+      },
+      rpcUrls: [blockchain.rpc],
+      blockExplorerUrls: [blockchain.explorer],
+      iconUrls: [blockchain.logo]
+    }
+  }
+})
+
+await global.ethereum.request({
+  method: 'wallet_addEthereumChain',
+  params: [{
+    chainId: blockchain.id,
+    chainName: blockchain.fullName,
+    nativeCurrency: {
+      name: blockchain.currency.name,
+      symbol: blockchain.currency.symbol,
+      decimals: blockchain.currency.decimals
+    },
+    rpcUrls: [blockchain.rpc],
+    blockExplorerUrls: [blockchain.explorer],
+    iconUrls: [blockchain.logo]
+  }]
+})
+```
+
 ### Errors
 
 For all mocking types (`call`, `transaction`, `estimate` & `balance`) you can also test error cases by setting `return` to an `Error`:

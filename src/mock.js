@@ -81,6 +81,19 @@ let mockWallet = ({ configuration, window }) => {
   }
 }
 
+let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
+  switch (blockchain) {
+    case 'ethereum':
+      return spy(mockEthereum({ blockchain, configuration, window, provider }))
+      break
+    case 'bsc':
+      return spy(mockBsc({ blockchain, configuration, window, provider }))
+      break
+    default:
+      raise('Web3Mock: Unknown blockchain!')
+  }
+}
+
 let mock = (configuration, call) => {
   preflight(configuration)
 
@@ -89,19 +102,9 @@ let mock = (configuration, call) => {
   let provider = configuration.provider
   let mock
 
-  switch (blockchain) {
-    case 'ethereum':
-      mock = spy(mockEthereum({ blockchain, configuration, window, provider }))
-      break
-    case 'bsc':
-      mock = spy(mockBsc({ blockchain, configuration, window, provider }))
-      break
-    default:
-      raise('Web3Mock: Unknown blockchain!')
-  }
-  
-  if (configuration.wallet) mockWallet({ configuration, window })
-  if (configuration.require) requireMock(configuration.require)
+  if (blockchain) { mock = mockBlockchain({ blockchain, configuration, window, provider }) }
+  if (configuration.wallet) { mockWallet({ configuration, window }) }
+  if (configuration.require) { requireMock(configuration.require) }
   mocks.unshift(mock)
 
   return mock

@@ -2433,10 +2433,10 @@ delayed-stream@~1.0.0:
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
   integrity sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
 
-depay-web3-blockchains@^2.1.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/depay-web3-blockchains/-/depay-web3-blockchains-2.2.0.tgz#37894c517334918fd516f09dc932108fc6c29172"
-  integrity sha512-2jJbx3x4hINYCGDaL38+7AjSK1bT+b60mE1JQgmiMcUwRLwjgKAImrlqyGtyi2lPQEZvjm9AOOk/5Hzb36lKHQ==
+depay-web3-blockchains@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/depay-web3-blockchains/-/depay-web3-blockchains-2.4.0.tgz#4b3bae79a366aa8407148e928a9141fa69877b54"
+  integrity sha512-6RZ9SKfrlNbu/EK8sCaW54OfZjcik7AZNDm0rYh5AAGspHY2Uuopka15IMCiuGPnP4/O5YYF06HHXhepsDMq5A==
 
 doctrine@^2.1.0:
   version "2.1.0"

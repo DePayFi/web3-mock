@@ -7,9 +7,14 @@ import { call } from './call'
 import { estimate } from './estimate'
 import { ethers } from 'ethers'
 import { getCurrentBlock } from '../../block'
+import { getCurrentNetwork } from '../../network'
+import { switchNetwork, addNetwork } from './network'
 import { transaction } from './transaction'
 
-let request = ({ blockchain, request, provider }) => {
+let request = ({ request, provider }) => {
+
+  let blockchain = getCurrentNetwork()
+
   switch (request.method) {
     case 'eth_chainId':
       return Promise.resolve(Blockchain.findByName(blockchain).id)
@@ -55,6 +60,14 @@ let request = ({ blockchain, request, provider }) => {
 
     case 'eth_getTransactionCount':
       return Promise.resolve(ethers.BigNumber.from('0')._hex)
+      break
+
+    case 'wallet_switchEthereumChain':
+      return switchNetwork({ blockchain, id: request.params[0].chainId, provider })
+      break
+
+    case 'wallet_addEthereumChain':
+      return addNetwork({ blockchain, params: request.params[0], provider })
       break
 
     default:

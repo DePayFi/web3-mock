@@ -1,18 +1,20 @@
-// https://docs.metamask.io/guide/ethereum-provider.html
-
-import { Web3Provider } from '@ethersproject/providers'
 import { on } from './on'
 import { request } from './request'
+import { setCurrentNetwork } from '../../network'
+import { Web3Provider } from '@ethersproject/providers'
 
 let mock = ({ blockchain, configuration, window, provider }) => {
+
+  setCurrentNetwork(blockchain)
+
   if (provider) {
     if (provider.send) {
       provider.send = (method, params) =>
-        request({ blockchain, provider, request: { method: method, params: params } })
+        request({ provider, request: { method: method, params: params } })
     }
     if (provider.sendTransaction) {
       provider.sendTransaction = (method, params) =>
-        request({ blockchain, provider, request: { method: method, params: params } })
+        request({ provider, request: { method: method, params: params } })
     }
   } else {
     window.ethereum = {
@@ -20,7 +22,6 @@ let mock = ({ blockchain, configuration, window, provider }) => {
       on,
       request: (configuration) => {
         return request({
-          blockchain,
           request: configuration,
           provider: new Web3Provider(window.ethereum),
         })
