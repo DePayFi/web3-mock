@@ -3,7 +3,7 @@ import { findMock } from './findMock'
 import { ethers } from 'ethers'
 
 let balance = function ({ blockchain, params, provider }) {
-  let mock = findMock({ type: 'balance', params, provider })
+  let mock = findMock({ blockchain, type: 'balance', params, provider })
 
   if (mock && mock.balance?.return) {
     mock.calls.add(params)

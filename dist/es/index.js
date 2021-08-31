@@ -240,6 +240,11 @@ let mockHasWrongType = (mock, type) => {
   return mock[type] == undefined
 };
 
+let mockHasWrongBlockchain = (mock, blockchain) => {
+  if(blockchain == undefined) { return false }
+  return mock.blockchain != blockchain
+};
+
 let mockHasWrongTransactionData = (mock, type, params) => {
   return (
     (mock[type].to && normalize(params.to) !== normalize(mock[type].to)) ||
@@ -339,9 +344,12 @@ let mockHasWrongNetworkAction = (mock, type, params) => {
   return Object.keys(mock.network)[0] != Object.keys(params)[0]
 };
 
-let findMock = ({ type, params, provider }) => {
+let findMock = ({ type, blockchain, params, provider }) => {
   return mocks.find((mock) => {
     if (mockIsNotAnObject(mock)) {
+      return
+    }
+    if (mockHasWrongBlockchain(mock, blockchain)) {
       return
     }
     if (mockHasWrongType(mock, type)) {
@@ -439,7 +447,7 @@ var getTransactionReceipt = (hash) => {
 
 function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 let balance = function ({ blockchain, params, provider }) {
-  let mock = findMock({ type: 'balance', params, provider });
+  let mock = findMock({ blockchain, type: 'balance', params, provider });
 
   if (mock && _optionalChain$5([mock, 'access', _ => _.balance, 'optionalAccess', _2 => _2.return])) {
     mock.calls.add(params);

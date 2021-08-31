@@ -19,12 +19,6 @@ describe('mock multiple balances', ()=> {
         return: balanceEthereum
       }
     })
-    
-    mock('ethereum')
-    provider = new ethers.providers.Web3Provider(global.ethereum);
-    balance = await provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
-    expect(balance.toString()).toEqual(balanceEthereum.toString())
-    expect(balanceEthereumMock).toHaveBeenCalled()
 
     let balanceBsc = ethers.utils.parseUnits('1337', 18)
     let balanceBscMock = mock({
@@ -40,5 +34,11 @@ describe('mock multiple balances', ()=> {
     balance = await provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
     expect(balance.toString()).toEqual(balanceBsc.toString())
     expect(balanceBscMock).toHaveBeenCalled()
+    
+    mock('ethereum')
+    provider = new ethers.providers.Web3Provider(global.ethereum);
+    balance = await provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
+    expect(balance.toString()).toEqual(balanceEthereum.toString())
+    expect(balanceEthereumMock).toHaveBeenCalled()
   })
 })
