@@ -742,9 +742,9 @@ let getTransactionToBeMocked = ({ mock, params, provider }) => {
   return toBeMocked
 };
 
-let request = ({ request, provider }) => {
+let request = ({ blockchain, request, provider }) => {
 
-  let blockchain = getCurrentNetwork();
+  blockchain = blockchain || getCurrentNetwork();
 
   switch (request.method) {
     case 'eth_chainId':
@@ -15018,4 +15018,26 @@ var trigger = (eventName, value) => {
   triggerEvent(eventName, value);
 };
 
-export { anything, confirm, fail, increaseBlock, mock, normalize, resetMocks, trigger };
+let mockJsonRpcProvider = ({ blockchain, window })=>{
+
+  class MockedJsonRpcProvider extends ethers.providers.Web3Provider {
+    
+    constructor(url) {
+      super(window.ethereum);
+    }
+
+    send(method, params) {
+      return request({ blockchain, provider: this, request: { method: method, params: params } })
+    }
+
+    sendTransaction(method, params) {
+      return request({ blockchain, provider: this, request: { method: method, params: params } })
+    }
+  }
+
+  Object.defineProperty(ethers.providers, 'JsonRpcProvider', {
+    get: ()=>MockedJsonRpcProvider,
+  });
+};
+
+export { anything, confirm, fail, increaseBlock, mock, mockJsonRpcProvider, normalize, resetMocks, trigger };
