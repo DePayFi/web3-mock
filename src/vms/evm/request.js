@@ -11,9 +11,9 @@ import { getCurrentNetwork } from '../../network'
 import { switchNetwork, addNetwork } from './network'
 import { transaction } from './transaction'
 
-let request = ({ request, provider }) => {
+let request = ({ blockchain, request, provider }) => {
 
-  let blockchain = getCurrentNetwork()
+  blockchain = blockchain || getCurrentNetwork()
 
   switch (request.method) {
     case 'eth_chainId':

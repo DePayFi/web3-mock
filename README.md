@@ -683,6 +683,46 @@ mock({
 })
 ```
 
+#### Mock JsonRpcProvider
+
+In case you use JsonRpcProvider alongside Web3Provider (window.ethereum) and you want to mock JsonRpcProvider remotely while having both be mocked in parallel, use `mockJsonRpcProvider({ blockchain, window })`:
+
+```javascript
+import { mockJsonRpcProvider } from 'depay-web3-mock'
+
+let balanceBsc = ethers.utils.parseUnits('1337', 18)
+let balanceBscMock = mock({
+  blockchain: 'bsc',
+  balance: {
+    for: '0xb0252f13850a4823706607524de0b146820F2240',
+    return: balanceBsc
+  }
+})
+
+let balanceEthereum = ethers.utils.parseUnits('100', 18)
+let balanceEthereumMock = mock({
+  blockchain: 'ethereum',
+  balance: {
+    for: '0xb0252f13850a4823706607524de0b146820F2240',
+    return: balanceEthereum
+  }
+})
+
+// connect network to ethereum
+mock('ethereum')
+
+mockJsonRpcProvider({ blockchain: 'bsc', window: global })
+provider = new ethers.providers.JsonRpcProvider('https://bsc-dataseed.binance.org');
+balance = await provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
+expect(balance.toString()).toEqual(balanceBsc.toString())
+expect(balanceBscMock).toHaveBeenCalled()
+
+provider = new ethers.providers.Web3Provider(global.ethereum);
+balance = await provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
+expect(balance.toString()).toEqual(balanceEthereum.toString())
+expect(balanceEthereumMock).toHaveBeenCalled()
+```
+
 ### Wallets
 
 Crypto wallets identify themselfs differently, in order to mock those wallet identifications, you can also use `mock`:

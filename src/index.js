@@ -6,6 +6,7 @@ import trigger from './trigger'
 import { anything } from './anything'
 import { increaseBlock } from './block'
 import { resetMocks } from './mocks'
+import { mockJsonRpcProvider } from './jsonRpcProvider'
 
 export {
   mock,
@@ -15,5 +16,6 @@ export {
   fail,
   increaseBlock,
   anything,
-  normalize
+  normalize,
+  mockJsonRpcProvider
 }
