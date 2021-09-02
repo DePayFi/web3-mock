@@ -14940,6 +14940,91 @@ let mock$1 = ({ blockchain, configuration, window, provider }) => {
   return configuration
 };
 
+let rpcToBlockchain = {};
+
+let mockRpc = (url, blockchain)=>{
+  rpcToBlockchain[url] = blockchain;
+};
+
+let mockedAllProviders = {};
+
+let mockJsonRpcProvider = ({ blockchain, window })=>{
+
+  class MockedJsonRpcProvider extends ethers.ethers.providers.Web3Provider {
+    
+    constructor(url) {
+      if(rpcToBlockchain[url] == undefined) {
+        raise$1(`Web3Mock: Unknown RPC! Add RPC mock with: mockRpc('${url}', '<blockchain>')`);
+      }
+      super(window.ethereum);
+      this._url = url;
+    }
+
+    send(method, params) {
+      return request({
+        blockchain: rpcToBlockchain[this._url],
+        provider: this,
+        request: { method: method, params: params } 
+      })
+    }
+
+    sendTransaction(method, params) {
+      console.log(this._url);
+      return request({
+        blockchain: rpcToBlockchain[this._url],
+        provider: this,
+        request: { method: method, params: params }
+      })
+    }
+  }
+
+  Object.defineProperty(ethers.ethers.providers, 'JsonRpcProvider', {
+    get: ()=>MockedJsonRpcProvider,
+  });
+};
+
+let mockJsonRpcBatchProvider = ({ blockchain, window })=>{
+
+  class MockedJsonRpcBatchProvider extends ethers.ethers.providers.Web3Provider {
+    
+    constructor(url) {
+      if(rpcToBlockchain[url] == undefined) {
+        raise$1(`Web3Mock: Unknown RPC! Add RPC mock with: mockRpc('${url}', '<blockchain>')`);
+      }
+      super(window.ethereum);
+      this._url = url;
+    }
+
+    send(method, params) {
+      return request({
+        blockchain: rpcToBlockchain[this._url],
+        provider: this,
+        request: { method: method, params: params } 
+      })
+    }
+
+    sendTransaction(method, params) {
+      console.log(this._url);
+      return request({
+        blockchain: rpcToBlockchain[this._url],
+        provider: this,
+        request: { method: method, params: params }
+      })
+    }
+  }
+
+  Object.defineProperty(ethers.ethers.providers, 'JsonRpcBatchProvider', {
+    get: ()=>MockedJsonRpcBatchProvider,
+  });
+};
+
+let mockAllProviders = ({ blockchain, window }) => {
+  if(mockedAllProviders[blockchain]) { return }
+  mockedAllProviders[blockchain] = true;
+  mockJsonRpcProvider({ blockchain, window });
+  mockJsonRpcBatchProvider({ blockchain, window });
+};
+
 function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 let getBlockchain = (configuration) => {
   if (typeof configuration === 'string') {
@@ -15039,6 +15124,7 @@ let mock = (configuration, call) => {
   if (blockchain) { mock = mockBlockchain({ blockchain, configuration, window, provider }); }
   if (configuration.wallet) { mockWallet({ configuration, window }); }
   if (configuration.require) { requireMock(configuration.require); }
+  if (provider == undefined) { mockAllProviders({ blockchain, window }); }
   mocks.unshift(mock);
 
   return mock
@@ -15048,34 +15134,13 @@ var trigger = (eventName, value) => {
   triggerEvent(eventName, value);
 };
 
-let mockJsonRpcProvider = ({ blockchain, window })=>{
-
-  class MockedJsonRpcProvider extends ethers.ethers.providers.Web3Provider {
-    
-    constructor(url) {
-      super(window.ethereum);
-    }
-
-    send(method, params) {
-      return request({ blockchain, provider: this, request: { method: method, params: params } })
-    }
-
-    sendTransaction(method, params) {
-      return request({ blockchain, provider: this, request: { method: method, params: params } })
-    }
-  }
-
-  Object.defineProperty(ethers.ethers.providers, 'JsonRpcProvider', {
-    get: ()=>MockedJsonRpcProvider,
-  });
-};
-
 exports.anything = anything;
 exports.confirm = confirm;
+exports.connect = setCurrentNetwork;
 exports.fail = fail;
 exports.increaseBlock = increaseBlock;
 exports.mock = mock;
-exports.mockJsonRpcProvider = mockJsonRpcProvider;
+exports.mockRpc = mockRpc;
 exports.normalize = normalize;
 exports.resetMocks = resetMocks;
 exports.trigger = trigger;

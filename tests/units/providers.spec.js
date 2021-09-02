@@ -1,12 +1,21 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks, mockJsonRpcProvider } from 'src'
+import { mock, resetMocks, connect, mockRpc } from 'src'
 
 describe('mock for multiple providers across multiple chains', ()=> {
 
   beforeEach(resetMocks)
   afterEach(resetMocks)
 
-  it('mocks balances for multiple chains for multiple providers', async ()=>{
+  it('asks to mock RPC url to blockchain', async ()=>{
+    mock('bsc')
+    await expect(()=>
+      new ethers.providers.JsonRpcProvider('https://bsc-dataseed.binance.org')
+    ).toThrow(
+      "Web3Mock: Unknown RPC! Add RPC mock with: mockRpc('https://bsc-dataseed.binance.org', '<blockchain>')"
+    )
+  })
+
+  it('mocks requests for multiple chains for multiple providers', async ()=>{
 
     let balance
     let provider
@@ -30,9 +39,10 @@ describe('mock for multiple providers across multiple chains', ()=> {
     })
 
     // connect network to ethereum
-    mock('ethereum')
+    connect('ethereum')
 
-    mockJsonRpcProvider({ blockchain: 'bsc', window: global })
+    mockRpc('https://bsc-dataseed.binance.org', 'bsc')
+
     provider = new ethers.providers.JsonRpcProvider('https://bsc-dataseed.binance.org');
     balance = await provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
     expect(balance.toString()).toEqual(balanceBsc.toString())
@@ -42,5 +52,17 @@ describe('mock for multiple providers across multiple chains', ()=> {
     balance = await provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
     expect(balance.toString()).toEqual(balanceEthereum.toString())
     expect(balanceEthereumMock).toHaveBeenCalled()
+
+    provider = new ethers.providers.JsonRpcBatchProvider('https://bsc-dataseed.binance.org');
+    let balance1 = provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
+    let balance2 = provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
+    let balance3 = provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
+    balance1 = await balance1
+    balance2 = await balance2
+    balance3 = await balance3
+    expect(balance1.toString()).toEqual(balanceBsc.toString())
+    expect(balance2.toString()).toEqual(balanceBsc.toString())
+    expect(balance3.toString()).toEqual(balanceBsc.toString())
+    expect(balanceBscMock).toHaveBeenCalledTimes(4)
   })
 })

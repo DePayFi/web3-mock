@@ -536,7 +536,7 @@ mock({ blockchain: 'ethereum', require: 'estimate' })
 
 ### Balance
 
-`web3-mock` allows you to mock balance requests for signer (connected wallet) or any other wallet:
+`web3-mock` allows you to mock balance requests:
 
 ```javascript
 let balanceMock = mock({
@@ -639,6 +639,18 @@ await global.ethereum.request({
 })
 ```
 
+#### Connect wallet to another wallet
+
+```javascript
+import { connect } from 'depay-web3-mock'
+
+connect('ethereum')
+
+// ...
+
+connect('bsc')
+```
+
 ### Errors
 
 For all mocking types (`call`, `transaction`, `estimate` & `balance`) you can also test error cases by setting `return` to an `Error`:
@@ -683,45 +695,11 @@ mock({
 })
 ```
 
-#### Mock JsonRpcProvider
+Per default `web3-mock` mocks all implemented providers per default:
 
-In case you use JsonRpcProvider alongside Web3Provider (window.ethereum) and you want to mock JsonRpcProvider remotely while having both be mocked in parallel, use `mockJsonRpcProvider({ blockchain, window })`:
+- JsonRpcProvider
+- JsonRpcBatchProvider
 
-```javascript
-import { mockJsonRpcProvider } from 'depay-web3-mock'
-
-let balanceBsc = ethers.utils.parseUnits('1337', 18)
-let balanceBscMock = mock({
-  blockchain: 'bsc',
-  balance: {
-    for: '0xb0252f13850a4823706607524de0b146820F2240',
-    return: balanceBsc
-  }
-})
-
-let balanceEthereum = ethers.utils.parseUnits('100', 18)
-let balanceEthereumMock = mock({
-  blockchain: 'ethereum',
-  balance: {
-    for: '0xb0252f13850a4823706607524de0b146820F2240',
-    return: balanceEthereum
-  }
-})
-
-// connect network to ethereum
-mock('ethereum')
-
-mockJsonRpcProvider({ blockchain: 'bsc', window: global })
-provider = new ethers.providers.JsonRpcProvider('https://bsc-dataseed.binance.org');
-balance = await provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
-expect(balance.toString()).toEqual(balanceBsc.toString())
-expect(balanceBscMock).toHaveBeenCalled()
-
-provider = new ethers.providers.Web3Provider(global.ethereum);
-balance = await provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
-expect(balance.toString()).toEqual(balanceEthereum.toString())
-expect(balanceEthereumMock).toHaveBeenCalled()
-```
 
 ### Wallets
 
