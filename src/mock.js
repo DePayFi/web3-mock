@@ -2,7 +2,6 @@ import raise from './raise'
 import { getWindow } from './window'
 import { mock as mockBsc } from './blockchains/bsc/mock'
 import { mock as mockEthereum } from './blockchains/ethereum/mock'
-import { mockAllProviders } from './providers'
 import { mocks } from './mocks'
 import { requireMock } from './require'
 
@@ -106,7 +105,7 @@ let mock = (configuration, call) => {
   if (blockchain) { mock = mockBlockchain({ blockchain, configuration, window, provider }) }
   if (configuration.wallet) { mockWallet({ configuration, window }) }
   if (configuration.require) { requireMock(configuration.require) }
-  if (provider == undefined) { mockAllProviders({ blockchain, window }) }
+  if (provider) { provider._blockchain = blockchain }
   mocks.unshift(mock)
 
   return mock

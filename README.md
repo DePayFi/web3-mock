@@ -695,12 +695,6 @@ mock({
 })
 ```
 
-Per default `web3-mock` mocks all implemented providers per default:
-
-- JsonRpcProvider
-- JsonRpcBatchProvider
-
-
 ### Wallets
 
 Crypto wallets identify themselfs differently, in order to mock those wallet identifications, you can also use `mock`:

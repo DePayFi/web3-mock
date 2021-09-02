@@ -17,6 +17,11 @@ let mockHasWrongBlockchain = (mock, blockchain) => {
   return mock.blockchain != blockchain
 }
 
+let mockHasWrongProvider = (mock, provider) => {
+  if(mock.provider == undefined) { return false }
+  return mock.provider != provider
+}
+
 let mockHasWrongTransactionData = (mock, type, params) => {
   return (
     (mock[type].to && normalize(params.to) !== normalize(mock[type].to)) ||
@@ -122,6 +127,9 @@ let findMock = ({ type, blockchain, params, provider }) => {
       return
     }
     if (mockHasWrongBlockchain(mock, blockchain)) {
+      return
+    }
+    if (mockHasWrongProvider(mock, provider)) {
       return
     }
     if (mockHasWrongType(mock, type)) {

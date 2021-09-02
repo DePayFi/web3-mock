@@ -13,7 +13,11 @@ import { transaction } from './transaction'
 
 let request = ({ blockchain, request, provider }) => {
 
-  blockchain = blockchain || getCurrentNetwork()
+  if(blockchain == undefined && provider?._blockchain) {
+    blockchain = provider._blockchain
+  } else if(blockchain == undefined) {
+    blockchain = getCurrentNetwork()
+  }
 
   switch (request.method) {
     case 'eth_chainId':

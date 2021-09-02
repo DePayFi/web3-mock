@@ -5,7 +5,6 @@ import normalize from './normalize'
 import trigger from './trigger'
 import { anything } from './anything'
 import { increaseBlock } from './block'
-import { mockRpc } from './providers'
 import { resetMocks } from './mocks'
 import { setCurrentNetwork as connect } from './network'
 
@@ -18,6 +17,5 @@ export {
   increaseBlock,
   anything,
   normalize,
-  connect,
-  mockRpc
+  connect
 }
