@@ -1,7 +1,7 @@
 {
   "name": "depay-web3-mock",
   "moduleName": "Web3Mock",
-  "version": "5.9.0",
+  "version": "5.9.1",
   "description": "JavaScript library to mock web3 responses either by emulating web3 wallets or web3 RPC requests.",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -33,11 +33,11 @@
   },
   "homepage": "https://github.com/DePayFi/depay-web3-mock#readme",
   "private": false,
-  "dependencies": {
+  "dependencies": {},
+  "peerDependencies": {
     "depay-web3-blockchains": "^2.4.0",
-    "ethers": "^5.4.4"
+    "ethers": "^5.4.6"
   },
-  "peerDependencies": {},
   "engines": {
     "node": ">=10"
   },
@@ -51,9 +51,11 @@
     "babel-loader": "^8.2.2",
     "babel-preset-env": "^1.7.0",
     "cypress": "^8.2.0",
+    "depay-web3-blockchains": "^2.4.0",
     "eslint": "^7.15.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-webpack-plugin": "^2.5.4",
+    "ethers": "^5.4.6",
     "regenerator-runtime": "^0.13.7",
     "rollup": "^2.34.2"
   }
