@@ -1,6 +1,7 @@
 import raise from './raise'
 import { ethers } from 'ethers'
 import { request } from './vms/evm/request'
+import { JsonRpcProvider, JsonRpcBatchProvider } from '@ethersproject/providers'
 
 let rpcToBlockchain = {}
 
