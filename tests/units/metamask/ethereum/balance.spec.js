@@ -1,15 +1,17 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks, anything } from '../../../../src'
+import { mock, resetMocks, anything } from 'src'
 
 describe('mock ethereum balances', ()=> {
 
+  const blockchain = 'ethereum'
+  const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
   beforeEach(resetMocks)
-  afterEach(resetMocks)
+  beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
 
   it('mocks a balance', async ()=>{
 
     let balanceMock = mock({
-      blockchain: 'ethereum',
+      blockchain,
       balance: {
         for: '0xb0252f13850a4823706607524de0b146820F2240',
         return: '232111122321'
@@ -26,9 +28,9 @@ describe('mock ethereum balances', ()=> {
    it('mocks a balance for a signer too', async ()=>{
 
     let balanceMock = mock({
-      blockchain: 'ethereum',
+      blockchain,
       balance: {
-        for: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+        for: accounts[0],
         return: '232111122321'
       }
     })
@@ -57,7 +59,7 @@ describe('mock ethereum balances', ()=> {
   it('fails if balance mock does not match balance request', async ()=>{
 
     let balanceMock = mock({
-      blockchain: 'ethereum',
+      blockchain,
       balance: {
         for: '0xb0z52f13850a4823706607524de0b146820F2240',
         return: '232111122321'
@@ -76,7 +78,7 @@ describe('mock ethereum balances', ()=> {
   it('fails the balance if you mock an Error', async ()=> {
     
     let balanceMock = mock({
-      blockchain: 'ethereum',
+      blockchain,
       balance: {
         for: '0xb0252f13850a4823706607524de0b146820F2240',
         return: Error('Some issue')

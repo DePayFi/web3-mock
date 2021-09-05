@@ -1,10 +1,12 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks } from '../../../../src'
+import { mock, resetMocks } from 'src'
 
 describe('mock bsc for given provider', ()=> {
 
+  const blockchain = 'bsc'
+  const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
   beforeEach(resetMocks)
-  afterEach(resetMocks)
+  beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
 
   it('allows you to mock web3 calls for a given provider', async ()=>{
 
@@ -15,7 +17,7 @@ describe('mock bsc for given provider', ()=> {
     
     mock({
       provider,
-      blockchain: 'bsc',
+      blockchain,
       call: {
         to: contractAddress,
         api: api,
@@ -47,7 +49,7 @@ it('allows you to mock web3 transactions for a given provider', async ()=>{
 
     mock({ 
       provider,
-      blockchain: 'bsc',
+      blockchain,
       transaction: {
         to: '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92',
         api: api,

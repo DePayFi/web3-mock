@@ -4,7 +4,6 @@ import { mock, resetMocks, connect } from 'src'
 describe('mock for multiple providers across multiple chains', ()=> {
 
   beforeEach(resetMocks)
-  afterEach(resetMocks)
 
   it('mocks requests for multiple chains for multiple providers', async ()=>{
 

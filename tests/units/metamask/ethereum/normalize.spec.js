@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { normalize } from '../../../../src'
+import { normalize } from 'src'
 
 describe('normalize', () => {
   

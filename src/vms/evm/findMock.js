@@ -36,7 +36,7 @@ let mockHasWrongBalanceData = (mock, type, params) => {
 }
 
 let mockHasWrongToAddress = (mock, type, params) => {
-  return normalize(mock[type].to) !== normalize(params.to)
+  return normalize(mock[type].to) !== normalize(params?.to)
 }
 
 let mockDataDoesNotMatchSingleArgument = (mock, type, contractArguments) => {

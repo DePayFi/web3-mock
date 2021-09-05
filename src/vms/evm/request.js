@@ -6,6 +6,7 @@ import { Blockchain } from 'depay-web3-blockchains'
 import { call } from './call'
 import { estimate } from './estimate'
 import { ethers } from 'ethers'
+import { getAccounts } from './accounts'
 import { getCurrentBlock } from '../../block'
 import { getCurrentNetwork } from '../../network'
 import { switchNetwork, addNetwork } from './network'
@@ -34,7 +35,7 @@ let request = ({ blockchain, request, provider }) => {
 
     case 'eth_requestAccounts':
     case 'eth_accounts':
-      return Promise.resolve(['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'])
+      return getAccounts({ blockchain, provider })
       break
 
     case 'eth_estimateGas':

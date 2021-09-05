@@ -1,10 +1,12 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks, confirm, anything } from '../../../../src'
+import { mock, resetMocks, confirm, anything } from 'src'
 
 describe('mock ethereum transactions', ()=> {
 
+  const blockchain = 'ethereum'
+  const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
   beforeEach(resetMocks)
-  afterEach(resetMocks)
+  beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
 
   it('does not mock transactions per default', async ()=> {
     

@@ -1,4 +1,4 @@
-import { mock, resetMocks } from '../../../../src'
+import { mock, resetMocks } from 'src'
 
 describe('resetMocks on ethereum', ()=> {
 

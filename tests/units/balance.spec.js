@@ -4,7 +4,6 @@ import { mock, resetMocks, anything } from 'src'
 describe('mock multiple balances', ()=> {
 
   beforeEach(resetMocks)
-  afterEach(resetMocks)
 
   it('mocks balances for multiple chains', async ()=>{
 

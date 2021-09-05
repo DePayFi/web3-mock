@@ -1,15 +1,17 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks, confirm, increaseBlock } from '../../../../src'
+import { mock, resetMocks, confirm, increaseBlock } from 'src'
 
 describe('mock ethereum transaction confirmations', ()=> {
 
+  const blockchain = 'ethereum'
+  const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
   beforeEach(resetMocks)
-  afterEach(resetMocks)
+  beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
 
   it('allows to control confirmation amount explicitly', async ()=> {
     
     let mockedTransaction = mock({
-      blockchain: 'ethereum',
+      blockchain,
       transaction: {
         to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
         value: '1000000000000000000'
@@ -58,7 +60,7 @@ describe('mock ethereum transaction confirmations', ()=> {
   it('implicitly increase block by one when calling confirm', async ()=> {
     
     let mockedTransaction = mock({
-      blockchain: 'ethereum',
+      blockchain,
       transaction: {
         to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
         value: '1000000000000000000'

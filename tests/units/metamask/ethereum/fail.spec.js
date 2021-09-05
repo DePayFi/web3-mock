@@ -1,15 +1,17 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks, fail } from '../../../../src'
+import { mock, resetMocks, fail } from 'src'
 
 describe('mock ethereum transaction failures/reverts', ()=> {
 
+  const blockchain = 'ethereum'
+  const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
   beforeEach(resetMocks)
-  afterEach(resetMocks)
+  beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
 
   it('allows to fail a transaction', async ()=> {
     
     let mockedTransaction = mock({
-      blockchain: 'ethereum',
+      blockchain,
       transaction: {
         to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
         value: '1000000000000000000'

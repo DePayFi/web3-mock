@@ -1,7 +1,9 @@
 import { ethers } from 'ethers'
-import { mock, trigger } from '../../../../src'
+import { mock, resetMocks, trigger } from 'src'
 
 describe('mock ethereum events', ()=> {
+
+  beforeEach(resetMocks)
 
   it('allows to trigger events', async ()=> {
     

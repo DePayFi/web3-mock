@@ -5,7 +5,6 @@ import { mock, resetMocks } from 'src'
 describe('network', ()=> {
 
   beforeEach(resetMocks)
-  afterEach(resetMocks)
 
   it('mocks a switch to a different network', async ()=>{
 

@@ -1,4 +1,4 @@
-import { mock } from '../../../../src'
+import { mock } from 'src'
 
 describe('mock', () => {
   

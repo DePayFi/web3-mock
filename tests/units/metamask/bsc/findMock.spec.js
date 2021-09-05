@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { mock } from '../../../../src'
+import { mock } from 'src'
 
 describe('findMock', () => {
 
