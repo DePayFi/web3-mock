@@ -123,6 +123,7 @@ This library supports the following blockchains:
 This library supports the following crypto wallets:
 
 - [MetaMask](https://metamask.io)
+- [Coinbase](https://wallet.coinbase.com/)
 
 ## Functionalities
 
@@ -741,6 +742,28 @@ mock({
 })
 
 window.ethereum.isMetaMask // true
+```
+
+#### MetaMask
+
+```javascript
+mock({
+  blockchain: 'ethereum',
+  wallet: 'metamask'
+})
+
+window.ethereum.isMetaMask // true
+```
+
+#### Coinbase
+
+```javascript
+mock({
+  blockchain: 'ethereum',
+  wallet: 'coinbase'
+})
+
+window.ethereum.isCoinbaseWallet // true
 ```
 
 ### Test Helpers
