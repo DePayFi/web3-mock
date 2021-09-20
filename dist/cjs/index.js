@@ -15061,6 +15061,9 @@ let mockWallet = ({ configuration, window }) => {
     case 'metamask':
       window.ethereum.isMetaMask = true;
       break
+    case 'coinbase':
+      window.ethereum.isCoinbaseWallet = true;
+      break
     default:
       raise$1('Web3Mock: Unknown wallet!');
   }
