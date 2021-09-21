@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('ethers'), require('depay-web3-blockchains'), require('buffer'), require('util'), require('events'), require('https'), require('http'), require('net'), require('tls'), require('crypto'), require('url'), require('zlib'), require('bufferutil'), require('stream'), require('utf-8-validate')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'ethers', 'depay-web3-blockchains', 'buffer', 'util', 'events', 'https', 'http', 'net', 'tls', 'crypto', 'url', 'zlib', 'bufferutil', 'stream', 'utf-8-validate'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Mock = {}, global.ethers, global.Web3Blockchains, global.require$$0$1, global.require$$0$2, global.EventEmitter, global.https, global.http, global.net, global.tls, global.require$$0$5, global.require$$1$2, global.zlib, global.require$$1$1, global.require$$0$4, global.require$$0$3));
-}(this, (function (exports, ethers, depayWeb3Blockchains, require$$0$1, require$$0$2, EventEmitter, https, http, net, tls, require$$0$5, require$$1$2, zlib, require$$1$1, require$$0$4, require$$0$3) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('ethers'), require('depay-web3-blockchains'), require('buffer'), require('util'), require('events'), require('https'), require('http'), require('net'), require('tls'), require('crypto'), require('url'), require('zlib'), require('fs'), require('path'), require('os'), require('stream')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'ethers', 'depay-web3-blockchains', 'buffer', 'util', 'events', 'https', 'http', 'net', 'tls', 'crypto', 'url', 'zlib', 'fs', 'path', 'os', 'stream'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Mock = {}, global.ethers, global.Web3Blockchains, global.require$$0$1, global.require$$0$2, global.EventEmitter, global.https, global.http, global.net, global.tls, global.require$$0$4, global.require$$1$1, global.zlib, global.fs, global.path, global.os, global.require$$0$3));
+}(this, (function (exports, ethers, depayWeb3Blockchains, require$$0$1, require$$0$2, EventEmitter, https, http, net, tls, require$$0$4, require$$1$1, zlib, fs, path, os, require$$0$3) { 'use strict';
 
   function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -13,11 +13,12 @@
   var http__default = /*#__PURE__*/_interopDefaultLegacy(http);
   var net__default = /*#__PURE__*/_interopDefaultLegacy(net);
   var tls__default = /*#__PURE__*/_interopDefaultLegacy(tls);
-  var require$$0__default$4 = /*#__PURE__*/_interopDefaultLegacy(require$$0$5);
-  var require$$1__default$1 = /*#__PURE__*/_interopDefaultLegacy(require$$1$2);
-  var zlib__default = /*#__PURE__*/_interopDefaultLegacy(zlib);
-  var require$$1__default = /*#__PURE__*/_interopDefaultLegacy(require$$1$1);
   var require$$0__default$3 = /*#__PURE__*/_interopDefaultLegacy(require$$0$4);
+  var require$$1__default = /*#__PURE__*/_interopDefaultLegacy(require$$1$1);
+  var zlib__default = /*#__PURE__*/_interopDefaultLegacy(zlib);
+  var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
+  var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
+  var os__default = /*#__PURE__*/_interopDefaultLegacy(os);
   var require$$0__default$2 = /*#__PURE__*/_interopDefaultLegacy(require$$0$3);
 
   var raise$1 = (msg)=>{
@@ -880,6 +881,10 @@
   function createCommonjsModule$1(fn) {
     var module = { exports: {} };
   	return fn(module, module.exports), module.exports;
+  }
+
+  function commonjsRequire$1 (path) {
+  	throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
   }
 
   var bn$1 = createCommonjsModule$1(function (module) {
@@ -21666,6 +21671,247 @@
     NOOP: () => {}
   };
 
+  // Workaround to fix webpack's build warnings: 'the request of a dependency is an expression'
+  var runtimeRequire = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : commonjsRequire$1; // eslint-disable-line
+
+  var vars = (process.config && process.config.variables) || {};
+  var prebuildsOnly = !!process.env.PREBUILDS_ONLY;
+  var abi = process.versions.modules; // TODO: support old node where this is undef
+  var runtime = isElectron() ? 'electron' : 'node';
+  var arch = os__default['default'].arch();
+  var platform = os__default['default'].platform();
+  var libc = process.env.LIBC || (isAlpine(platform) ? 'musl' : 'glibc');
+  var armv = process.env.ARM_VERSION || (arch === 'arm64' ? '8' : vars.arm_version) || '';
+  var uv = (process.versions.uv || '').split('.')[0];
+
+  var nodeGypBuild = load;
+
+  function load (dir) {
+    return runtimeRequire(load.path(dir))
+  }
+
+  load.path = function (dir) {
+    dir = path__default['default'].resolve(dir || '.');
+
+    try {
+      var name = runtimeRequire(path__default['default'].join(dir, 'package.json')).name.toUpperCase().replace(/-/g, '_');
+      if (process.env[name + '_PREBUILD']) dir = process.env[name + '_PREBUILD'];
+    } catch (err) {}
+
+    if (!prebuildsOnly) {
+      var release = getFirst(path__default['default'].join(dir, 'build/Release'), matchBuild);
+      if (release) return release
+
+      var debug = getFirst(path__default['default'].join(dir, 'build/Debug'), matchBuild);
+      if (debug) return debug
+    }
+
+    var prebuild = resolve(dir);
+    if (prebuild) return prebuild
+
+    var nearby = resolve(path__default['default'].dirname(process.execPath));
+    if (nearby) return nearby
+
+    var target = [
+      'platform=' + platform,
+      'arch=' + arch,
+      'runtime=' + runtime,
+      'abi=' + abi,
+      'uv=' + uv,
+      armv ? 'armv=' + armv : '',
+      'libc=' + libc,
+      'node=' + process.versions.node,
+      process.versions.electron ? 'electron=' + process.versions.electron : '',
+      typeof __webpack_require__ === 'function' ? 'webpack=true' : '' // eslint-disable-line
+    ].filter(Boolean).join(' ');
+
+    throw new Error('No native build was found for ' + target + '\n    loaded from: ' + dir + '\n')
+
+    function resolve (dir) {
+      // Find matching "prebuilds/<platform>-<arch>" directory
+      var tuples = readdirSync(path__default['default'].join(dir, 'prebuilds')).map(parseTuple);
+      var tuple = tuples.filter(matchTuple(platform, arch)).sort(compareTuples)[0];
+      if (!tuple) return
+
+      // Find most specific flavor first
+      var prebuilds = path__default['default'].join(dir, 'prebuilds', tuple.name);
+      var parsed = readdirSync(prebuilds).map(parseTags);
+      var candidates = parsed.filter(matchTags(runtime, abi));
+      var winner = candidates.sort(compareTags(runtime))[0];
+      if (winner) return path__default['default'].join(prebuilds, winner.file)
+    }
+  };
+
+  function readdirSync (dir) {
+    try {
+      return fs__default['default'].readdirSync(dir)
+    } catch (err) {
+      return []
+    }
+  }
+
+  function getFirst (dir, filter) {
+    var files = readdirSync(dir).filter(filter);
+    return files[0] && path__default['default'].join(dir, files[0])
+  }
+
+  function matchBuild (name) {
+    return /\.node$/.test(name)
+  }
+
+  function parseTuple (name) {
+    // Example: darwin-x64+arm64
+    var arr = name.split('-');
+    if (arr.length !== 2) return
+
+    var platform = arr[0];
+    var architectures = arr[1].split('+');
+
+    if (!platform) return
+    if (!architectures.length) return
+    if (!architectures.every(Boolean)) return
+
+    return { name, platform, architectures }
+  }
+
+  function matchTuple (platform, arch) {
+    return function (tuple) {
+      if (tuple == null) return false
+      if (tuple.platform !== platform) return false
+      return tuple.architectures.includes(arch)
+    }
+  }
+
+  function compareTuples (a, b) {
+    // Prefer single-arch prebuilds over multi-arch
+    return a.architectures.length - b.architectures.length
+  }
+
+  function parseTags (file) {
+    var arr = file.split('.');
+    var extension = arr.pop();
+    var tags = { file: file, specificity: 0 };
+
+    if (extension !== 'node') return
+
+    for (var i = 0; i < arr.length; i++) {
+      var tag = arr[i];
+
+      if (tag === 'node' || tag === 'electron' || tag === 'node-webkit') {
+        tags.runtime = tag;
+      } else if (tag === 'napi') {
+        tags.napi = true;
+      } else if (tag.slice(0, 3) === 'abi') {
+        tags.abi = tag.slice(3);
+      } else if (tag.slice(0, 2) === 'uv') {
+        tags.uv = tag.slice(2);
+      } else if (tag.slice(0, 4) === 'armv') {
+        tags.armv = tag.slice(4);
+      } else if (tag === 'glibc' || tag === 'musl') {
+        tags.libc = tag;
+      } else {
+        continue
+      }
+
+      tags.specificity++;
+    }
+
+    return tags
+  }
+
+  function matchTags (runtime, abi) {
+    return function (tags) {
+      if (tags == null) return false
+      if (tags.runtime !== runtime && !runtimeAgnostic(tags)) return false
+      if (tags.abi !== abi && !tags.napi) return false
+      if (tags.uv && tags.uv !== uv) return false
+      if (tags.armv && tags.armv !== armv) return false
+      if (tags.libc && tags.libc !== libc) return false
+
+      return true
+    }
+  }
+
+  function runtimeAgnostic (tags) {
+    return tags.runtime === 'node' && tags.napi
+  }
+
+  function compareTags (runtime) {
+    // Precedence: non-agnostic runtime, abi over napi, then by specificity.
+    return function (a, b) {
+      if (a.runtime !== b.runtime) {
+        return a.runtime === runtime ? -1 : 1
+      } else if (a.abi !== b.abi) {
+        return a.abi ? -1 : 1
+      } else if (a.specificity !== b.specificity) {
+        return a.specificity > b.specificity ? -1 : 1
+      } else {
+        return 0
+      }
+    }
+  }
+
+  function isElectron () {
+    if (process.versions && process.versions.electron) return true
+    if (process.env.ELECTRON_RUN_AS_NODE) return true
+    return typeof window !== 'undefined' && window.process && window.process.type === 'renderer'
+  }
+
+  function isAlpine (platform) {
+    return platform === 'linux' && fs__default['default'].existsSync('/etc/alpine-release')
+  }
+
+  // Exposed for unit tests
+  // TODO: move to lib
+  load.parseTags = parseTags;
+  load.matchTags = matchTags;
+  load.compareTags = compareTags;
+  load.parseTuple = parseTuple;
+  load.matchTuple = matchTuple;
+  load.compareTuples = compareTuples;
+
+  /**
+   * Masks a buffer using the given mask.
+   *
+   * @param {Buffer} source The buffer to mask
+   * @param {Buffer} mask The mask to use
+   * @param {Buffer} output The buffer where to store the result
+   * @param {Number} offset The offset at which to start writing
+   * @param {Number} length The number of bytes to mask.
+   * @public
+   */
+  const mask$1 = (source, mask, output, offset, length) => {
+    for (var i = 0; i < length; i++) {
+      output[offset + i] = source[i] ^ mask[i & 3];
+    }
+  };
+
+  /**
+   * Unmasks a buffer using the given mask.
+   *
+   * @param {Buffer} buffer The buffer to unmask
+   * @param {Buffer} mask The mask to use
+   * @public
+   */
+  const unmask$1 = (buffer, mask) => {
+    // Required until https://github.com/nodejs/node/issues/9006 is resolved.
+    const length = buffer.length;
+    for (var i = 0; i < length; i++) {
+      buffer[i] ^= mask[i & 3];
+    }
+  };
+
+  var fallback$1 = { mask: mask$1, unmask: unmask$1 };
+
+  var bufferutil = createCommonjsModule$1(function (module) {
+
+  try {
+    module.exports = nodeGypBuild(__dirname);
+  } catch (e) {
+    module.exports = fallback$1;
+  }
+  });
+
   var bufferUtil = createCommonjsModule$1(function (module) {
 
   const { EMPTY_BUFFER } = constants;
@@ -21770,7 +22016,7 @@
   }
 
   try {
-    const bufferUtil = require$$1__default['default'];
+    const bufferUtil = bufferutil;
     const bu = bufferUtil.BufferUtil || bufferUtil;
 
     module.exports = {
@@ -22364,6 +22610,76 @@
     this[kCallback](err);
   }
 
+  /**
+   * Checks if a given buffer contains only correct UTF-8.
+   * Ported from https://www.cl.cam.ac.uk/%7Emgk25/ucs/utf8_check.c by
+   * Markus Kuhn.
+   *
+   * @param {Buffer} buf The buffer to check
+   * @return {Boolean} `true` if `buf` contains only correct UTF-8, else `false`
+   * @public
+   */
+  function isValidUTF8$1(buf) {
+    const len = buf.length;
+    let i = 0;
+
+    while (i < len) {
+      if ((buf[i] & 0x80) === 0x00) {  // 0xxxxxxx
+        i++;
+      } else if ((buf[i] & 0xe0) === 0xc0) {  // 110xxxxx 10xxxxxx
+        if (
+          i + 1 === len ||
+          (buf[i + 1] & 0xc0) !== 0x80 ||
+          (buf[i] & 0xfe) === 0xc0  // overlong
+        ) {
+          return false;
+        }
+
+        i += 2;
+      } else if ((buf[i] & 0xf0) === 0xe0) {  // 1110xxxx 10xxxxxx 10xxxxxx
+        if (
+          i + 2 >= len ||
+          (buf[i + 1] & 0xc0) !== 0x80 ||
+          (buf[i + 2] & 0xc0) !== 0x80 ||
+          buf[i] === 0xe0 && (buf[i + 1] & 0xe0) === 0x80 ||  // overlong
+          buf[i] === 0xed && (buf[i + 1] & 0xe0) === 0xa0  // surrogate (U+D800 - U+DFFF)
+        ) {
+          return false;
+        }
+
+        i += 3;
+      } else if ((buf[i] & 0xf8) === 0xf0) {  // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+        if (
+          i + 3 >= len ||
+          (buf[i + 1] & 0xc0) !== 0x80 ||
+          (buf[i + 2] & 0xc0) !== 0x80 ||
+          (buf[i + 3] & 0xc0) !== 0x80 ||
+          buf[i] === 0xf0 && (buf[i + 1] & 0xf0) === 0x80 ||  // overlong
+          buf[i] === 0xf4 && buf[i + 1] > 0x8f || buf[i] > 0xf4  // > U+10FFFF
+        ) {
+          return false;
+        }
+
+        i += 4;
+      } else {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  var fallback = isValidUTF8$1;
+
+  var utf8Validate = createCommonjsModule$1(function (module) {
+
+  try {
+    module.exports = nodeGypBuild(__dirname);
+  } catch (e) {
+    module.exports = fallback;
+  }
+  });
+
   var validation = createCommonjsModule$1(function (module) {
 
   /**
@@ -22449,7 +22765,7 @@
   }
 
   try {
-    let isValidUTF8 = require$$0__default$2['default'];
+    let isValidUTF8 = utf8Validate;
 
     /* istanbul ignore if */
     if (typeof isValidUTF8 === 'object') {
@@ -22470,7 +22786,7 @@
   }
   });
 
-  const { Writable } = require$$0__default$3['default'];
+  const { Writable } = require$$0__default$2['default'];
 
 
   const {
@@ -23080,7 +23396,7 @@
 
 
 
-  const { randomFillSync } = require$$0__default$4['default'];
+  const { randomFillSync } = require$$0__default$3['default'];
 
 
   const { EMPTY_BUFFER: EMPTY_BUFFER$1 } = constants;
@@ -23889,8 +24205,8 @@
 
   var extension = { format: format$2, parse: parse$2 };
 
-  const { randomBytes, createHash: createHash$1 } = require$$0__default$4['default'];
-  const { URL } = require$$1__default$1['default'];
+  const { randomBytes, createHash: createHash$1 } = require$$0__default$3['default'];
+  const { URL } = require$$1__default['default'];
 
 
 
@@ -24961,7 +25277,7 @@
     }
   }
 
-  const { Duplex } = require$$0__default$3['default'];
+  const { Duplex } = require$$0__default$2['default'];
 
   /**
    * Emits the `'close'` event on a stream.
@@ -25144,7 +25460,7 @@
 
 
 
-  const { createHash } = require$$0__default$4['default'];
+  const { createHash } = require$$0__default$3['default'];
 
 
 
