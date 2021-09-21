@@ -777,6 +777,18 @@ mock({
 window.ethereum.isCoinbaseWallet // true
 ```
 
+#### WalletConnect
+
+```javascript
+mock({
+  blockchain: 'ethereum',
+  wallet: 'walletconnect'
+})
+
+// simulates walletconnect connect flow
+// and allows to trigger walletconnect events with "trigger"
+```
+
 ### Test Helpers
 
 #### normalize
