@@ -2,6 +2,7 @@ import raise from './raise'
 import { getWindow } from './window'
 import { mock as mockBsc } from './blockchains/bsc/mock'
 import { mock as mockEthereum } from './blockchains/ethereum/mock'
+import { mock as mockWalletConnect } from './wallets/walletConnect/mock'
 import { mocks } from './mocks'
 import { requireMock } from './require'
 
@@ -78,6 +79,9 @@ let mockWallet = ({ configuration, window }) => {
       break
     case 'coinbase':
       window.ethereum.isCoinbaseWallet = true
+      break
+    case 'walletconnect':
+      mockWalletConnect({ window })
       break
     default:
       raise('Web3Mock: Unknown wallet!')

@@ -123,7 +123,8 @@ This library supports the following blockchains:
 This library supports the following crypto wallets:
 
 - [MetaMask](https://metamask.io)
-- [Coinbase](https://wallet.coinbase.com/)
+- [Coinbase](https://wallet.coinbase.com)
+- [WalletConnect](https://walletconnect.org/)
 
 ## Functionalities
 
@@ -715,6 +716,16 @@ mock('ethereum')
 trigger('accountsChanged', ['0xb0252f13850a4823706607524de0b146820F2240', '0xEcA533Ef096f191A35DE76aa4580FA3A722724bE'])
 ```
 
+also allows you to trigger walletConnect events, too:
+
+```javascript
+import { mock, trigger } from 'depay-web3-mock'
+
+mock({ blockchain: 'ethereum', wallet: 'walletconnect' })
+
+trigger('connected', [error, payload])
+```
+
 ### Providers
 
 If you want to mock Web3 calls and transactions for other providers but the usual, implicit ones (like window.ethereum),
@@ -764,6 +775,18 @@ mock({
 })
 
 window.ethereum.isCoinbaseWallet // true
+```
+
+#### WalletConnect
+
+```javascript
+mock({
+  blockchain: 'ethereum',
+  wallet: 'walletconnect'
+})
+
+// simulates walletconnect connect flow
+// and allows to trigger walletconnect events with "trigger"
 ```
 
 ### Test Helpers
