@@ -4,10 +4,10 @@ let resetEvents = () => {
   events = {}
 }
 
-let triggerEvent = (eventName, value) => {
+let triggerEvent = (eventName, values) => {
   if(events[eventName] == undefined) { return }
   events[eventName].forEach(function (callback) {
-    callback(value)
+    callback.apply(null, values)
   })
 }
 

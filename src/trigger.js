@@ -1,6 +1,8 @@
-import { triggerEvent as triggerEthereumEvent } from './blockchains/ethereum/on'
+import { triggerEvent as triggerEVMEvent } from './vms/evm/on'
+import { triggerEvent as triggerWalletConnectEvent } from './wallets/walletConnect/on'
 import { mocks } from './mocks'
 
 export default (eventName, value) => {
-  triggerEthereumEvent(eventName, value)
+  triggerEVMEvent(eventName, value)
+  triggerWalletConnectEvent(eventName, value)
 }
