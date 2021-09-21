@@ -721,7 +721,7 @@ also allows you to trigger walletConnect events, too:
 ```javascript
 import { mock, trigger } from 'depay-web3-mock'
 
-mock({ blockchain: 'ethereum', wallet: 'walletconnect' })
+mock({ blockchain: 'ethereum', connector: yourWalletConnectConnector, wallet: 'walletconnect' })
 
 trigger('connected', [error, payload])
 ```
@@ -782,6 +782,7 @@ window.ethereum.isCoinbaseWallet // true
 ```javascript
 mock({
   blockchain: 'ethereum',
+  connector: yourWalletConnectConnector,
   wallet: 'walletconnect'
 })
 

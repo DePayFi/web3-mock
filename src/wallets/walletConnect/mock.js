@@ -1,9 +1,12 @@
-import Connector from "@walletconnect/core"
 import { on } from "./on"
 
-let mock = ({ window }) => {
-  Connector.prototype.createSession = function(){ }
-  Connector.prototype.connect = async function(){
+let mock = ({ configuration, window }) => {
+
+  if(typeof configuration?.connector == 'undefined') { throw('You need to pass a WalletConnect connector instance when mocking WalletConnect!') }
+
+  configuration.connector.createSession = function(){ }
+  
+  configuration.connector.connect = async function(){
     let accounts = await window.ethereum.request({ method: 'eth_accounts' })
     let chainId = await window.ethereum.request({ method: 'net_version' })
 
@@ -12,7 +15,8 @@ let mock = ({ window }) => {
       chainId
     }
   }
-  Connector.prototype.on = on
+  
+  configuration.connector.on = on
 }
 
 export {

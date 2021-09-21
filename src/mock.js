@@ -81,7 +81,7 @@ let mockWallet = ({ configuration, window }) => {
       window.ethereum.isCoinbaseWallet = true
       break
     case 'walletconnect':
-      mockWalletConnect({ window })
+      mockWalletConnect({ configuration, window })
       break
     default:
       raise('Web3Mock: Unknown wallet!')

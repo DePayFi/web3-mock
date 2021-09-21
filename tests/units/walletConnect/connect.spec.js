@@ -9,16 +9,20 @@ describe('mocks walletConnect connect', ()=> {
     describe(blockchain, ()=> {
 
       const mockedAccounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
+      let connector
       beforeEach(resetMocks)
       beforeEach(()=>mock({ blockchain, accounts: { return: mockedAccounts } }))
+      beforeEach(()=>{ connector = {} })
+
+      it('fails if you try to mock WalletConnect without passing a connector instance', async ()=>{
+        await expect(()=>{
+          mock({ blockchain, wallet: 'walletconnect' })
+        }).toThrowError('You need to pass a WalletConnect connector instance when mocking WalletConnect!')
+      })
 
       it('mocks the WalletConnect client constructor, createSession and connect', async ()=>{
-        mock({ blockchain, wallet: 'walletconnect' })
+        mock({ blockchain, connector, wallet: 'walletconnect' })
         
-        const connector = new WalletConnect({
-          bridge: "https://bridge.walletconnect.org"
-        })
-
         await connector.createSession()
         let { accounts, chainId } = await connector.connect()
 
@@ -27,11 +31,7 @@ describe('mocks walletConnect connect', ()=> {
       })
 
       it('allows to mock event triggers for wallet connect', async ()=>{
-        mock({ blockchain, wallet: 'walletconnect' })
-
-        const connector = new WalletConnect({
-          bridge: "https://bridge.walletconnect.org"
-        })
+        mock({ blockchain, connector, wallet: 'walletconnect' })
 
         let connectCalledWith
         connector.on("connect", (error, payload) => {
