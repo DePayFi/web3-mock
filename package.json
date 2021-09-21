@@ -1,7 +1,7 @@
 {
   "name": "depay-web3-mock",
   "moduleName": "Web3Mock",
-  "version": "8.2.0",
+  "version": "8.2.1",
   "description": "JavaScript library to mock web3 responses either by emulating web3 wallets or web3 RPC requests.",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -33,11 +33,12 @@
   },
   "homepage": "https://github.com/DePayFi/depay-web3-mock#readme",
   "private": false,
-  "dependencies": {},
+  "dependencies": {
+    "@walletconnect/client": "^1.6.5"
+  },
   "peerDependencies": {
     "depay-web3-blockchains": "^2.4.0",
-    "ethers": "^5.4.6",
-    "@walletconnect/client": "^1.6.5"
+    "ethers": "^5.4.6"
   },
   "engines": {
     "node": ">=10"
@@ -49,7 +50,6 @@
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@rollup/plugin-replace": "^2.4.2",
     "@rollup/plugin-sucrase": "^3.1.0",
-    "@walletconnect/client": "^1.6.5",
     "babel-loader": "^8.2.2",
     "babel-preset-env": "^1.7.0",
     "cypress": "^8.2.0",
