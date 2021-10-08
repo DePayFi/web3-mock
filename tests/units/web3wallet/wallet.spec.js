@@ -16,6 +16,7 @@ describe('mocks wallet specifics', ()=> {
       it('mocks CoinbaseWallet identifier', async ()=>{
         mock({ blockchain, wallet: 'coinbase' })
         expect(global.ethereum.isCoinbaseWallet).toEqual(true)
+        expect(global.ethereum.isWalletLink).toEqual(true)
       })
     })
   })

@@ -15108,6 +15108,7 @@ let mockWallet = ({ configuration, window }) => {
       break
     case 'coinbase':
       window.ethereum.isCoinbaseWallet = true;
+      window.ethereum.isWalletLink = true;
       break
     case 'walletconnect':
       mock$1({ configuration, window });

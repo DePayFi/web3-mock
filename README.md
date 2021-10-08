@@ -775,6 +775,7 @@ mock({
 })
 
 window.ethereum.isCoinbaseWallet // true
+window.ethereum.isWalletLink // true
 ```
 
 #### WalletConnect
