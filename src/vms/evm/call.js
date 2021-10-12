@@ -9,7 +9,7 @@ let callMock = ({ mock, params, provider })=> {
     return Promise.reject(mock.call.return)
   } else {
     return Promise.resolve(
-      encode({ result: mock.call.return, api: mock.call.api, params, provider }),
+      encode({ result: mock.call.return, api: mock.call.api, params, provider })
     )
   }
 }

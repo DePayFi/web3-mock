@@ -32,8 +32,13 @@ let encode = ({ result, params, api, provider }) => {
   let data = params.data
   let contract = getContract({ address, api, provider })
   let contractFunction = getContractFunction({ data, address, api, provider })
-  let callArguments = getContractArguments({ params, api, provider })
-  return contract.interface.encodeFunctionResult(contractFunction.name, [result])
+  let encodedResult
+  if(contractFunction?.outputs && contractFunction.outputs.length == 1) {
+    encodedResult = [result]
+  } else {
+    encodedResult = result
+  }
+  return contract.interface.encodeFunctionResult(contractFunction.name, encodedResult)
 }
 
 export { encode, getContractFunction, getContractArguments }
