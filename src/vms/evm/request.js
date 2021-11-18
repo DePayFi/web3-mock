@@ -67,6 +67,10 @@ let request = ({ blockchain, request, provider }) => {
       return Promise.resolve(ethers.BigNumber.from('0')._hex)
       break
 
+    case 'eth_subscribe':
+      return Promise.resolve()
+      break
+
     case 'wallet_switchEthereumChain':
       return switchNetwork({ blockchain, id: request.params[0].chainId, provider })
       break
