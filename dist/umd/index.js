@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('ethers'), require('depay-web3-blockchains'), require('buffer'), require('util')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'ethers', 'depay-web3-blockchains', 'buffer', 'util'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('ethers'), require('@depay/web3-blockchains'), require('buffer'), require('util')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'ethers', '@depay/web3-blockchains', 'buffer', 'util'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Mock = {}, global.ethers, global.Web3Blockchains, global.require$$0, global.require$$0$1));
-}(this, (function (exports, ethers, depayWeb3Blockchains, require$$0, require$$0$1) { 'use strict';
+}(this, (function (exports, ethers, web3Blockchains, require$$0, require$$0$1) { 'use strict';
 
   function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -683,7 +683,7 @@
 
   function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   let switchNetwork = function ({ blockchain, id, provider }) {
-    let toBlockchain = depayWeb3Blockchains.Blockchain.findById(id);
+    let toBlockchain = web3Blockchains.Blockchain.findById(id);
     if(toBlockchain == undefined) { throw `No blockchain found for id ${id}` }
     let params = { switchTo: toBlockchain.name };
 
@@ -810,13 +810,13 @@
 
     switch (request.method) {
       case 'eth_chainId':
-        return Promise.resolve(depayWeb3Blockchains.Blockchain.findByName(blockchain).id)
+        return Promise.resolve(web3Blockchains.Blockchain.findByName(blockchain).id)
 
       case 'eth_getBalance':
         return balance({ blockchain, params: request.params[0], provider })
 
       case 'net_version':
-        return Promise.resolve(depayWeb3Blockchains.Blockchain.findByName(blockchain).networkId)
+        return Promise.resolve(web3Blockchains.Blockchain.findByName(blockchain).networkId)
 
       case 'eth_requestAccounts':
       case 'eth_accounts':

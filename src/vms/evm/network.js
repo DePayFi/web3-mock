@@ -1,5 +1,5 @@
 import raise from '../../raise'
-import { Blockchain } from 'depay-web3-blockchains'
+import { Blockchain } from '@depay/web3-blockchains'
 import { findMock } from './findMock'
 import { setCurrentNetwork } from '../../network'
 
