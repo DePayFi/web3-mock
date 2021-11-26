@@ -838,6 +838,9 @@ let request = ({ blockchain, request, provider }) => {
     case 'eth_getTransactionCount':
       return Promise.resolve(ethers.BigNumber.from('0')._hex)
 
+    case 'eth_subscribe':
+      return Promise.resolve()
+
     case 'wallet_switchEthereumChain':
       return switchNetwork({ blockchain, id: request.params[0].chainId, provider })
 

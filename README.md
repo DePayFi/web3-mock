@@ -140,6 +140,7 @@ await window.ethereum.request(method: 'net_version') // 1
 await window.ethereum.request(method: 'eth_getBalance') // '0x0'
 await window.ethereum.request(method: 'eth_estimateGas') // '0x2c4a0'
 await window.ethereum.request(method: 'eth_blockNumber') // '0x5daf3b'
+await window.ethereum.request(method: 'eth_subscribe') // undefined
 ```
 
 ### Accounts
