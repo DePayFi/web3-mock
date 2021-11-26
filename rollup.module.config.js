@@ -33,10 +33,10 @@ export default {
   plugins: [
     sucrase({
       exclude: ['node_modules/**'],
-      transforms: ['typescript', 'jsx']
+      transforms: ['jsx']
     }),
     resolve({
-      extensions: ['.js', '.ts', '.jsx']
+      extensions: ['.js',  '.jsx']
     }),
     nodeResolve(),
     commonjs({
