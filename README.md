@@ -3,19 +3,19 @@ Simplify testing your dApps by mocking blockchain providers and wallets with web
 ## Quickstart
 
 ```
-yarn add depay-web3-mock
+yarn add @depay/web3-mock
 ```
 
 or 
 
 ```
-npm install --save depay-web3-mock
+npm install --save @depay/web3-mock
 ```
 
 ### Basic
 
 ```javascript
-import { mock } from 'depay-web3-mock'
+import { mock } from '@depay/web3-mock'
 
 describe('something', ()=> {
 
@@ -33,7 +33,7 @@ describe('something', ()=> {
 ### Advanced
 
 ```javascript
-import { mock, resetMocks } from 'depay-web3-mock'
+import { mock, resetMocks } from '@depay/web3-mock'
 
 describe('something', ()=> {
 
@@ -268,7 +268,7 @@ expect(contractMock).toHaveBeenCalled()
 #### Mock Contract Calls partialy with anything
 
 ```javascript
-import { anything } from 'depay-web3-mock'
+import { anything } from '@depay/web3-mock'
 
 let contractMock = mock({
   blockchain: 'ethereum',
@@ -400,7 +400,7 @@ Mocking transaction confirmations consists of two steps:
 2. Increase the blocknumber after the transaction has been confirmed (to increase transaction confirmation amount e.g. for safe amount of confirmations)
 
 ```javascript
-import { mock, confirm } from 'depay-web3-mock'
+import { mock, confirm } from '@depay/web3-mock'
 
 let mockedTransaction = mock({
   blockchain: 'ethereum',
@@ -418,7 +418,7 @@ await sentTransaction.wait(1).then(function(receipt){
 ```
 
 ```javascript
-import { mock, confirm, increaseBlock } from 'depay-web3-mock'
+import { mock, confirm, increaseBlock } from '@depay/web3-mock'
 
 let mockedTransaction = mock({
   blockchain: 'ethereum',
@@ -441,7 +441,7 @@ await sentTransaction.wait(12).then(function(receipt){
 Mocking transactions fail/revert:
 
 ```javascript
-import { mock, fail } from 'depay-web3-mock'
+import { mock, fail } from '@depay/web3-mock'
 
 let mockedTransaction = mock({
   blockchain: 'ethereum',
@@ -536,7 +536,7 @@ Explicit estimate mocks are not required, they are implicitly mocked with a defa
 In case you want to explicitly want to test that your code performs an estimate and does not perform the transaction, use estimate mocks:
 
 ```javascript
-import { mock } from 'depay-web3-mock'
+import { mock } from '@depay/web3-mock'
 
 let mockedEstimate = mock({
   blockchain: 'ethereum',
@@ -566,7 +566,7 @@ expect(mockedEstimate).toHaveBeenCalled()
 In case you want to require all estimate requests being mocked you need to enable that explicitly (unlike calls or transactions which are always required):
 
 ```javascript
-import { mock } from 'depay-web3-mock'
+import { mock } from '@depay/web3-mock'
 
 mock({ blockchain: 'ethereum', require: 'estimate' })
 ```
@@ -679,7 +679,7 @@ await global.ethereum.request({
 #### Connect wallet to another wallet
 
 ```javascript
-import { connect } from 'depay-web3-mock'
+import { connect } from '@depay/web3-mock'
 
 connect('ethereum')
 
@@ -707,7 +707,7 @@ mock({
 `web3-mock` allows you to trigger events (like `accountsChanged`).
 
 ```javascript
-import { mock, trigger } from 'depay-web3-mock'
+import { mock, trigger } from '@depay/web3-mock'
 
 mock('ethereum')
 
@@ -719,7 +719,7 @@ trigger('accountsChanged', ['0xb0252f13850a4823706607524de0b146820F2240', '0xEcA
 also allows you to trigger walletConnect events, too:
 
 ```javascript
-import { mock, trigger } from 'depay-web3-mock'
+import { mock, trigger } from '@depay/web3-mock'
 
 mock({ blockchain: 'ethereum', connector: yourWalletConnectConnector, wallet: 'walletconnect' })
 
@@ -798,7 +798,7 @@ mock({
 `normalize` allows you to normalize values to compare them easier in tests:
 
 ```javascript
-import { normalize } from 'depay-web3-mock'
+import { normalize } from '@depay/web3-mock'
 
 expect(
   normalize('0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D')
@@ -843,10 +843,10 @@ npm publish
 
 In your jest test environment `global` is the `window` available to your code.
 
-Hence `depay-web3-mock` takes jest's `global` automatically when using `depay-web3-mock` in a jest test environment.
+Hence `@depay/web3-mock` takes jest's `global` automatically when using `@depay/web3-mock` in a jest test environment.
 
 #### Cypress
 
 In your cypress test environment `cy.window().specWindow.window` is the `window` available to your code.
 
-Hence `depay-web3-mock` takes cypress's `cy.window().specWindow.window` automatically when using `depay-web3-mock` in a jest test environment.
+Hence `@depay/web3-mock` takes cypress's `cy.window().specWindow.window` automatically when using `@depay/web3-mock` in a jest test environment.
