@@ -1,6 +1,6 @@
 import WalletConnect from '@walletconnect/client'
 import { mock, resetMocks } from 'src'
-import { Blockchain } from 'depay-web3-blockchains'
+import { Blockchain } from '@depay/web3-blockchains'
 
 describe('mocks walletConnect requests', ()=> {
 
