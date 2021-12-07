@@ -1,9 +1,15 @@
-let currentBlock = 1
+let currentBlock
 
 let getCurrentBlock = () => currentBlock
+
+let resetCurrentBlock = ()=>{
+  currentBlock = 1
+}
+
+resetCurrentBlock()
 
 let increaseBlock = (amount = 1) => {
   currentBlock += amount
 }
 
-export { getCurrentBlock, increaseBlock }
+export { resetCurrentBlock, getCurrentBlock, increaseBlock }

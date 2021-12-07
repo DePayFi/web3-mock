@@ -1,4 +1,4 @@
-import { mock, resetMocks } from 'src'
+import { mock, resetMocks, increaseBlock, getCurrentBlock } from 'src'
 
 describe('resetMocks', ()=> {
 
@@ -15,6 +15,18 @@ describe('resetMocks', ()=> {
 
       it('makes sure that everything gets reset between tests', async ()=>{
         expect(global.ethereum).toEqual(undefined)
+      })
+
+      it('makes sure that current block is reset too', async ()=>{
+        expect(getCurrentBlock()).toEqual(1)
+        increaseBlock()
+        expect(getCurrentBlock()).toEqual(2)
+      })
+
+      it('makes sure that current block is reset too', async ()=>{
+        expect(getCurrentBlock()).toEqual(1)
+        increaseBlock()
+        expect(getCurrentBlock()).toEqual(2)
       })
     })
   })

@@ -1,4 +1,5 @@
 import { resetRequire } from './require'
+import { resetCurrentBlock } from './block'
 import { getWindow } from './window'
 
 let mocks = []
@@ -10,6 +11,7 @@ let resetMocks = () => {
   }
   mocks = []
   resetRequire()
+  resetCurrentBlock()
 }
 
 resetMocks()
