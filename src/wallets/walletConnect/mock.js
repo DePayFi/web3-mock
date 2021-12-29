@@ -1,4 +1,4 @@
-import { on } from "./on"
+import { on, off } from "./events"
 
 let mock = ({ configuration, window }) => {
 
@@ -21,6 +21,8 @@ let mock = ({ configuration, window }) => {
   }
   
   configuration.connector.on = on
+  
+  configuration.connector.off = off
 
   configuration.connector.sendTransaction = async function(transaction){
     return await window.ethereum.request({ method: 'eth_sendTransaction', params: [transaction] })

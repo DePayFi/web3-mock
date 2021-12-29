@@ -18,4 +18,10 @@ let on = (eventName, callback) => {
   events[eventName].push(callback)
 }
 
-export { on, resetEvents, triggerEvent }
+let off = (eventName) => {
+  if (events[eventName]) {
+    events[eventName] = []
+  }
+}
+
+export { on, off, resetEvents, triggerEvent }

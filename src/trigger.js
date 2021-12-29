@@ -1,5 +1,5 @@
-import { triggerEvent as triggerEVMEvent } from './vms/evm/on'
-import { triggerEvent as triggerWalletConnectEvent } from './wallets/walletConnect/on'
+import { triggerEvent as triggerEVMEvent } from './vms/evm/events'
+import { triggerEvent as triggerWalletConnectEvent } from './wallets/walletConnect/events'
 import { mocks } from './mocks'
 
 export default (eventName, value) => {

@@ -18,4 +18,13 @@ let on = (eventName, callback) => {
   events[eventName].push(callback)
 }
 
-export { on, resetEvents, triggerEvent }
+let removeListener = (eventName, callback) => {
+  if (events[eventName]) {
+    let index = events[eventName].indexOf(callback)
+    if (index >= 0) {
+      events[eventName].splice(index, 1)
+    }
+  }
+}
+
+export { on, removeListener, resetEvents, triggerEvent }

@@ -1,4 +1,4 @@
-import { on } from './on'
+import { on, removeListener } from './events'
 import { request } from './request'
 import { setCurrentNetwork } from '../../network'
 import { Web3Provider } from '@ethersproject/providers'
@@ -20,6 +20,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
     window.ethereum = {
       ...window.ethereum,
       on,
+      removeListener: removeListener,
       request: (configuration) => {
         return request({
           request: configuration,

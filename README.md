@@ -727,6 +727,8 @@ mock({ blockchain: 'ethereum', connector: yourWalletConnectConnector, wallet: 'w
 trigger('connected', [error, payload])
 ```
 
+In order to achieve event mocking, `web3-mock` mocks internal event handling via `.on`, `.removeListener` and `.off`.
+
 ### Providers
 
 If you want to mock Web3 calls and transactions for other providers but the usual, implicit ones (like window.ethereum),

@@ -14,9 +14,15 @@
     throw(msg)
   };
 
-  let currentBlock = 1;
+  let currentBlock;
 
   let getCurrentBlock = () => currentBlock;
+
+  let resetCurrentBlock = ()=>{
+    currentBlock = 1;
+  };
+
+  resetCurrentBlock();
 
   let increaseBlock = (amount = 1) => {
     currentBlock += amount;
@@ -53,6 +59,7 @@
     }
     mocks = [];
     resetRequire();
+    resetCurrentBlock();
   };
 
   resetMocks();
@@ -117,6 +124,15 @@
       events$1[eventName] = [];
     }
     events$1[eventName].push(callback);
+  };
+
+  let removeListener = (eventName, callback) => {
+    if (events$1[eventName]) {
+      let index = events$1[eventName].indexOf(callback);
+      if (index >= 0) {
+        events$1[eventName].splice(index, 1);
+      }
+    }
   };
 
   var getRandomTransactionHash = () => {
@@ -14984,6 +15000,7 @@
       window.ethereum = {
         ...window.ethereum,
         on: on$1,
+        removeListener: removeListener,
         request: (configuration) => {
           return request({
             request: configuration,
@@ -15012,6 +15029,12 @@
     events[eventName].push(callback);
   };
 
+  let off = (eventName) => {
+    if (events[eventName]) {
+      events[eventName] = [];
+    }
+  };
+
   function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   let mock$1 = ({ configuration, window }) => {
 
@@ -15034,6 +15057,8 @@
     };
     
     configuration.connector.on = on;
+    
+    configuration.connector.off = off;
 
     configuration.connector.sendTransaction = async function(transaction){
       return await window.ethereum.request({ method: 'eth_sendTransaction', params: [transaction] })
@@ -15161,9 +15186,11 @@
   exports.confirm = confirm;
   exports.connect = setCurrentNetwork;
   exports.fail = fail;
+  exports.getCurrentBlock = getCurrentBlock;
   exports.increaseBlock = increaseBlock;
   exports.mock = mock;
   exports.normalize = normalize;
+  exports.resetCurrentBlock = resetCurrentBlock;
   exports.resetMocks = resetMocks;
   exports.trigger = trigger;
 
