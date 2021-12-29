@@ -81,6 +81,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_sign':
+    case 'personal_sign':
       return sign({ blockchain, params: request.params, provider })
       break
 
