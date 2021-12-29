@@ -27,6 +27,10 @@ let mock = ({ configuration, window }) => {
   configuration.connector.sendTransaction = async function(transaction){
     return await window.ethereum.request({ method: 'eth_sendTransaction', params: [transaction] })
   }
+
+  configuration.connector.signPersonalMessage = async function(params){
+    return await window.ethereum.request({ method: 'eth_sign', params: [params[1], params[0]] })
+  }
 }
 
 export {

@@ -9,6 +9,7 @@ import { ethers } from 'ethers'
 import { getAccounts } from './accounts'
 import { getCurrentBlock } from '../../block'
 import { getCurrentNetwork } from '../../network'
+import { sign } from './sign'
 import { switchNetwork, addNetwork } from './network'
 import { transaction } from './transaction'
 
@@ -77,6 +78,10 @@ let request = ({ blockchain, request, provider }) => {
 
     case 'wallet_addEthereumChain':
       return addNetwork({ blockchain, params: request.params[0], provider })
+      break
+
+    case 'eth_sign':
+      return sign({ blockchain, params: request.params, provider })
       break
 
     default:
