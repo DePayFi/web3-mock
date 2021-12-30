@@ -7,10 +7,23 @@ let sign = function ({ blockchain, params, provider }) {
 
   if (mock && mock.signature?.return) {
     mock.calls.add(params)
-    if (mock?.signature?.return instanceof Error) {
-      return Promise.reject(mock.signature.return)
+
+    if(mock.signature.delay) {
+      return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+          if (mock.signature.return instanceof Error) {
+            reject(mock.signature.return)
+          } else {
+            resolve(mock.signature.return)
+          }
+        }, mock.signature.delay)
+      })
     } else {
-      return Promise.resolve(mock.signature.return)
+      if (mock.signature.return instanceof Error) {
+        return Promise.reject(mock.signature.return)
+      } else {
+        return Promise.resolve(mock.signature.return)
+      }
     }
   } else {
     raise(

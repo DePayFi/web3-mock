@@ -594,6 +594,19 @@ await signer.signMessage(message)
 // "0x123456"
 ```
 
+Also allows to delay signature:
+
+```javascript
+mock({
+  blockchain: 'ethereum',
+  signature: {
+    params: [accounts[0], `0x${messageHex}`],
+    return: "0x123456",
+    delay: 5000
+  }
+})
+```
+
 ### Balance
 
 `web3-mock` allows you to mock balance requests:
