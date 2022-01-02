@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-mock",
   "moduleName": "Web3Mock",
-  "version": "10.0.0",
+  "version": "10.1.0",
   "description": "JavaScript library to mock web3 responses either by emulating web3 wallets or web3 RPC requests.",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -35,7 +35,7 @@
   "private": false,
   "dependencies": {},
   "peerDependencies": {
-    "@depay/web3-blockchains": "^3.0.0",
+    "@depay/web3-blockchains": "^4.0.0",
     "ethers": "^5.4.6"
   },
   "engines": {
@@ -44,7 +44,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.12.7",
-    "@depay/web3-blockchains": "^3.0.0",
+    "@depay/web3-blockchains": "^4.0.0",
     "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@rollup/plugin-replace": "^2.4.2",

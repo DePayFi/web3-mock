@@ -908,10 +908,10 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@depay/web3-blockchains@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-3.0.0.tgz#e393d547b88bc4d7bf65ec7f7b98ba8ad9f76ac5"
-  integrity sha512-Mnc3fCCwD+B9YMBGcAB6DJC5cVNn5AcddGcpXbX9cvVY1iJ8IDe0sVKYEBJmHPr1punumU1H1nrhs5ctPZkosQ==
+"@depay/web3-blockchains@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-4.0.0.tgz#049f3132d309f90401f138485b5257e6f1a98650"
+  integrity sha512-mMtWwubtYhjygJso3iVAYrRBmANH3VbBHkvtOwOc2rPHoTAS3uYZTMfbNc9sFVCyxXo+hsa8453rsxFNJi9Y3A==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
