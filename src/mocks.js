@@ -2,9 +2,15 @@ import { resetRequire } from './require'
 import { resetCurrentBlock } from './block'
 import { getWindow } from './window'
 
+let WalletConnectClass
+
 let mocks = []
 
-let resetMocks = () => {
+const setWalletConnectClass = (givenWalletConnectClass)=> {
+  WalletConnectClass = givenWalletConnectClass
+}
+
+const resetMocks = ()=> {
   let window = getWindow()
   if (window.ethereum) {
     window.ethereum = undefined
@@ -12,8 +18,11 @@ let resetMocks = () => {
   mocks = []
   resetRequire()
   resetCurrentBlock()
+  if(WalletConnectClass) {
+    WalletConnectClass.instance = undefined
+  }
 }
 
 resetMocks()
 
-export { mocks, resetMocks }
+export { mocks, resetMocks, setWalletConnectClass }

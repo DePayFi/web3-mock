@@ -6,20 +6,20 @@ describe('mock transactions', ()=> {
   ['ethereum', 'bsc'].forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
+
+      class WalletConnectStub {}
       
       const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
-      let connector
       beforeEach(resetMocks)
       beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
       beforeEach(()=>{ 
-        connector = {}
-        mock({ blockchain, connector, wallet: 'walletconnect' })
+        mock({ blockchain, connector: WalletConnectStub, wallet: 'walletconnect' })
       })
 
       it('does not mock transactions per default', async ()=> {
         
         await expect(
-          connector.sendTransaction({
+          WalletConnectStub.instance.sendTransaction({
             to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
             value: ethers.utils.parseEther("1")
           })
@@ -39,7 +39,7 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let transaction = await connector.sendTransaction({
+        let transaction = await WalletConnectStub.instance.sendTransaction({
           from: accounts[0],
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
           value: ethers.utils.parseEther("2")
@@ -82,7 +82,7 @@ describe('mock transactions', ()=> {
         )
 
         transaction.from = accounts[0]
-        let submittedTransaction = await connector.sendTransaction(transaction)
+        let submittedTransaction = await WalletConnectStub.instance.sendTransaction(transaction)
 
         expect(submittedTransaction).toBeDefined()
         expect(mockedTransaction).toHaveBeenCalled()

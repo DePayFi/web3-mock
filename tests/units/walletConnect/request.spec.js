@@ -8,17 +8,17 @@ describe('mocks walletConnect requests', ()=> {
 
     describe(blockchain, ()=> {
 
+      class WalletConnectStub {}
+
       const mockedAccounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
-      let connector
       beforeEach(resetMocks)
       beforeEach(()=>mock({ blockchain, accounts: { return: mockedAccounts } }))
       beforeEach(()=>{ 
-        connector = {}
-        mock({ blockchain, connector, wallet: 'walletconnect' })
+        mock({ blockchain, connector: WalletConnectStub, wallet: 'walletconnect' })
       })
 
       it('mocks requests through walletconnect', async ()=>{
-        expect(await connector.sendCustomRequest({ method: 'eth_chainId' })).toEqual(
+        expect(await WalletConnectStub.instance.sendCustomRequest({ method: 'eth_chainId' })).toEqual(
           Blockchain.findByName(blockchain).id
         )
       })

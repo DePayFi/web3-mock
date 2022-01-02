@@ -53,9 +53,15 @@ function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[
   if (typeof window == 'object') return window
 };
 
+let WalletConnectClass;
+
 let mocks = [];
 
-let resetMocks = () => {
+const setWalletConnectClass = (givenWalletConnectClass)=> {
+  WalletConnectClass = givenWalletConnectClass;
+};
+
+const resetMocks = ()=> {
   let window = getWindow();
   if (window.ethereum) {
     window.ethereum = undefined;
@@ -63,6 +69,9 @@ let resetMocks = () => {
   mocks = [];
   resetRequire();
   resetCurrentBlock();
+  if(WalletConnectClass) {
+    WalletConnectClass.instance = undefined;
+  }
 };
 
 resetMocks();
@@ -706,10 +715,23 @@ let sign = function ({ blockchain, params, provider }) {
 
   if (mock && _optionalChain$5([mock, 'access', _ => _.signature, 'optionalAccess', _2 => _2.return])) {
     mock.calls.add(params);
-    if (_optionalChain$5([mock, 'optionalAccess', _3 => _3.signature, 'optionalAccess', _4 => _4.return]) instanceof Error) {
-      return Promise.reject(mock.signature.return)
+
+    if(mock.signature.delay) {
+      return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+          if (mock.signature.return instanceof Error) {
+            reject(mock.signature.return);
+          } else {
+            resolve(mock.signature.return);
+          }
+        }, mock.signature.delay);
+      })
     } else {
-      return Promise.resolve(mock.signature.return)
+      if (mock.signature.return instanceof Error) {
+        return Promise.reject(mock.signature.return)
+      } else {
+        return Promise.resolve(mock.signature.return)
+      }
     }
   } else {
     raise$1(
@@ -898,6 +920,7 @@ let request = ({ blockchain, request, provider }) => {
       return addNetwork({ blockchain, params: request.params[0], provider })
 
     case 'eth_sign':
+    case 'personal_sign':
       return sign({ blockchain, params: request.params, provider })
 
     default:
@@ -15070,14 +15093,18 @@ function _optionalChain$1(ops) { let lastAccessLHS = undefined; let value = ops[
 let mock$1 = ({ configuration, window }) => {
 
   if(typeof _optionalChain$1([configuration, 'optionalAccess', _ => _.connector]) == 'undefined') { throw('You need to pass a WalletConnect connector instance when mocking WalletConnect!') }
+  if(configuration.connector.instance){ return configuration.connector.instance }
 
-  configuration.connector.createSession = function(){ };
+  setWalletConnectClass(configuration.connector);
+  let instance = configuration.connector.instance = new configuration.connector();
+
+  instance.createSession = function(){ };
   
-  configuration.connector.sendCustomRequest = async function(options){
+  instance.sendCustomRequest = async function(options){
     return await window.ethereum.request(options)
   };
 
-  configuration.connector.connect = async function(){
+  instance.connect = async function(){
     let accounts = await window.ethereum.request({ method: 'eth_accounts' });
     let chainId = await window.ethereum.request({ method: 'net_version' });
 
@@ -15087,15 +15114,15 @@ let mock$1 = ({ configuration, window }) => {
     }
   };
   
-  configuration.connector.on = on;
+  instance.on = on;
   
-  configuration.connector.off = off;
+  instance.off = off;
 
-  configuration.connector.sendTransaction = async function(transaction){
+  instance.sendTransaction = async function(transaction){
     return await window.ethereum.request({ method: 'eth_sendTransaction', params: [transaction] })
   };
 
-  configuration.connector.signPersonalMessage = async function(params){
+  instance.signPersonalMessage = async function(params){
     return await window.ethereum.request({ method: 'eth_sign', params: [params[1], params[0]] })
   };
 };

@@ -8,11 +8,11 @@ describe('mocks walletConnect connect', ()=> {
 
     describe(blockchain, ()=> {
 
+      class WalletConnectStub {}
+
       const mockedAccounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
-      let connector
       beforeEach(resetMocks)
       beforeEach(()=>mock({ blockchain, accounts: { return: mockedAccounts } }))
-      beforeEach(()=>{ connector = {} })
 
       it('fails if you try to mock WalletConnect without passing a connector instance', async ()=>{
         await expect(()=>{
@@ -21,10 +21,10 @@ describe('mocks walletConnect connect', ()=> {
       })
 
       it('mocks the WalletConnect client constructor, createSession and connect', async ()=>{
-        mock({ blockchain, connector, wallet: 'walletconnect' })
+        mock({ blockchain, connector: WalletConnectStub, wallet: 'walletconnect' })
         
-        await connector.createSession()
-        let { accounts, chainId } = await connector.connect()
+        await WalletConnectStub.instance.createSession()
+        let { accounts, chainId } = await WalletConnectStub.instance.connect()
 
         expect(accounts).toEqual(mockedAccounts)
         expect(chainId).toEqual(Blockchain.findByName(blockchain).networkId)

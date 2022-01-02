@@ -756,8 +756,9 @@ also allows you to trigger walletConnect events, too:
 
 ```javascript
 import { mock, trigger } from '@depay/web3-mock'
+import { wallets } from '@depay/web3-wallets'
 
-mock({ blockchain: 'ethereum', connector: yourWalletConnectConnector, wallet: 'walletconnect' })
+mock({ blockchain: 'ethereum', wallet: 'walletconnect', connector: wallets.WalletConnect })
 
 trigger('connected', [error, payload])
 ```
@@ -819,10 +820,12 @@ window.ethereum.isWalletLink // true
 #### WalletConnect
 
 ```javascript
+import { wallets } from '@depay/web3-wallets'
+
 mock({
   blockchain: 'ethereum',
-  connector: yourWalletConnectConnector,
-  wallet: 'walletconnect'
+  wallet: 'walletconnect',
+  connector: wallets.WalletConnect
 })
 
 // simulates walletconnect connect flow

@@ -1,16 +1,21 @@
 import { on, off } from "./events"
+import { setWalletConnectClass } from "../../mocks"
 
 let mock = ({ configuration, window }) => {
 
   if(typeof configuration?.connector == 'undefined') { throw('You need to pass a WalletConnect connector instance when mocking WalletConnect!') }
+  if(configuration.connector.instance){ return configuration.connector.instance }
 
-  configuration.connector.createSession = function(){ }
+  setWalletConnectClass(configuration.connector)
+  let instance = configuration.connector.instance = new configuration.connector()
+
+  instance.createSession = function(){ }
   
-  configuration.connector.sendCustomRequest = async function(options){
+  instance.sendCustomRequest = async function(options){
     return await window.ethereum.request(options)
   }
 
-  configuration.connector.connect = async function(){
+  instance.connect = async function(){
     let accounts = await window.ethereum.request({ method: 'eth_accounts' })
     let chainId = await window.ethereum.request({ method: 'net_version' })
 
@@ -20,15 +25,15 @@ let mock = ({ configuration, window }) => {
     }
   }
   
-  configuration.connector.on = on
+  instance.on = on
   
-  configuration.connector.off = off
+  instance.off = off
 
-  configuration.connector.sendTransaction = async function(transaction){
+  instance.sendTransaction = async function(transaction){
     return await window.ethereum.request({ method: 'eth_sendTransaction', params: [transaction] })
   }
 
-  configuration.connector.signPersonalMessage = async function(params){
+  instance.signPersonalMessage = async function(params){
     return await window.ethereum.request({ method: 'eth_sign', params: [params[1], params[0]] })
   }
 }

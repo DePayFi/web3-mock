@@ -8,27 +8,27 @@ describe('mocks walletConnect connect', ()=> {
 
     describe(blockchain, ()=> {
 
+      class WalletConnectStub {}
+
       const mockedAccounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
-      let connector
       beforeEach(resetMocks)
       beforeEach(()=>mock({ blockchain, accounts: { return: mockedAccounts } }))
-      beforeEach(()=>{ connector = {} })
 
       it('allows to mock event triggers for wallet connect', async ()=>{
-        mock({ blockchain, connector, wallet: 'walletconnect' })
+        mock({ blockchain, connector: WalletConnectStub, wallet: 'walletconnect' })
 
         let connectCalledWith
-        connector.on("connect", (error, payload) => {
+        WalletConnectStub.instance.on("connect", (error, payload) => {
           connectCalledWith = payload
         })
 
         let sessionUpdateCalledWith
-        connector.on("session_update", (error, payload) => {
+        WalletConnectStub.instance.on("session_update", (error, payload) => {
           sessionUpdateCalledWith = payload
         })
 
         let disconnectCalledWith
-        connector.on("disconnect", (error, payload) => {
+        WalletConnectStub.instance.on("disconnect", (error, payload) => {
           disconnectCalledWith = payload
         })
 
@@ -42,14 +42,14 @@ describe('mocks walletConnect connect', ()=> {
       })
 
       it('allows to deregister events for walletconnect', async ()=>{
-        mock({ blockchain, connector, wallet: 'walletconnect' })
+        mock({ blockchain, connector: WalletConnectStub, wallet: 'walletconnect' })
 
         let connectCalledWith
         const onConnecctCallback = (error, payload) => {
           connectCalledWith = payload
         }
-        connector.on("connect", onConnecctCallback)
-        connector.off("connect", onConnecctCallback)
+        WalletConnectStub.instance.on("connect", onConnecctCallback)
+        WalletConnectStub.instance.off("connect", onConnecctCallback)
 
         trigger('connect', [undefined, 'connected'])
 
