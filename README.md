@@ -618,7 +618,12 @@ mock({
     }
 })
 
-await signer.signMessage(message)
+//code under test
+await window.ethereum.request({ 
+    method: 'eth_signTypedData_v4',
+    params: [accounts[0], JSON.stringify(data)],
+    from: accounts[0]
+})
 // RawSignature
 // "0x123456"
 ```
