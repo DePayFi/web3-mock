@@ -17,6 +17,9 @@
 !.vscode/extensions.json
 .history/*
 
+# IDE - Webstorm
+.idea/
+
 # Various
 npm-debug.log*
 yarn-error.log
