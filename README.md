@@ -593,6 +593,40 @@ await signer.signMessage(message)
 // RawSignature
 // "0x123456"
 ```
+including signed data:
+
+```javascript
+let data = {
+    domain: {
+        ...
+    },
+    message: {
+        ...
+    },
+    primaryType: 'Person',
+    types: {
+        ...
+    },
+}
+const messageHex = sigUtil.signTypedData_v4(secret, { data })
+mock({
+    blockchain: 'ethereum',
+    accounts :{ return :accounts},
+    signature: {
+        params: [accounts[0], JSON.stringify(data)],
+        return: "0x123456"
+    }
+})
+
+//code under test
+await window.ethereum.request({ 
+    method: 'eth_signTypedData_v4',
+    params: [accounts[0], JSON.stringify(data)],
+    from: accounts[0]
+})
+// RawSignature
+// "0x123456"
+```
 
 Also allows to delay signature:
 

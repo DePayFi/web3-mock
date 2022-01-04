@@ -1,6 +1,5 @@
 import raise from '../../raise'
-import { findMock } from './findMock'
-import { ethers } from 'ethers'
+import {findMock} from './findMock'
 
 let sign = function ({ blockchain, params, provider }) {
   let mock = findMock({ blockchain, type: 'signature', params, provider })
