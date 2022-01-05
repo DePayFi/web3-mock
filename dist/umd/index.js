@@ -865,6 +865,11 @@
   function _optionalChain$2(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   let request = ({ blockchain, request, provider }) => {
 
+    // Web3js request fix (nested request)
+    if(Object.keys(request.method).includes('method')) {
+      request = request.method;
+    }
+
     if(blockchain == undefined && _optionalChain$2([provider, 'optionalAccess', _ => _._blockchain])) {
       blockchain = provider._blockchain;
     } else if(blockchain == undefined) {
@@ -891,6 +896,12 @@
 
       case 'eth_blockNumber':
         return Promise.resolve(ethers.ethers.BigNumber.from(getCurrentBlock())._hex)
+
+      case 'eth_getBlockByNumber':
+        return Promise.resolve({})
+
+      case 'eth_gasPrice':
+        return Promise.resolve('0x12fee89674')
 
       case 'eth_call':
         return call({ blockchain, params: request.params[0], provider })

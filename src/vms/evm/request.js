@@ -15,6 +15,11 @@ import { transaction } from './transaction'
 
 let request = ({ blockchain, request, provider }) => {
 
+  // Web3js request fix (nested request)
+  if(Object.keys(request.method).includes('method')) {
+    request = request.method
+  }
+
   if(blockchain == undefined && provider?._blockchain) {
     blockchain = provider._blockchain
   } else if(blockchain == undefined) {
@@ -46,6 +51,14 @@ let request = ({ blockchain, request, provider }) => {
 
     case 'eth_blockNumber':
       return Promise.resolve(ethers.BigNumber.from(getCurrentBlock())._hex)
+      break
+
+    case 'eth_getBlockByNumber':
+      return Promise.resolve({})
+      break
+
+    case 'eth_gasPrice':
+      return Promise.resolve('0x12fee89674')
       break
 
     case 'eth_call':

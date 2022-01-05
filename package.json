@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-mock",
   "moduleName": "Web3Mock",
-  "version": "11.1.0",
+  "version": "11.2.0",
   "description": "JavaScript library to mock web3 responses either by emulating web3 wallets or web3 RPC requests.",
   "main": "./dist/umd/index.js",
   "module": "./dist/esm/index.js",
@@ -59,6 +59,8 @@
     "eslint-webpack-plugin": "^2.5.4",
     "ethers": "^5.4.6",
     "regenerator-runtime": "^0.13.7",
-    "rollup": "^2.34.2"
+    "rollup": "^2.34.2",
+    "web3": "^1.6.1",
+    "web3-eth-contract": "^1.6.1"
   }
 }
