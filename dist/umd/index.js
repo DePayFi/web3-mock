@@ -309,7 +309,10 @@
     return (
       Array.isArray(mock[type].params) == false &&
       contractArguments.length == 1 &&
-      normalize(mock[type].params) != normalize(contractArguments[0]) &&
+      (
+        normalize(mock[type].params) != normalize(contractArguments[0]) && 
+        normalize(Object.values(mock[type].params)[0]) != normalize(contractArguments[0])
+      ) &&
       !anythingMatch({ contractArguments, mockParams: mock[type].params })
     )
   };
@@ -366,11 +369,13 @@
       api,
       provider,
     });
+
     if (mock[type].method !== contractFunction.name) {
       return true
     }
 
     let contractArguments = getContractArguments({ params, api, provider });
+
     if (mockDataDoesNotMatchSingleArgument(mock, type, contractArguments)) {
       return true
     }
