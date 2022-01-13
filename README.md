@@ -924,4 +924,4 @@ Hence `@depay/web3-mock` takes jest's `global` automatically when using `@depay/
 
 In your cypress test environment `cy.window().specWindow.window` is the `window` available to your code.
 
-Hence `@depay/web3-mock` takes cypress's `cy.window().specWindow.window` automatically when using `@depay/web3-mock` in a jest test environment.
+Hence `@depay/web3-mock` takes cypress's `cy.window().specWindow.window` automatically when using `@depay/web3-mock` in a cypress test environment.
