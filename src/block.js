@@ -1,5 +1,7 @@
 let currentBlock
 
+let blockData = {}
+
 let getCurrentBlock = () => currentBlock
 
 let resetCurrentBlock = ()=>{
@@ -12,4 +14,16 @@ let increaseBlock = (amount = 1) => {
   currentBlock += amount
 }
 
-export { resetCurrentBlock, getCurrentBlock, increaseBlock }
+let getBlockData = (number) => {
+  return(blockData[number] || {})
+}
+
+let setBlockData = (number, data) => {
+  blockData[number] = data
+}
+
+let resetBlockData = ()=> {
+  blockData = {}
+}
+
+export { resetCurrentBlock, getCurrentBlock, increaseBlock, getBlockData, setBlockData, resetBlockData }

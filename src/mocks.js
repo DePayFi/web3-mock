@@ -1,6 +1,7 @@
-import { resetRequire } from './require'
-import { resetCurrentBlock } from './block'
 import { getWindow } from './window'
+import { resetCurrentBlock, resetBlockData } from './block'
+import { resetRequire } from './require'
+import { resetTransactionCount } from './vms/evm/transaction/count'
 
 let WalletConnectClass
 
@@ -18,6 +19,8 @@ const resetMocks = ()=> {
   mocks = []
   resetRequire()
   resetCurrentBlock()
+  resetBlockData()
+  resetTransactionCount()
   if(WalletConnectClass) {
     WalletConnectClass.instance = undefined
   }

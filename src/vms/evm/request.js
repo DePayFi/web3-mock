@@ -1,5 +1,6 @@
 import getTransactionByHash from './transaction/getTransactionByHash'
 import getTransactionReceipt from './transaction/getTransactionReceipt'
+import { getTransactionCount } from './transaction/count'
 import raise from '../../raise'
 import { balance } from './balance'
 import { Blockchain } from '@depay/web3-blockchains'
@@ -7,7 +8,7 @@ import { call } from './call'
 import { estimate } from './estimate'
 import { ethers } from 'ethers'
 import { getAccounts } from './accounts'
-import { getCurrentBlock } from '../../block'
+import { getCurrentBlock, getBlockData } from '../../block'
 import { getCurrentNetwork } from '../../network'
 import { sign } from './sign'
 import { switchNetwork, addNetwork } from './network'
@@ -54,7 +55,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getBlockByNumber':
-      return Promise.resolve({})
+      return Promise.resolve(getBlockData(parseInt(ethers.BigNumber.from(request.params[0].toString()).toString())))
       break
 
     case 'eth_gasPrice':
@@ -78,7 +79,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getTransactionCount':
-      return Promise.resolve(ethers.BigNumber.from('0')._hex)
+      return Promise.resolve(getTransactionCount(request.params[0]))
       break
 
     case 'eth_subscribe':

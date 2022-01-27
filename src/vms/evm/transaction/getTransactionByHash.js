@@ -2,12 +2,14 @@ import getRandomTransactionHash from './getRandomTransactionHash'
 import { ethers } from 'ethers'
 import { findMockByTransactionHash } from '../findMock'
 import { getCurrentBlock } from '../../../block'
+import { mocks } from '../../../mocks'
 
 export default (hash) => {
   let mock = findMockByTransactionHash(hash)
+  let lastTransactionMock = mocks.find((mock)=>mock.transaction)
 
   let transaction = {
-    from: '0xb7576e9d314df41ec5506494293afb1bd5d3f65d',
+    from: (lastTransactionMock && lastTransactionMock.transaction.from) ? lastTransactionMock.transaction.from : '0xb7576e9d314df41ec5506494293afb1bd5d3f65d',
     gas: '0x29857',
     gasPrice: '0xba43b7400',
     hash: hash,

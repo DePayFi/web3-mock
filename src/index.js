@@ -1,4 +1,5 @@
 import confirm from './confirm'
+import replace from './replace'
 import fail from './fail'
 import mock from './mock'
 import normalize from './normalize'
@@ -19,5 +20,6 @@ export {
   resetCurrentBlock,
   anything,
   normalize,
+  replace,
   connect
 }
