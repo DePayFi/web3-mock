@@ -55,7 +55,13 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getBlockByNumber':
-      return Promise.resolve(getBlockData(parseInt(ethers.BigNumber.from(request.params[0].toString()).toString())))
+      let blockNumber
+      if(request.params[0] == 'latest'){
+        blockNumber = getCurrentBlock()
+      } else {
+        blockNumber = ethers.BigNumber.from(request.params[0].toString())
+      }
+      return Promise.resolve(getBlockData(parseInt(blockNumber.toString())))
       break
 
     case 'eth_gasPrice':
