@@ -630,6 +630,46 @@ describe('mock transactions', ()=> {
         await new Promise((r) => setTimeout(r, 2000));
 
         expect(transactionError.code).toEqual('TRANSACTION_REPLACED')
+        expect(transactionError.receipt.status).toEqual(1)
+      })
+
+      it('allows to replace a transaction and let the replacing transaction fail', async ()=>{
+
+        let transaction = {
+          to: '0x5Af489c8786A018EC4814194dC8048be1007e390',
+          from: accounts[0],
+          value: "2000000000000000000"
+        }
+
+        let transactionMock = mock({
+          blockchain,
+          transaction
+        })
+
+        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let signer = provider.getSigner();
+
+        let sentTransaction = await signer.sendTransaction({
+          to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+          value: ethers.utils.parseEther("2")
+        })
+
+        let transactionError
+        sentTransaction.wait(1).catch((error)=>{
+          transactionError = error
+        })
+
+        let replacingTransactionMock = mock({
+          blockchain,
+          transaction
+        })
+
+        replace(transactionMock, replacingTransactionMock, false)
+
+        await new Promise((r) => setTimeout(r, 2000));
+
+        expect(transactionError.code).toEqual('TRANSACTION_REPLACED')
+        expect(transactionError.receipt.status).toEqual(0)
       })
     })
   })

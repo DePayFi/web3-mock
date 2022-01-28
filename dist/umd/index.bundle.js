@@ -17446,12 +17446,16 @@
     )._hex
   };
 
-  var replace = (transactionMock, replacingTransactionMock) => {
+  var replace = (transactionMock, replacingTransactionMock, confirmed = true) => {
     if(transactionMock == undefined || replacingTransactionMock == undefined) { raise$1('replace requires (transactionMock, replacingTransactionMock)'); }
     if(transactionMock.transaction.from == undefined) { raise$1('transactionMock to be replaced requires at least a "from"'); }
 
     replacingTransactionMock.transaction._id = getRandomTransactionHash();
-    replacingTransactionMock.transaction._confirmed = true;
+    if(confirmed){
+      replacingTransactionMock.transaction._confirmed = true;
+    } else {
+      replacingTransactionMock.transaction._failed = true;
+    }
     setBlockData(getCurrentBlock(), {
       "number": "0xd6fa38",
       "baseFeePerGas": "0x2d79336308",

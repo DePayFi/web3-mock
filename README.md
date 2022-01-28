@@ -498,6 +498,17 @@ await new Promise((r) => setTimeout(r, 2000));
 expect(transactionError.code).toEqual('TRANSACTION_REPLACED')
 ```
 
+In case you need to have the replacing transaction fail simply pass `false` as the third argument:
+
+```javascript
+replace(transactionMock, replacingTransactionMock, false)
+
+await new Promise((r) => setTimeout(r, 2000));
+
+expect(transactionError.code).toEqual('TRANSACTION_REPLACED')
+expect(transactionError.receipt.status).toEqual(0)
+```
+
 #### Mock Transactions partialy with anything
 
 ```javascript
