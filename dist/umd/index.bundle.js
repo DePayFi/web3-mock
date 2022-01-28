@@ -17445,8 +17445,8 @@
   };
 
   var replace = (transactionMock, replacingTransactionMock) => {
-    if(transactionMock == undefined || replacingTransactionMock == undefined) { raise('replace requires (transactionMock, replacingTransactionMock)'); }
-    if(transactionMock.transaction.from == undefined) { raise('transactionMock to be replaced requires at least a "from"'); }
+    if(transactionMock == undefined || replacingTransactionMock == undefined) { raise$1('replace requires (transactionMock, replacingTransactionMock)'); }
+    if(transactionMock.transaction.from == undefined) { raise$1('transactionMock to be replaced requires at least a "from"'); }
 
     replacingTransactionMock.transaction._id = getRandomTransactionHash();
     replacingTransactionMock.transaction._confirmed = true;
@@ -18427,7 +18427,13 @@
         return Promise.resolve(BigNumber.from(getCurrentBlock())._hex)
 
       case 'eth_getBlockByNumber':
-        return Promise.resolve(getBlockData(parseInt(BigNumber.from(request.params[0].toString()).toString())))
+        let blockNumber;
+        if(request.params[0] == 'latest'){
+          blockNumber = getCurrentBlock();
+        } else {
+          blockNumber = BigNumber.from(request.params[0].toString());
+        }
+        return Promise.resolve(getBlockData(parseInt(blockNumber.toString())))
 
       case 'eth_gasPrice':
         return Promise.resolve('0x12fee89674')
