@@ -1,4 +1,5 @@
 import getRandomTransactionHash from './vms/evm/transaction/getRandomTransactionHash'
+import raise from './raise'
 import { getTransactionCount, increaseTransactionCount } from './vms/evm/transaction/count'
 import { increaseBlock, getCurrentBlock, setBlockData } from './block'
 
