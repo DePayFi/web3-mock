@@ -17368,11 +17368,13 @@ new Logger(version);
 let count = {};
 
 let increaseTransactionCount = (address) => {
+  address = address.toLowerCase();
   if(count[address] == undefined) { count[address] = 0; }
   count[address] += 1;
 };
 
 let getTransactionCount = (address) => {
+  address = address.toLowerCase();
   if(count[address] == undefined) { count[address] = 0; }
   return BigNumber.from(count[address].toString())._hex
 };
