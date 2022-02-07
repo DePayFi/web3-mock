@@ -17636,7 +17636,7 @@
 
   let getContractFunction = ({ data, address, api, provider }) => {
     let contract = getContract({ address, api, provider });
-    let methodSelector = data.split('000000000000000000000000')[0];
+    let methodSelector = data.substring(0, 10);
     try {
       return contract.interface.getFunction(methodSelector)
     } catch (error) {
