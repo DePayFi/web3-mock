@@ -39,6 +39,8 @@ describe('mock transactions', ()=> {
           }
         })
 
+        expect(mockedTransaction.transaction._id).toBeDefined()
+
         let provider = new ethers.providers.Web3Provider(global.ethereum);
 
         let signer = provider.getSigner();

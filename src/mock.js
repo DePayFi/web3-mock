@@ -1,3 +1,4 @@
+import getRandomTransactionHash from './vms/evm/transaction/getRandomTransactionHash.js'
 import raise from './raise'
 import { getWindow } from './window'
 import { mock as mockBsc } from './blockchains/bsc/mock'
@@ -110,6 +111,9 @@ let mock = (configuration, call) => {
   let provider = configuration.provider
   let mock
 
+  if (configuration.transaction) {
+    configuration.transaction._id = getRandomTransactionHash()
+  }
   if (blockchain) { mock = mockBlockchain({ blockchain, configuration, window, provider }) }
   if (configuration.wallet) { mockWallet({ configuration, window }) }
   if (configuration.require) { requireMock(configuration.require) }

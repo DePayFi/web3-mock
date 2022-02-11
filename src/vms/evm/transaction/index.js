@@ -1,4 +1,3 @@
-import getRandomTransactionHash from './getRandomTransactionHash'
 import normalize from '../../../normalize'
 import raise from '../../../raise'
 import { findMock, findAnyMockForThisAddress } from '../findMock'
@@ -7,7 +6,6 @@ import { getContractFunction, getContractArguments } from '../data'
 let transaction = ({ blockchain, params, provider }) => {
   let mock = findMock({ type: 'transaction', params, provider })
   if (mock) {
-    mock.transaction._id = getRandomTransactionHash()
     mock.calls.add(params)
 
     if(mock.transaction.delay) {
