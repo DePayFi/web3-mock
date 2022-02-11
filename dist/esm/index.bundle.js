@@ -18327,7 +18327,6 @@ function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[
 let transaction = ({ blockchain, params, provider }) => {
   let mock = findMock({ type: 'transaction', params, provider });
   if (mock) {
-    mock.transaction._id = getRandomTransactionHash();
     mock.calls.add(params);
 
     if(mock.transaction.delay) {
@@ -18667,6 +18666,9 @@ let mock = (configuration, call) => {
   let provider = configuration.provider;
   let mock;
 
+  if (configuration.transaction) {
+    configuration.transaction._id = getRandomTransactionHash();
+  }
   if (blockchain) { mock = mockBlockchain({ blockchain, configuration, window, provider }); }
   if (configuration.wallet) { mockWallet({ configuration, window }); }
   if (configuration.require) { requireMock(configuration.require); }
