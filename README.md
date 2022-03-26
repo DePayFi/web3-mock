@@ -918,6 +918,21 @@ mock({
 // and allows to trigger walletconnect events with "trigger"
 ```
 
+#### Coinbase WalletLink
+
+```javascript
+import { wallets } from '@depay/web3-wallets'
+
+mock({
+  blockchain: 'ethereum',
+  wallet: 'walletlink',
+  connector: wallets.WalletLink
+})
+
+// simulates coinbase walletlink connect flow
+// and allows to trigger walletlink events with "trigger"
+```
+
 ### Test Helpers
 
 #### normalize

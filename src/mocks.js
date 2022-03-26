@@ -3,12 +3,16 @@ import { resetCurrentBlock, resetBlockData } from './block'
 import { resetRequire } from './require'
 import { resetTransactionCount } from './vms/evm/transaction/count'
 
-let WalletConnectClass
+let WalletConnectClass, WalletLinkClass
 
 let mocks = []
 
 const setWalletConnectClass = (givenWalletConnectClass)=> {
   WalletConnectClass = givenWalletConnectClass
+}
+
+const setWalletLinkClass = (givenWalletLinkClass)=> {
+  WalletLinkClass = givenWalletLinkClass
 }
 
 const resetMocks = ()=> {
@@ -21,11 +25,15 @@ const resetMocks = ()=> {
   resetCurrentBlock()
   resetBlockData()
   resetTransactionCount()
-  if(WalletConnectClass) {
-    WalletConnectClass.instance = undefined
-  }
+  if(WalletConnectClass) { WalletConnectClass.instance = undefined }
+  if(WalletLinkClass) { WalletLinkClass.instance = undefined }
 }
 
 resetMocks()
 
-export { mocks, resetMocks, setWalletConnectClass }
+export { 
+  mocks,
+  resetMocks,
+  setWalletConnectClass,
+  setWalletLinkClass,
+}

@@ -4,6 +4,7 @@ import { getWindow } from './window'
 import { mock as mockBsc } from './blockchains/bsc/mock'
 import { mock as mockEthereum } from './blockchains/ethereum/mock'
 import { mock as mockWalletConnect } from './wallets/walletConnect/mock'
+import { mock as mockWalletLink } from './wallets/walletLink/mock'
 import { mocks } from './mocks'
 import { requireMock } from './require'
 
@@ -84,6 +85,9 @@ let mockWallet = ({ configuration, window }) => {
       break
     case 'walletconnect':
       mockWalletConnect({ configuration, window })
+      break
+    case 'walletlink':
+      mockWalletLink({ configuration, window })
       break
     default:
       raise('Web3Mock: Unknown wallet!')
