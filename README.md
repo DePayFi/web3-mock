@@ -118,13 +118,15 @@ describe('something', ()=> {
 This library supports the following blockchains:
 
 - [Ethereum](https://ethereum.org)
-- [Binance Smart Chain](https://www.binance.org/en/smartChain)
+- [BNB Smart Chain](https://www.binance.org/smartChain)
+- [Polygon](https://polygon.technology)
 
 This library supports the following crypto wallets:
 
 - [MetaMask](https://metamask.io)
 - [Coinbase](https://wallet.coinbase.com)
 - [WalletConnect](https://walletconnect.org/)
+- All major web3 wallets that implement/inject window.ethereum
 
 ## Functionalities
 
