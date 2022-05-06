@@ -36,16 +36,16 @@
   "private": false,
   "dependencies": {},
   "peerDependencies": {
-    "@depay/web3-blockchains": "^4.2.0",
+    "@depay/web3-blockchains": "^4.5.0",
     "ethers": "^5.4.6"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=16"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.12.7",
-    "@depay/web3-blockchains": "^4.2.0",
+    "@depay/web3-blockchains": "^4.5.0",
     "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@rollup/plugin-replace": "^2.4.2",

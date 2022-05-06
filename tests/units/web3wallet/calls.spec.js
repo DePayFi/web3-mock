@@ -1,5 +1,6 @@
 import { ethers } from 'ethers'
 import { mock, resetMocks, anything } from 'src'
+import { supported } from "src/blockchains"
 
 describe('mock contract calls', ()=> {
 
@@ -310,7 +311,7 @@ describe('mock contract calls', ()=> {
         expect(callMock).toHaveBeenCalled()
       })
 
-      it('fails the call if you mock an Error', async ()=>{
+      it.only('fails the call if you mock an Error', async ()=>{
 
         let callMock = mock({
           blockchain,
