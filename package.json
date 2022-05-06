@@ -37,7 +37,7 @@
   "dependencies": {},
   "peerDependencies": {
     "@depay/web3-blockchains": "^4.5.0",
-    "ethers": "^5.4.6"
+    "ethers": "5.6.2"
   },
   "engines": {
     "node": ">=16"
@@ -57,7 +57,7 @@
     "eslint": "^7.15.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-webpack-plugin": "^2.5.4",
-    "ethers": "^5.4.6",
+    "ethers": "5.6.2",
     "regenerator-runtime": "^0.13.7",
     "rollup": "^2.34.2",
     "rollup-plugin-polyfill-node": "^0.8.0",

@@ -4,7 +4,7 @@ import { supported } from "src/blockchains"
 
 describe('mock contract calls', ()=> {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  supported.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
@@ -49,7 +49,9 @@ describe('mock contract calls', ()=> {
         
         await expect(
           contract.name()
-        ).rejects.toEqual('Web3Mock: Please mock the contract call to: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
+        ).rejects.toEqual(
+          new Error('missing revert data in call exception [ See: https://links.ethers.org/v5-errors-CALL_EXCEPTION ] (error="Web3Mock: Please mock the contract call to: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb", data="0x", code=CALL_EXCEPTION, version=providers/5.6.2)')
+        )
       })
 
       it('does not raise an error but asks you to mock the call if other mocks exist', async ()=> {
@@ -71,7 +73,9 @@ describe('mock contract calls', ()=> {
         
         await expect(
           contract.name()
-        ).rejects.toEqual('Web3Mock: Please mock the contract call to: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb')
+        ).rejects.toEqual(
+          new Error('missing revert data in call exception [ See: https://links.ethers.org/v5-errors-CALL_EXCEPTION ] (error="Web3Mock: Please mock the contract call to: 0xa0bed124a09ac2bd941b10349d8d224fe3c955eb", data="0x", code=CALL_EXCEPTION, version=providers/5.6.2)')
+        )
       })
 
       it('throws an error if the api for the called contract was not provided', ()=>{
@@ -108,7 +112,9 @@ describe('mock contract calls', ()=> {
         );
 
         await expect(contract.vestingRewardPerSecond).rejects.toEqual(
-          'Web3Mock: method not found in mocked api!'
+          new Error(
+            'missing revert data in call exception [ See: https://links.ethers.org/v5-errors-CALL_EXCEPTION ] (error="Web3Mock: method not found in mocked api!", data="0x", code=CALL_EXCEPTION, version=providers/5.6.2)'
+          )
         )
 
         expect(callMock).not.toHaveBeenCalled()
@@ -133,7 +139,7 @@ describe('mock contract calls', ()=> {
         );
 
         await expect(contract.decimals()).rejects.toEqual(
-          `Web3Mock: Please mock the contract call: {\"blockchain\":\"${blockchain}\",\"call\":{\"to\":\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\",\"api\":[\"PLACE API HERE\"],\"method\":\"decimals\",\"return\":\"Your Value\"}}`
+          new Error(`missing revert data in call exception [ See: https://links.ethers.org/v5-errors-CALL_EXCEPTION ] (error="Web3Mock: Please mock the contract call: {\\"blockchain\\":\\"${blockchain}\\",\\"call\\":{\\"to\\":\\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\\",\\"api\\":[\\"PLACE API HERE\\"],\\"method\\":\\"decimals\\",\\"return\\":\\"Your Value\\"}}", data="0x", code=CALL_EXCEPTION, version=providers/5.6.2)`)
         )
       })
 
@@ -156,7 +162,7 @@ describe('mock contract calls', ()=> {
         );
 
         await expect(contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390")).rejects.toEqual(
-          `Web3Mock: Please mock the contract call: {\"blockchain\":\"${blockchain}\",\"call\":{\"to\":\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\",\"api\":[\"PLACE API HERE\"],\"method\":\"balanceOf\",\"return\":\"Your Value\",\"params\":\"0x5af489c8786a018ec4814194dc8048be1007e390\"}}`
+          new Error(`missing revert data in call exception [ See: https://links.ethers.org/v5-errors-CALL_EXCEPTION ] (error="Web3Mock: Please mock the contract call: {\\"blockchain\\":\\"${blockchain}\\",\\"call\\":{\\"to\\":\\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\\",\\"api\\":[\\"PLACE API HERE\\"],\\"method\\":\\"balanceOf\\",\\"return\\":\\"Your Value\\",\\"params\\":\\"0x5af489c8786a018ec4814194dc8048be1007e390\\"}}", data="0x", code=CALL_EXCEPTION, version=providers/5.6.2)`)
         )
       })
 
@@ -246,7 +252,7 @@ describe('mock contract calls', ()=> {
             ["0xdac17f958d2ee523a2206206994597c13d831ec7","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"]
           )
         ).rejects.toEqual(
-          `Web3Mock: Please mock the contract call: {\"blockchain\":\"${blockchain}\",\"call\":{\"to\":\"0x7a250d5630b4cf539739df2c5dacb4c659f2488d\",\"api\":[\"PLACE API HERE\"],\"method\":\"getAmountsIn\",\"return\":\"Your Value\",\"params\":[\"1000000000000000000\",[\"0xdac17f958d2ee523a2206206994597c13d831ec7\",\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\"]]}}`
+          new Error(`missing revert data in call exception [ See: https://links.ethers.org/v5-errors-CALL_EXCEPTION ] (error="Web3Mock: Please mock the contract call: {\\"blockchain\\":\\"${blockchain}\\",\\"call\\":{\\"to\\":\\"0x7a250d5630b4cf539739df2c5dacb4c659f2488d\\",\\"api\\":[\\"PLACE API HERE\\"],\\"method\\":\\"getAmountsIn\\",\\"return\\":\\"Your Value\\",\\"params\\":[\\"1000000000000000000\\",[\\"0xdac17f958d2ee523a2206206994597c13d831ec7\\",\\"0xa0bed124a09ac2bd941b10349d8d224fe3c955eb\\"]]}}", data="0x", code=CALL_EXCEPTION, version=providers/5.6.2)`)
         )
       })
 
@@ -311,7 +317,7 @@ describe('mock contract calls', ()=> {
         expect(callMock).toHaveBeenCalled()
       })
 
-      it.only('fails the call if you mock an Error', async ()=>{
+      it('fails the call if you mock an Error', async ()=>{
 
         let callMock = mock({
           blockchain,
@@ -333,7 +339,7 @@ describe('mock contract calls', ()=> {
 
         await expect(
           contract.name()
-        ).rejects.toEqual(new Error('Some issue'))
+        ).rejects.toEqual(new Error('missing revert data in call exception [ See: https://links.ethers.org/v5-errors-CALL_EXCEPTION ] (error={"error":{"message":"Some issue"}}, data="0x", code=CALL_EXCEPTION, version=providers/5.6.2)'))
 
         expect(callMock).toHaveBeenCalled()
       })
