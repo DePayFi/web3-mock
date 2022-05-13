@@ -1,9 +1,10 @@
 import { ethers } from 'ethers'
 import { mock, resetMocks, confirm, increaseBlock } from 'src'
+import { supported } from "src/blockchains"
 
 describe('mock transaction confirmations', ()=> {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  supported.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

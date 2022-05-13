@@ -1,9 +1,10 @@
 import { ethers } from 'ethers'
 import { mock, resetMocks, confirm, anything, replace } from 'src'
+import { supported } from "src/blockchains"
 
 describe('mock transactions', ()=> {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  supported.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
       const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']

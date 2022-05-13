@@ -6,7 +6,11 @@ import { encode, getContractFunction, getContractArguments } from './data'
 let callMock = ({ mock, params, provider })=> {
   mock.calls.add(params)
   if (mock.call.return instanceof Error) {
-    return Promise.reject(mock.call.return)
+    return Promise.reject({ 
+      error: {
+        message: mock.call.return.message
+      }
+    })
   } else {
     return Promise.resolve(
       encode({ result: mock.call.return, api: mock.call.api, params, provider })

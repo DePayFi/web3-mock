@@ -1,21 +1,16 @@
 import raise from './raise'
-import { confirm as confirmBscTransaction } from './blockchains/bsc/confirm'
-import { confirm as confirmEthereumTransaction } from './blockchains/ethereum/confirm'
-import { mocks } from './mocks'
+import { confirm as confirmEvm } from './vms/evm/confirm'
 import { increaseBlock } from './block'
+import { mocks } from './mocks'
+import { supported } from './blockchains'
 
 export default (mock) => {
   if (mock?.transaction?._id) {
     mock.transaction._confirmed = true
-    switch (mock.blockchain) {
-      case 'ethereum':
-        confirmEthereumTransaction(mock.transaction)
-        break
-      case 'bsc':
-        confirmBscTransaction(mock.transaction)
-        break
-      default:
-        raise('Web3Mock: Unknown blockchain!')
+    if(supported.evm.includes(mock.blockchain)) {
+      confirmEvm(mock.transaction)
+    } else {
+      raise('Web3Mock: Unknown blockchain!')
     }
     increaseBlock()
   } else {

@@ -1,12 +1,12 @@
 import getRandomTransactionHash from './vms/evm/transaction/getRandomTransactionHash.js'
 import raise from './raise'
 import { getWindow } from './window'
-import { mock as mockBsc } from './blockchains/bsc/mock'
-import { mock as mockEthereum } from './blockchains/ethereum/mock'
+import { mock as mockEvm } from './vms/evm/mock'
 import { mock as mockWalletConnect } from './wallets/walletConnect/mock'
 import { mock as mockWalletLink } from './wallets/walletLink/mock'
 import { mocks } from './mocks'
 import { requireMock } from './require'
+import { supported } from './blockchains'
 
 let getBlockchain = (configuration) => {
   if (typeof configuration === 'string') {
@@ -95,15 +95,10 @@ let mockWallet = ({ configuration, window }) => {
 }
 
 let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
-  switch (blockchain) {
-    case 'ethereum':
-      return spy(mockEthereum({ blockchain, configuration, window, provider }))
-      break
-    case 'bsc':
-      return spy(mockBsc({ blockchain, configuration, window, provider }))
-      break
-    default:
-      raise('Web3Mock: Unknown blockchain!')
+  if(supported.evm.includes(blockchain)) {
+    return spy(mockEvm({ blockchain, configuration, window, provider }))
+  } else {
+    raise('Web3Mock: Unknown blockchain!')
   }
 }
 

@@ -1,9 +1,10 @@
 import { ethers } from 'ethers'
 import { mock, resetMocks, anything } from 'src'
+import { supported } from "src/blockchains"
 
 describe('mocks web3 wallet balances', ()=> {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  supported.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

@@ -1,9 +1,10 @@
 import { mock, resetMocks } from 'src'
 import { Blockchain } from '@depay/web3-blockchains'
+import { supported } from "src/blockchains"
 
 describe('mocks walletConnect requests', ()=> {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  supported.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

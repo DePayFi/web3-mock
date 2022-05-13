@@ -1,9 +1,10 @@
 import {ethers} from 'ethers'
 import {mock, resetMocks} from 'src'
+import { supported } from "src/blockchains"
 
 describe('mock signatures', ()=> {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  supported.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
       const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
@@ -22,7 +23,7 @@ describe('mock signatures', ()=> {
         await expect(
           signer.signMessage(message)
         ).rejects.toEqual(
-          "Web3Mock: Please mock the sign request: {\"blockchain\":\""+blockchain+"\",\"signature\":{\"params\":[\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\",\"0x546869732069732061206d65737361676520746f206265207369676e65640a0a416e642061206e6577206c696e65\"],\"return\":\"PUT SIGNATURE HERE\"}}"
+          "Web3Mock: Please mock the sign request: {\"blockchain\":\""+blockchain+"\",\"signature\":{\"params\":[\"0x546869732069732061206d65737361676520746f206265207369676e65640a0a416e642061206e6577206c696e65\",\"0xd8da6bf26964af9d7eed9e03e53415d37aa96045\"],\"return\":\"PUT SIGNATURE HERE\"}}"
         )
       })
 

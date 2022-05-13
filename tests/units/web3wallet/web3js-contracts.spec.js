@@ -1,10 +1,11 @@
 import Contract from 'web3-eth-contract'
 import Web3 from 'web3'
 import { mock, confirm, resetMocks } from 'src'
+import { supported } from "src/blockchains"
 
 describe('mock and trigger web3-js contract interactions', ()=> {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  supported.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

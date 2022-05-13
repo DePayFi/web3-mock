@@ -1,8 +1,9 @@
 import { mock, resetMocks, increaseBlock, getCurrentBlock } from 'src'
+import { supported } from "src/blockchains"
 
 describe('resetMocks', ()=> {
 
-  ['ethereum', 'bsc'].forEach((blockchain)=>{
+  supported.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
