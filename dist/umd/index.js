@@ -110,19 +110,17 @@
 
   resetMocks();
 
+  let supported = ['ethereum', 'bsc', 'polygon'];
+  supported.evm = ['ethereum', 'bsc', 'polygon'];
+
   function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   var confirm = (mock) => {
     if (_optionalChain$e([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
       mock.transaction._confirmed = true;
-      switch (mock.blockchain) {
-        case 'ethereum':
-          confirm$1(mock.transaction);
-          break
-        case 'bsc':
-          confirm$1(mock.transaction);
-          break
-        default:
-          raise$1('Web3Mock: Unknown blockchain!');
+      if(supported.evm.includes(mock.blockchain)) {
+        confirm$1(mock.transaction);
+      } else {
+        raise$1('Web3Mock: Unknown blockchain!');
       }
       increaseBlock();
     } else {
@@ -208,15 +206,10 @@
     if (_optionalChain$d([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
       mock.transaction._failed = true;
       mock.transaction._confirmed = false;
-      switch (mock.blockchain) {
-        case 'ethereum':
-          fail$1(mock.transaction);
-          break
-        case 'bsc':
-          fail$1(mock.transaction);
-          break
-        default:
-          raise('Web3Mock: Unknown blockchain!');
+      if(supported.evm.includes(mock.blockchain)) {
+        fail$1(mock.transaction);
+      } else {
+        raise('Web3Mock: Unknown blockchain!');
       }
       increaseBlock();
     } else {
@@ -621,7 +614,11 @@
   let callMock = ({ mock, params, provider })=> {
     mock.calls.add(params);
     if (mock.call.return instanceof Error) {
-      return Promise.reject(mock.call.return)
+      return Promise.reject({ 
+        error: {
+          message: mock.call.return.message
+        }
+      })
     } else {
       return Promise.resolve(
         encode$3({ result: mock.call.return, api: mock.call.api, params, provider })
@@ -4500,7 +4497,7 @@
   })(module, commonjsGlobal);
   });
 
-  const version$f = "logger/5.4.1";
+  const version$f = "logger/5.6.0";
 
   let _permanentCensorErrors = false;
   let _censorErrors = false;
@@ -4597,7 +4594,7 @@
       //  - errorArgs?: The EIP848 error parameters
       //  - reason: The reason (only for EIP848 "Error(string)")
       ErrorCode["CALL_EXCEPTION"] = "CALL_EXCEPTION";
-      // Insufficien funds (< value + gasLimit * gasPrice)
+      // Insufficient funds (< value + gasLimit * gasPrice)
       //   - transaction: the transaction attempted
       ErrorCode["INSUFFICIENT_FUNDS"] = "INSUFFICIENT_FUNDS";
       // Nonce has already been used
@@ -4679,6 +4676,40 @@
           messageDetails.push(`code=${code}`);
           messageDetails.push(`version=${this.version}`);
           const reason = message;
+          let url = "";
+          switch (code) {
+              case ErrorCode.NUMERIC_FAULT: {
+                  url = "NUMERIC_FAULT";
+                  const fault = message;
+                  switch (fault) {
+                      case "overflow":
+                      case "underflow":
+                      case "division-by-zero":
+                          url += "-" + fault;
+                          break;
+                      case "negative-power":
+                      case "negative-width":
+                          url += "-unsupported";
+                          break;
+                      case "unbound-bitwise-result":
+                          url += "-unbound-result";
+                          break;
+                  }
+                  break;
+              }
+              case ErrorCode.CALL_EXCEPTION:
+              case ErrorCode.INSUFFICIENT_FUNDS:
+              case ErrorCode.MISSING_NEW:
+              case ErrorCode.NONCE_EXPIRED:
+              case ErrorCode.REPLACEMENT_UNDERPRICED:
+              case ErrorCode.TRANSACTION_REPLACED:
+              case ErrorCode.UNPREDICTABLE_GAS_LIMIT:
+                  url = code;
+                  break;
+          }
+          if (url) {
+              message += " [ See: https:/\/links.ethers.org/v5-errors-" + url + " ]";
+          }
           if (messageDetails.length) {
               message += " (" + messageDetails.join(", ") + ")";
           }
@@ -4812,7 +4843,7 @@
   Logger.errors = ErrorCode;
   Logger.levels = LogLevel;
 
-  const version$e = "bytes/5.4.0";
+  const version$e = "bytes/5.6.1";
 
   const logger$h = new Logger(version$e);
   ///////////////////////////////
@@ -4832,6 +4863,9 @@
   function isBytesLike(value) {
       return ((isHexString(value) && !(value.length % 2)) || isBytes(value));
   }
+  function isInteger(value) {
+      return (typeof (value) === "number" && value == value && (value % 1) === 0);
+  }
   function isBytes(value) {
       if (value == null) {
           return false;
@@ -4842,12 +4876,12 @@
       if (typeof (value) === "string") {
           return false;
       }
-      if (value.length == null) {
+      if (!isInteger(value.length) || value.length < 0) {
           return false;
       }
       for (let i = 0; i < value.length; i++) {
           const v = value[i];
-          if (typeof (v) !== "number" || v < 0 || v >= 256 || (v % 1)) {
+          if (!isInteger(v) || v < 0 || v >= 256) {
               return false;
           }
       }
@@ -4879,7 +4913,7 @@
           let hex = value.substring(2);
           if (hex.length % 2) {
               if (options.hexPad === "left") {
-                  hex = "0x0" + hex.substring(2);
+                  hex = "0" + hex;
               }
               else if (options.hexPad === "right") {
                   hex += "0";
@@ -5079,17 +5113,28 @@
           s: "0x",
           _vs: "0x",
           recoveryParam: 0,
-          v: 0
+          v: 0,
+          yParityAndS: "0x",
+          compact: "0x"
       };
       if (isBytesLike(signature)) {
-          const bytes = arrayify(signature);
-          if (bytes.length !== 65) {
-              logger$h.throwArgumentError("invalid signature string; must be 65 bytes", "signature", signature);
-          }
+          let bytes = arrayify(signature);
           // Get the r, s and v
-          result.r = hexlify(bytes.slice(0, 32));
-          result.s = hexlify(bytes.slice(32, 64));
-          result.v = bytes[64];
+          if (bytes.length === 64) {
+              // EIP-2098; pull the v from the top bit of s and clear it
+              result.v = 27 + (bytes[32] >> 7);
+              bytes[32] &= 0x7f;
+              result.r = hexlify(bytes.slice(0, 32));
+              result.s = hexlify(bytes.slice(32, 64));
+          }
+          else if (bytes.length === 65) {
+              result.r = hexlify(bytes.slice(0, 32));
+              result.s = hexlify(bytes.slice(32, 64));
+              result.v = bytes[64];
+          }
+          else {
+              logger$h.throwArgumentError("invalid signature string", "signature", signature);
+          }
           // Allow a recid to be used as the v
           if (result.v < 27) {
               if (result.v === 0 || result.v === 1) {
@@ -5152,8 +5197,11 @@
               if (result.v == null) {
                   result.v = 27 + result.recoveryParam;
               }
-              else if (result.recoveryParam !== (1 - (result.v % 2))) {
-                  logger$h.throwArgumentError("signature recoveryParam mismatch v", "signature", signature);
+              else {
+                  const recId = (result.v === 0 || result.v === 1) ? result.v : (1 - (result.v % 2));
+                  if (result.recoveryParam !== recId) {
+                      logger$h.throwArgumentError("signature recoveryParam mismatch v", "signature", signature);
+                  }
               }
           }
           if (result.r == null || !isHexString(result.r)) {
@@ -5190,10 +5238,12 @@
               logger$h.throwArgumentError("signature _vs mismatch v and s", "signature", signature);
           }
       }
+      result.yParityAndS = result._vs;
+      result.compact = result.r + result.yParityAndS.substring(2);
       return result;
   }
 
-  const version$d = "bignumber/5.4.1";
+  const version$d = "bignumber/5.6.0";
 
   var BN = bn.BN;
   const logger$g = new Logger(version$d);
@@ -5234,7 +5284,7 @@
       div(other) {
           const o = BigNumber.from(other);
           if (o.isZero()) {
-              throwFault("division by zero", "div");
+              throwFault("division-by-zero", "div");
           }
           return toBigNumber(toBN(this).div(toBN(other)));
       }
@@ -5244,53 +5294,53 @@
       mod(other) {
           const value = toBN(other);
           if (value.isNeg()) {
-              throwFault("cannot modulo negative values", "mod");
+              throwFault("division-by-zero", "mod");
           }
           return toBigNumber(toBN(this).umod(value));
       }
       pow(other) {
           const value = toBN(other);
           if (value.isNeg()) {
-              throwFault("cannot raise to negative values", "pow");
+              throwFault("negative-power", "pow");
           }
           return toBigNumber(toBN(this).pow(value));
       }
       and(other) {
           const value = toBN(other);
           if (this.isNegative() || value.isNeg()) {
-              throwFault("cannot 'and' negative values", "and");
+              throwFault("unbound-bitwise-result", "and");
           }
           return toBigNumber(toBN(this).and(value));
       }
       or(other) {
           const value = toBN(other);
           if (this.isNegative() || value.isNeg()) {
-              throwFault("cannot 'or' negative values", "or");
+              throwFault("unbound-bitwise-result", "or");
           }
           return toBigNumber(toBN(this).or(value));
       }
       xor(other) {
           const value = toBN(other);
           if (this.isNegative() || value.isNeg()) {
-              throwFault("cannot 'xor' negative values", "xor");
+              throwFault("unbound-bitwise-result", "xor");
           }
           return toBigNumber(toBN(this).xor(value));
       }
       mask(value) {
           if (this.isNegative() || value < 0) {
-              throwFault("cannot mask negative values", "mask");
+              throwFault("negative-width", "mask");
           }
           return toBigNumber(toBN(this).maskn(value));
       }
       shl(value) {
           if (this.isNegative() || value < 0) {
-              throwFault("cannot shift negative values", "shl");
+              throwFault("negative-width", "shl");
           }
           return toBigNumber(toBN(this).shln(value));
       }
       shr(value) {
           if (this.isNegative() || value < 0) {
-              throwFault("cannot shift negative values", "shr");
+              throwFault("negative-width", "shr");
           }
           return toBigNumber(toBN(this).shrn(value));
       }
@@ -5387,7 +5437,7 @@
               return BigNumber.from(hexlify(anyValue));
           }
           if (anyValue) {
-              // Hexable interface (takes piority)
+              // Hexable interface (takes priority)
               if (anyValue.toHexString) {
                   const hex = anyValue.toHexString();
                   if (typeof (hex) === "string") {
@@ -5424,7 +5474,7 @@
       if (value[0] === "-") {
           // Strip off the negative sign
           value = value.substring(1);
-          // Cannot have mulitple negative signs (e.g. "--0x04")
+          // Cannot have multiple negative signs (e.g. "--0x04")
           if (value[0] === "-") {
               logger$g.throwArgumentError("invalid hex", "value", value);
           }
@@ -5477,7 +5527,7 @@
       return (new BN(value, 36)).toString(16);
   }
 
-  const version$c = "properties/5.4.1";
+  const version$c = "properties/5.6.0";
 
   var __awaiter$7 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
       function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -5602,7 +5652,7 @@
       }
   }
 
-  const version$b = "abstract-provider/5.4.1";
+  const version$b = "abstract-provider/5.6.0";
 
   var __awaiter$6 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
       function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -5644,7 +5694,7 @@
                   // We may want to compute this more accurately in the future,
                   // using the formula "check if the base fee is correct".
                   // See: https://eips.ethereum.org/EIPS/eip-1559
-                  maxPriorityFeePerGas = BigNumber.from("2500000000");
+                  maxPriorityFeePerGas = BigNumber.from("1500000000");
                   maxFeePerGas = block.baseFeePerGas.mul(2).add(maxPriorityFeePerGas);
               }
               return { maxFeePerGas, maxPriorityFeePerGas, gasPrice };
@@ -5663,7 +5713,7 @@
       }
   }
 
-  const version$a = "networks/5.4.2";
+  const version$a = "networks/5.6.2";
 
   const logger$d = new Logger(version$a);
   function isRenetworkable(value) {
@@ -5675,41 +5725,47 @@
               options = {};
           }
           const providerList = [];
-          if (providers.InfuraProvider) {
+          if (providers.InfuraProvider && options.infura !== "-") {
               try {
                   providerList.push(new providers.InfuraProvider(network, options.infura));
               }
               catch (error) { }
           }
-          if (providers.EtherscanProvider) {
+          if (providers.EtherscanProvider && options.etherscan !== "-") {
               try {
                   providerList.push(new providers.EtherscanProvider(network, options.etherscan));
               }
               catch (error) { }
           }
-          if (providers.AlchemyProvider) {
+          if (providers.AlchemyProvider && options.alchemy !== "-") {
               try {
                   providerList.push(new providers.AlchemyProvider(network, options.alchemy));
               }
               catch (error) { }
           }
-          if (providers.PocketProvider) {
+          if (providers.PocketProvider && options.pocket !== "-") {
               // These networks are currently faulty on Pocket as their
               // network does not handle the Berlin hardfork, which is
               // live on these ones.
               // @TODO: This goes away once Pocket has upgraded their nodes
               const skip = ["goerli", "ropsten", "rinkeby"];
               try {
-                  const provider = new providers.PocketProvider(network);
+                  const provider = new providers.PocketProvider(network, options.pocket);
                   if (provider.network && skip.indexOf(provider.network.name) === -1) {
                       providerList.push(provider);
                   }
               }
               catch (error) { }
           }
-          if (providers.CloudflareProvider) {
+          if (providers.CloudflareProvider && options.cloudflare !== "-") {
               try {
                   providerList.push(new providers.CloudflareProvider(network));
+              }
+              catch (error) { }
+          }
+          if (providers.AnkrProvider && options.ankr !== "-") {
+              try {
+                  providerList.push(new providers.AnkrProvider(network, options.ankr));
               }
               catch (error) { }
           }
@@ -5762,6 +5818,7 @@
       name: "classicMordor",
       _defaultProvider: etcDefaultProvider("https://www.ethercluster.com/mordor", "classicMordor")
   };
+  // See: https://chainlist.org
   const networks = {
       unspecified: { chainId: 0, name: "unspecified" },
       homestead: homestead,
@@ -5786,6 +5843,7 @@
           name: "goerli",
           _defaultProvider: ethDefaultProvider("goerli")
       },
+      kintsugi: { chainId: 1337702, name: "kintsugi" },
       // ETC (See: #351)
       classic: {
           chainId: 61,
@@ -5803,6 +5861,11 @@
       xdai: { chainId: 100, name: "xdai" },
       matic: { chainId: 137, name: "matic" },
       maticmum: { chainId: 80001, name: "maticmum" },
+      optimism: { chainId: 10, name: "optimism" },
+      "optimism-kovan": { chainId: 69, name: "optimism-kovan" },
+      "optimism-goerli": { chainId: 420, name: "optimism-goerli" },
+      arbitrum: { chainId: 42161, name: "arbitrum" },
+      "arbitrum-rinkeby": { chainId: 421611, name: "arbitrum-rinkeby" },
       bnb: { chainId: 56, name: "bnb" },
       bnbt: { chainId: 97, name: "bnbt" },
   };
@@ -6003,9 +6066,9 @@
   /**
    * [js-sha3]{@link https://github.com/emn178/js-sha3}
    *
-   * @version 0.5.7
+   * @version 0.8.0
    * @author Chen, Yi-Cyuan [emn178@gmail.com]
-   * @copyright Chen, Yi-Cyuan 2015-2016
+   * @copyright Chen, Yi-Cyuan 2015-2018
    * @license MIT
    */
 
@@ -6013,25 +6076,52 @@
   /*jslint bitwise: true */
   (function () {
 
-    var root = typeof window === 'object' ? window : {};
+    var INPUT_ERROR = 'input is invalid type';
+    var FINALIZE_ERROR = 'finalize already called';
+    var WINDOW = typeof window === 'object';
+    var root = WINDOW ? window : {};
+    if (root.JS_SHA3_NO_WINDOW) {
+      WINDOW = false;
+    }
+    var WEB_WORKER = !WINDOW && typeof self === 'object';
     var NODE_JS = !root.JS_SHA3_NO_NODE_JS && typeof process === 'object' && process.versions && process.versions.node;
     if (NODE_JS) {
       root = commonjsGlobal;
+    } else if (WEB_WORKER) {
+      root = self;
     }
     var COMMON_JS = !root.JS_SHA3_NO_COMMON_JS && 'object' === 'object' && module.exports;
+    var ARRAY_BUFFER = !root.JS_SHA3_NO_ARRAY_BUFFER && typeof ArrayBuffer !== 'undefined';
     var HEX_CHARS = '0123456789abcdef'.split('');
     var SHAKE_PADDING = [31, 7936, 2031616, 520093696];
+    var CSHAKE_PADDING = [4, 1024, 262144, 67108864];
     var KECCAK_PADDING = [1, 256, 65536, 16777216];
     var PADDING = [6, 1536, 393216, 100663296];
     var SHIFT = [0, 8, 16, 24];
     var RC = [1, 0, 32898, 0, 32906, 2147483648, 2147516416, 2147483648, 32907, 0, 2147483649,
-              0, 2147516545, 2147483648, 32777, 2147483648, 138, 0, 136, 0, 2147516425, 0,
-              2147483658, 0, 2147516555, 0, 139, 2147483648, 32905, 2147483648, 32771,
-              2147483648, 32770, 2147483648, 128, 2147483648, 32778, 0, 2147483658, 2147483648,
-              2147516545, 2147483648, 32896, 2147483648, 2147483649, 0, 2147516424, 2147483648];
+      0, 2147516545, 2147483648, 32777, 2147483648, 138, 0, 136, 0, 2147516425, 0,
+      2147483658, 0, 2147516555, 0, 139, 2147483648, 32905, 2147483648, 32771,
+      2147483648, 32770, 2147483648, 128, 2147483648, 32778, 0, 2147483658, 2147483648,
+      2147516545, 2147483648, 32896, 2147483648, 2147483649, 0, 2147516424, 2147483648];
     var BITS = [224, 256, 384, 512];
     var SHAKE_BITS = [128, 256];
-    var OUTPUT_TYPES = ['hex', 'buffer', 'arrayBuffer', 'array'];
+    var OUTPUT_TYPES = ['hex', 'buffer', 'arrayBuffer', 'array', 'digest'];
+    var CSHAKE_BYTEPAD = {
+      '128': 168,
+      '256': 136
+    };
+
+    if (root.JS_SHA3_NO_NODE_JS || !Array.isArray) {
+      Array.isArray = function (obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+      };
+    }
+
+    if (ARRAY_BUFFER && (root.JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW || !ArrayBuffer.isView)) {
+      ArrayBuffer.isView = function (obj) {
+        return typeof obj === 'object' && obj.buffer && obj.buffer.constructor === ArrayBuffer;
+      };
+    }
 
     var createOutputMethod = function (bits, padding, outputType) {
       return function (message) {
@@ -6045,6 +6135,26 @@
       };
     };
 
+    var createCshakeOutputMethod = function (bits, padding, outputType) {
+      return function (message, outputBits, n, s) {
+        return methods['cshake' + bits].update(message, outputBits, n, s)[outputType]();
+      };
+    };
+
+    var createKmacOutputMethod = function (bits, padding, outputType) {
+      return function (key, message, outputBits, s) {
+        return methods['kmac' + bits].update(key, message, outputBits, s)[outputType]();
+      };
+    };
+
+    var createOutputMethods = function (method, createMethod, bits, padding) {
+      for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
+        var type = OUTPUT_TYPES[i];
+        method[type] = createMethod(bits, padding, type);
+      }
+      return method;
+    };
+
     var createMethod = function (bits, padding) {
       var method = createOutputMethod(bits, padding, 'hex');
       method.create = function () {
@@ -6053,11 +6163,7 @@
       method.update = function (message) {
         return method.create().update(message);
       };
-      for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
-        var type = OUTPUT_TYPES[i];
-        method[type] = createOutputMethod(bits, padding, type);
-      }
-      return method;
+      return createOutputMethods(method, createOutputMethod, bits, padding);
     };
 
     var createShakeMethod = function (bits, padding) {
@@ -6068,28 +6174,59 @@
       method.update = function (message, outputBits) {
         return method.create(outputBits).update(message);
       };
-      for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
-        var type = OUTPUT_TYPES[i];
-        method[type] = createShakeOutputMethod(bits, padding, type);
-      }
-      return method;
+      return createOutputMethods(method, createShakeOutputMethod, bits, padding);
+    };
+
+    var createCshakeMethod = function (bits, padding) {
+      var w = CSHAKE_BYTEPAD[bits];
+      var method = createCshakeOutputMethod(bits, padding, 'hex');
+      method.create = function (outputBits, n, s) {
+        if (!n && !s) {
+          return methods['shake' + bits].create(outputBits);
+        } else {
+          return new Keccak(bits, padding, outputBits).bytepad([n, s], w);
+        }
+      };
+      method.update = function (message, outputBits, n, s) {
+        return method.create(outputBits, n, s).update(message);
+      };
+      return createOutputMethods(method, createCshakeOutputMethod, bits, padding);
+    };
+
+    var createKmacMethod = function (bits, padding) {
+      var w = CSHAKE_BYTEPAD[bits];
+      var method = createKmacOutputMethod(bits, padding, 'hex');
+      method.create = function (key, outputBits, s) {
+        return new Kmac(bits, padding, outputBits).bytepad(['KMAC', s], w).bytepad([key], w);
+      };
+      method.update = function (key, message, outputBits, s) {
+        return method.create(key, outputBits, s).update(message);
+      };
+      return createOutputMethods(method, createKmacOutputMethod, bits, padding);
     };
 
     var algorithms = [
-      {name: 'keccak', padding: KECCAK_PADDING, bits: BITS, createMethod: createMethod},
-      {name: 'sha3', padding: PADDING, bits: BITS, createMethod: createMethod},
-      {name: 'shake', padding: SHAKE_PADDING, bits: SHAKE_BITS, createMethod: createShakeMethod}
+      { name: 'keccak', padding: KECCAK_PADDING, bits: BITS, createMethod: createMethod },
+      { name: 'sha3', padding: PADDING, bits: BITS, createMethod: createMethod },
+      { name: 'shake', padding: SHAKE_PADDING, bits: SHAKE_BITS, createMethod: createShakeMethod },
+      { name: 'cshake', padding: CSHAKE_PADDING, bits: SHAKE_BITS, createMethod: createCshakeMethod },
+      { name: 'kmac', padding: CSHAKE_PADDING, bits: SHAKE_BITS, createMethod: createKmacMethod }
     ];
 
     var methods = {}, methodNames = [];
 
     for (var i = 0; i < algorithms.length; ++i) {
       var algorithm = algorithms[i];
-      var bits  = algorithm.bits;
+      var bits = algorithm.bits;
       for (var j = 0; j < bits.length; ++j) {
-        var methodName = algorithm.name +'_' + bits[j];
+        var methodName = algorithm.name + '_' + bits[j];
         methodNames.push(methodName);
         methods[methodName] = algorithm.createMethod(bits[j], algorithm.padding);
+        if (algorithm.name !== 'sha3') {
+          var newMethodName = algorithm.name + bits[j];
+          methodNames.push(newMethodName);
+          methods[newMethodName] = methods[methodName];
+        }
       }
     }
 
@@ -6099,6 +6236,7 @@
       this.padding = padding;
       this.outputBits = outputBits;
       this.reset = true;
+      this.finalized = false;
       this.block = 0;
       this.start = 0;
       this.blockCount = (1600 - (bits << 1)) >> 5;
@@ -6112,11 +6250,27 @@
     }
 
     Keccak.prototype.update = function (message) {
-      var notString = typeof message !== 'string';
-      if (notString && message.constructor === ArrayBuffer) {
-        message = new Uint8Array(message);
+      if (this.finalized) {
+        throw new Error(FINALIZE_ERROR);
       }
-      var length = message.length, blocks = this.blocks, byteCount = this.byteCount,
+      var notString, type = typeof message;
+      if (type !== 'string') {
+        if (type === 'object') {
+          if (message === null) {
+            throw new Error(INPUT_ERROR);
+          } else if (ARRAY_BUFFER && message.constructor === ArrayBuffer) {
+            message = new Uint8Array(message);
+          } else if (!Array.isArray(message)) {
+            if (!ARRAY_BUFFER || !ArrayBuffer.isView(message)) {
+              throw new Error(INPUT_ERROR);
+            }
+          }
+        } else {
+          throw new Error(INPUT_ERROR);
+        }
+        notString = true;
+      }
+      var blocks = this.blocks, byteCount = this.byteCount, length = message.length,
         blockCount = this.blockCount, index = 0, s = this.s, i, code;
 
       while (index < length) {
@@ -6168,7 +6322,84 @@
       return this;
     };
 
+    Keccak.prototype.encode = function (x, right) {
+      var o = x & 255, n = 1;
+      var bytes = [o];
+      x = x >> 8;
+      o = x & 255;
+      while (o > 0) {
+        bytes.unshift(o);
+        x = x >> 8;
+        o = x & 255;
+        ++n;
+      }
+      if (right) {
+        bytes.push(n);
+      } else {
+        bytes.unshift(n);
+      }
+      this.update(bytes);
+      return bytes.length;
+    };
+
+    Keccak.prototype.encodeString = function (str) {
+      var notString, type = typeof str;
+      if (type !== 'string') {
+        if (type === 'object') {
+          if (str === null) {
+            throw new Error(INPUT_ERROR);
+          } else if (ARRAY_BUFFER && str.constructor === ArrayBuffer) {
+            str = new Uint8Array(str);
+          } else if (!Array.isArray(str)) {
+            if (!ARRAY_BUFFER || !ArrayBuffer.isView(str)) {
+              throw new Error(INPUT_ERROR);
+            }
+          }
+        } else {
+          throw new Error(INPUT_ERROR);
+        }
+        notString = true;
+      }
+      var bytes = 0, length = str.length;
+      if (notString) {
+        bytes = length;
+      } else {
+        for (var i = 0; i < str.length; ++i) {
+          var code = str.charCodeAt(i);
+          if (code < 0x80) {
+            bytes += 1;
+          } else if (code < 0x800) {
+            bytes += 2;
+          } else if (code < 0xd800 || code >= 0xe000) {
+            bytes += 3;
+          } else {
+            code = 0x10000 + (((code & 0x3ff) << 10) | (str.charCodeAt(++i) & 0x3ff));
+            bytes += 4;
+          }
+        }
+      }
+      bytes += this.encode(bytes * 8);
+      this.update(str);
+      return bytes;
+    };
+
+    Keccak.prototype.bytepad = function (strs, w) {
+      var bytes = this.encode(w);
+      for (var i = 0; i < strs.length; ++i) {
+        bytes += this.encodeString(strs[i]);
+      }
+      var paddingBytes = w - bytes % w;
+      var zeros = [];
+      zeros.length = paddingBytes;
+      this.update(zeros);
+      return this;
+    };
+
     Keccak.prototype.finalize = function () {
+      if (this.finalized) {
+        return;
+      }
+      this.finalized = true;
       var blocks = this.blocks, i = this.lastByteIndex, blockCount = this.blockCount, s = this.s;
       blocks[i >> 2] |= this.padding[i & 3];
       if (this.lastByteIndex === this.byteCount) {
@@ -6188,15 +6419,15 @@
       this.finalize();
 
       var blockCount = this.blockCount, s = this.s, outputBlocks = this.outputBlocks,
-          extraBytes = this.extraBytes, i = 0, j = 0;
+        extraBytes = this.extraBytes, i = 0, j = 0;
       var hex = '', block;
       while (j < outputBlocks) {
         for (i = 0; i < blockCount && j < outputBlocks; ++i, ++j) {
           block = s[i];
           hex += HEX_CHARS[(block >> 4) & 0x0F] + HEX_CHARS[block & 0x0F] +
-                 HEX_CHARS[(block >> 12) & 0x0F] + HEX_CHARS[(block >> 8) & 0x0F] +
-                 HEX_CHARS[(block >> 20) & 0x0F] + HEX_CHARS[(block >> 16) & 0x0F] +
-                 HEX_CHARS[(block >> 28) & 0x0F] + HEX_CHARS[(block >> 24) & 0x0F];
+            HEX_CHARS[(block >> 12) & 0x0F] + HEX_CHARS[(block >> 8) & 0x0F] +
+            HEX_CHARS[(block >> 20) & 0x0F] + HEX_CHARS[(block >> 16) & 0x0F] +
+            HEX_CHARS[(block >> 28) & 0x0F] + HEX_CHARS[(block >> 24) & 0x0F];
         }
         if (j % blockCount === 0) {
           f(s);
@@ -6205,9 +6436,7 @@
       }
       if (extraBytes) {
         block = s[i];
-        if (extraBytes > 0) {
-          hex += HEX_CHARS[(block >> 4) & 0x0F] + HEX_CHARS[block & 0x0F];
-        }
+        hex += HEX_CHARS[(block >> 4) & 0x0F] + HEX_CHARS[block & 0x0F];
         if (extraBytes > 1) {
           hex += HEX_CHARS[(block >> 12) & 0x0F] + HEX_CHARS[(block >> 8) & 0x0F];
         }
@@ -6222,7 +6451,7 @@
       this.finalize();
 
       var blockCount = this.blockCount, s = this.s, outputBlocks = this.outputBlocks,
-          extraBytes = this.extraBytes, i = 0, j = 0;
+        extraBytes = this.extraBytes, i = 0, j = 0;
       var bytes = this.outputBits >> 3;
       var buffer;
       if (extraBytes) {
@@ -6252,7 +6481,7 @@
       this.finalize();
 
       var blockCount = this.blockCount, s = this.s, outputBlocks = this.outputBlocks,
-          extraBytes = this.extraBytes, i = 0, j = 0;
+        extraBytes = this.extraBytes, i = 0, j = 0;
       var array = [], offset, block;
       while (j < outputBlocks) {
         for (i = 0; i < blockCount && j < outputBlocks; ++i, ++j) {
@@ -6270,9 +6499,7 @@
       if (extraBytes) {
         offset = j << 2;
         block = s[i];
-        if (extraBytes > 0) {
-          array[offset] = block & 0xFF;
-        }
+        array[offset] = block & 0xFF;
         if (extraBytes > 1) {
           array[offset + 1] = (block >> 8) & 0xFF;
         }
@@ -6283,11 +6510,22 @@
       return array;
     };
 
+    function Kmac(bits, padding, outputBits) {
+      Keccak.call(this, bits, padding, outputBits);
+    }
+
+    Kmac.prototype = new Keccak();
+
+    Kmac.prototype.finalize = function () {
+      this.encode(this.outputBits, true);
+      return Keccak.prototype.finalize.call(this);
+    };
+
     var f = function (s) {
       var h, l, n, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9,
-          b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17,
-          b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33,
-          b34, b35, b36, b37, b38, b39, b40, b41, b42, b43, b44, b45, b46, b47, b48, b49;
+        b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17,
+        b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33,
+        b34, b35, b36, b37, b38, b39, b40, b41, b42, b43, b44, b45, b46, b47, b48, b49;
       for (n = 0; n < 48; n += 2) {
         c0 = s[0] ^ s[10] ^ s[20] ^ s[30] ^ s[40];
         c1 = s[1] ^ s[11] ^ s[21] ^ s[31] ^ s[41];
@@ -6471,7 +6709,7 @@
     if (COMMON_JS) {
       module.exports = methods;
     } else {
-      for (var i = 0; i < methodNames.length; ++i) {
+      for (i = 0; i < methodNames.length; ++i) {
         root[methodNames[i]] = methods[methodNames[i]];
       }
     }
@@ -6484,7 +6722,7 @@
       return '0x' + sha3$1.keccak_256(arrayify(data));
   }
 
-  const version$9 = "strings/5.4.0";
+  const version$9 = "strings/5.6.0";
 
   const logger$c = new Logger(version$9);
   ///////////////////////////////
@@ -6518,7 +6756,7 @@
       // - offset       = start of this codepoint
       // - badCodepoint = the computed codepoint; inside the UTF-16 surrogate range
       Utf8ErrorReason["UTF16_SURROGATE"] = "UTF-16 surrogate";
-      // The string is an overlong reperesentation
+      // The string is an overlong representation
       // - offset       = start of this codepoint
       // - badCodepoint = the computed codepoint; already bounds checked
       Utf8ErrorReason["OVERLONG"] = "overlong representation";
@@ -6624,7 +6862,7 @@
               res = (res << 6) | (nextChar & 0x3f);
               i++;
           }
-          // See above loop for invalid contimuation byte
+          // See above loop for invalid continuation byte
           if (res === null) {
               continue;
           }
@@ -6890,7 +7128,7 @@
       return keccak256(toUtf8Bytes(text));
   }
 
-  const version$8 = "hash/5.4.0";
+  const version$8 = "hash/5.6.0";
 
   const logger$b = new Logger(version$8);
   const Zeros = new Uint8Array(32);
@@ -6914,8 +7152,17 @@
       }
       return hexlify(result);
   }
+  function dnsEncode(name) {
+      return hexlify(concat(name.split(".").map((comp) => {
+          // We jam in an _ prefix to fill in with the length later
+          // Note: Nameprep throws if the component is over 63 bytes
+          const bytes = toUtf8Bytes("_" + nameprep(comp));
+          bytes[0] = bytes.length - 1;
+          return bytes;
+      }))) + "00";
+  }
 
-  const version$7 = "rlp/5.4.0";
+  const version$7 = "rlp/5.6.0";
 
   const logger$a = new Logger(version$7);
   function arrayifyInteger(value) {
@@ -7023,7 +7270,7 @@
       }
       return { consumed: 1, result: hexlify(data[offset]) };
   }
-  function decode$1(data) {
+  function decode$2(data) {
       const bytes = arrayify(data);
       const decoded = _decode(bytes, 0);
       if (decoded.consumed !== bytes.length) {
@@ -7032,7 +7279,7 @@
       return decoded.result;
   }
 
-  const version$6 = "address/5.4.0";
+  const version$6 = "address/5.6.0";
 
   const logger$9 = new Logger(version$6);
   function getChecksumAddress(address) {
@@ -8847,13 +9094,21 @@
 
   var hash = hash_1;
 
-  const version$5 = "sha2/5.4.0";
+  const version$5 = "sha2/5.6.0";
 
   new Logger(version$5);
   function sha256(data) {
       return "0x" + (hash.sha256().update(arrayify(data)).digest("hex"));
   }
 
+  function decode$1(textData) {
+      textData = atob(textData);
+      const data = [];
+      for (let i = 0; i < textData.length; i++) {
+          data.push(textData.charCodeAt(i));
+      }
+      return arrayify(data);
+  }
   function encode$1(data) {
       data = arrayify(data);
       let textData = "";
@@ -8863,7 +9118,7 @@
       return btoa(textData);
   }
 
-  const version$4 = "web/5.4.0";
+  const version$4 = "web/5.6.0";
 
   var __awaiter$4 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
       function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -8883,12 +9138,14 @@
               method: (options.method || "GET"),
               headers: (options.headers || {}),
               body: (options.body || undefined),
-              mode: "cors",
-              cache: "no-cache",
-              credentials: "same-origin",
-              redirect: "follow",
-              referrer: "client", // no-referrer, *client
           };
+          if (options.skipFetchSetup !== true) {
+              request.mode = "cors"; // no-cors, cors, *same-origin
+              request.cache = "no-cache"; // *default, no-cache, reload, force-cache, only-if-cached
+              request.credentials = "same-origin"; // include, *same-origin, omit
+              request.redirect = "follow"; // manual, *follow, error
+              request.referrer = "client"; // no-referrer, *client
+          }
           const response = yield fetch(href, request);
           const body = yield response.arrayBuffer();
           const headers = {};
@@ -8957,6 +9214,7 @@
       const throttleCallback = ((typeof (connection) === "object") ? connection.throttleCallback : null);
       const throttleSlotInterval = ((typeof (connection) === "object" && typeof (connection.throttleSlotInterval) === "number") ? connection.throttleSlotInterval : 100);
       logger$7.assertArgument((throttleSlotInterval > 0 && (throttleSlotInterval % 1) === 0), "invalid connection throttle slot interval", "connection.throttleSlotInterval", throttleSlotInterval);
+      const errorPassThrough = ((typeof (connection) === "object") ? !!(connection.errorPassThrough) : false);
       const headers = {};
       let url = null;
       // @TODO: Allow ConnectionInfo to override some of these values
@@ -8994,6 +9252,35 @@
                   key: "Authorization",
                   value: "Basic " + encode$1(toUtf8Bytes(authorization))
               };
+          }
+          if (connection.skipFetchSetup != null) {
+              options.skipFetchSetup = !!connection.skipFetchSetup;
+          }
+      }
+      const reData = new RegExp("^data:([a-z0-9-]+/[a-z0-9-]+);base64,(.*)$", "i");
+      const dataMatch = ((url) ? url.match(reData) : null);
+      if (dataMatch) {
+          try {
+              const response = {
+                  statusCode: 200,
+                  statusMessage: "OK",
+                  headers: { "content-type": dataMatch[1] },
+                  body: decode$1(dataMatch[2])
+              };
+              let result = response.body;
+              if (processFunc) {
+                  result = processFunc(response.body, response);
+              }
+              return Promise.resolve(result);
+          }
+          catch (error) {
+              logger$7.throwError("processing response error", Logger.errors.SERVER_ERROR, {
+                  body: bodyify(dataMatch[1], dataMatch[2]),
+                  error: error,
+                  requestBody: null,
+                  requestMethod: "GET",
+                  url: url
+              });
           }
       }
       if (body) {
@@ -9045,24 +9332,34 @@
                   let response = null;
                   try {
                       response = yield getUrl(url, options);
-                      // Exponential back-off throttling
-                      if (response.statusCode === 429 && attempt < attemptLimit) {
-                          let tryAgain = true;
-                          if (throttleCallback) {
-                              tryAgain = yield throttleCallback(attempt, url);
+                      if (attempt < attemptLimit) {
+                          if (response.statusCode === 301 || response.statusCode === 302) {
+                              // Redirection; for now we only support absolute locataions
+                              const location = response.headers.location || "";
+                              if (options.method === "GET" && location.match(/^https:/)) {
+                                  url = response.headers.location;
+                                  continue;
+                              }
                           }
-                          if (tryAgain) {
-                              let stall = 0;
-                              const retryAfter = response.headers["retry-after"];
-                              if (typeof (retryAfter) === "string" && retryAfter.match(/^[1-9][0-9]*$/)) {
-                                  stall = parseInt(retryAfter) * 1000;
+                          else if (response.statusCode === 429) {
+                              // Exponential back-off throttling
+                              let tryAgain = true;
+                              if (throttleCallback) {
+                                  tryAgain = yield throttleCallback(attempt, url);
                               }
-                              else {
-                                  stall = throttleSlotInterval * parseInt(String(Math.random() * Math.pow(2, attempt)));
+                              if (tryAgain) {
+                                  let stall = 0;
+                                  const retryAfter = response.headers["retry-after"];
+                                  if (typeof (retryAfter) === "string" && retryAfter.match(/^[1-9][0-9]*$/)) {
+                                      stall = parseInt(retryAfter) * 1000;
+                                  }
+                                  else {
+                                      stall = throttleSlotInterval * parseInt(String(Math.random() * Math.pow(2, attempt)));
+                                  }
+                                  //console.log("Stalling 429");
+                                  yield staller(stall);
+                                  continue;
                               }
-                              //console.log("Stalling 429");
-                              yield staller(stall);
-                              continue;
                           }
                       }
                   }
@@ -9082,7 +9379,7 @@
                   if (allow304 && response.statusCode === 304) {
                       body = null;
                   }
-                  else if (response.statusCode < 200 || response.statusCode >= 300) {
+                  else if (!errorPassThrough && (response.statusCode < 200 || response.statusCode >= 300)) {
                       runningTimeout.cancel();
                       logger$7.throwError("bad response", Logger.errors.SERVER_ERROR, {
                           status: response.statusCode,
@@ -9124,7 +9421,7 @@
                       }
                   }
                   runningTimeout.cancel();
-                  // If we had a processFunc, it eitehr returned a T or threw above.
+                  // If we had a processFunc, it either returned a T or threw above.
                   // The "body" is now a Uint8Array.
                   return body;
               }
@@ -9440,7 +9737,7 @@
     fromWords: fromWords
   };
 
-  const version$3 = "providers/5.4.5";
+  const version$3 = "providers/5.6.5";
 
   function createCommonjsModule(fn, basedir, module) {
   	return module = {
@@ -11868,7 +12165,7 @@
 
   var EC$1 = elliptic_1.ec;
 
-  const version$2 = "signing-key/5.4.0";
+  const version$2 = "signing-key/5.6.1";
 
   const logger$6 = new Logger(version$2);
   let _curve = null;
@@ -11882,6 +12179,9 @@
       constructor(privateKey) {
           defineReadOnly(this, "curve", "secp256k1");
           defineReadOnly(this, "privateKey", hexlify(privateKey));
+          if (hexDataLength(this.privateKey) !== 32) {
+              logger$6.throwArgumentError("invalid private key", "privateKey", "[[ REDACTED ]]");
+          }
           const keyPair = getCurve().keyFromPrivate(arrayify(this.privateKey));
           defineReadOnly(this, "publicKey", "0x" + keyPair.getPublic(false, "hex"));
           defineReadOnly(this, "compressedPublicKey", "0x" + keyPair.getPublic(true, "hex"));
@@ -11943,7 +12243,7 @@
       return logger$6.throwArgumentError("invalid public or private key", "key", "[REDACTED]");
   }
 
-  const version$1 = "transactions/5.4.0";
+  const version$1 = "transactions/5.6.0";
 
   const logger$5 = new Logger(version$1);
   var TransactionTypes;
@@ -12088,7 +12388,7 @@
       }
   }
   function _parseEip1559(payload) {
-      const transaction = decode$1(payload.slice(1));
+      const transaction = decode$2(payload.slice(1));
       if (transaction.length !== 9 && transaction.length !== 12) {
           logger$5.throwArgumentError("invalid component count for transaction type: 2", "payload", hexlify(payload));
       }
@@ -12116,7 +12416,7 @@
       return tx;
   }
   function _parseEip2930(payload) {
-      const transaction = decode$1(payload.slice(1));
+      const transaction = decode$2(payload.slice(1));
       if (transaction.length !== 8 && transaction.length !== 11) {
           logger$5.throwArgumentError("invalid component count for transaction type: 1", "payload", hexlify(payload));
       }
@@ -12141,7 +12441,7 @@
   }
   // Legacy Transactions and EIP-155
   function _parse(rawTransaction) {
-      const transaction = decode$1(rawTransaction);
+      const transaction = decode$2(rawTransaction);
       if (transaction.length !== 9 && transaction.length !== 6) {
           logger$5.throwArgumentError("invalid raw transaction", "rawTransaction", rawTransaction);
       }
@@ -12173,7 +12473,7 @@
           tx.v = 0;
       }
       else {
-          // Signed Tranasaction
+          // Signed Transaction
           tx.chainId = Math.floor((tx.v - 35) / 2);
           if (tx.chainId < 0) {
               tx.chainId = 0;
@@ -12302,7 +12602,7 @@
               type: type
           };
           formats.block = {
-              hash: hash,
+              hash: Formatter.allowNull(hash),
               parentHash: hash,
               number: number,
               timestamp: number,
@@ -12310,7 +12610,7 @@
               difficulty: this.difficulty.bind(this),
               gasLimit: bigNumber,
               gasUsed: bigNumber,
-              miner: address,
+              miner: Formatter.allowNull(address),
               extraData: data,
               transactions: Formatter.allowNull(Formatter.arrayOf(hash)),
               baseFeePerGas: Formatter.allowNull(bigNumber)
@@ -12453,7 +12753,11 @@
           if (value.author != null && value.miner == null) {
               value.miner = value.author;
           }
-          return Formatter.check(format, value);
+          // The difficulty may need to come from _difficulty in recursed blocks
+          const difficulty = (value._difficulty != null) ? value._difficulty : value.difficulty;
+          const result = Formatter.check(format, value);
+          result._difficulty = ((difficulty == null) ? null : BigNumber.from(difficulty));
+          return result;
       }
       block(value) {
           return this._block(value, this.formats.block);
@@ -12631,6 +12935,7 @@
       });
   };
   const logger$3 = new Logger(version$3);
+  const MAX_CCIP_REDIRECTS = 10;
   //////////////////////////////
   // Event Serializeing
   function checkTopic(topic) {
@@ -12731,6 +13036,8 @@
           defineReadOnly(this, "tag", tag);
           defineReadOnly(this, "listener", listener);
           defineReadOnly(this, "once", once);
+          this._lastBlockNumber = -2;
+          this._inflight = false;
       }
       get event() {
           switch (this.type) {
@@ -12787,34 +13094,147 @@
   function base58Encode(data) {
       return Base58.encode(concat([data, hexDataSlice(sha256(sha256(data)), 0, 4)]));
   }
+  const matcherIpfs = new RegExp("^(ipfs):/\/(.*)$", "i");
+  const matchers = [
+      new RegExp("^(https):/\/(.*)$", "i"),
+      new RegExp("^(data):(.*)$", "i"),
+      matcherIpfs,
+      new RegExp("^eip155:[0-9]+/(erc[0-9]+):(.*)$", "i"),
+  ];
+  function _parseString(result, start) {
+      try {
+          return toUtf8String(_parseBytes(result, start));
+      }
+      catch (error) { }
+      return null;
+  }
+  function _parseBytes(result, start) {
+      if (result === "0x") {
+          return null;
+      }
+      const offset = BigNumber.from(hexDataSlice(result, start, start + 32)).toNumber();
+      const length = BigNumber.from(hexDataSlice(result, offset, offset + 32)).toNumber();
+      return hexDataSlice(result, offset + 32, offset + 32 + length);
+  }
+  // Trim off the ipfs:// prefix and return the default gateway URL
+  function getIpfsLink(link) {
+      if (link.match(/^ipfs:\/\/ipfs\//i)) {
+          link = link.substring(12);
+      }
+      else if (link.match(/^ipfs:\/\//i)) {
+          link = link.substring(7);
+      }
+      else {
+          logger$3.throwArgumentError("unsupported IPFS format", "link", link);
+      }
+      return `https:/\/gateway.ipfs.io/ipfs/${link}`;
+  }
+  function numPad(value) {
+      const result = arrayify(value);
+      if (result.length > 32) {
+          throw new Error("internal; should not happen");
+      }
+      const padded = new Uint8Array(32);
+      padded.set(result, 32 - result.length);
+      return padded;
+  }
+  function bytesPad(value) {
+      if ((value.length % 32) === 0) {
+          return value;
+      }
+      const result = new Uint8Array(Math.ceil(value.length / 32) * 32);
+      result.set(value);
+      return result;
+  }
+  // ABI Encodes a series of (bytes, bytes, ...)
+  function encodeBytes(datas) {
+      const result = [];
+      let byteCount = 0;
+      // Add place-holders for pointers as we add items
+      for (let i = 0; i < datas.length; i++) {
+          result.push(null);
+          byteCount += 32;
+      }
+      for (let i = 0; i < datas.length; i++) {
+          const data = arrayify(datas[i]);
+          // Update the bytes offset
+          result[i] = numPad(byteCount);
+          // The length and padded value of data
+          result.push(numPad(data.length));
+          result.push(bytesPad(data));
+          byteCount += 32 + Math.ceil(data.length / 32) * 32;
+      }
+      return hexConcat(result);
+  }
   class Resolver {
-      constructor(provider, address, name) {
+      // The resolvedAddress is only for creating a ReverseLookup resolver
+      constructor(provider, address, name, resolvedAddress) {
           defineReadOnly(this, "provider", provider);
           defineReadOnly(this, "name", name);
           defineReadOnly(this, "address", provider.formatter.address(address));
+          defineReadOnly(this, "_resolvedAddress", resolvedAddress);
       }
-      _fetchBytes(selector, parameters) {
-          return __awaiter$2(this, void 0, void 0, function* () {
-              // keccak256("addr(bytes32,uint256)")
-              const transaction = {
+      supportsWildcard() {
+          if (!this._supportsEip2544) {
+              // supportsInterface(bytes4 = selector("resolve(bytes,bytes)"))
+              this._supportsEip2544 = this.provider.call({
                   to: this.address,
+                  data: "0x01ffc9a79061b92300000000000000000000000000000000000000000000000000000000"
+              }).then((result) => {
+                  return BigNumber.from(result).eq(1);
+              }).catch((error) => {
+                  if (error.code === Logger.errors.CALL_EXCEPTION) {
+                      return false;
+                  }
+                  // Rethrow the error: link is down, etc. Let future attempts retry.
+                  this._supportsEip2544 = null;
+                  throw error;
+              });
+          }
+          return this._supportsEip2544;
+      }
+      _fetch(selector, parameters) {
+          return __awaiter$2(this, void 0, void 0, function* () {
+              // e.g. keccak256("addr(bytes32,uint256)")
+              const tx = {
+                  to: this.address,
+                  ccipReadEnabled: true,
                   data: hexConcat([selector, namehash(this.name), (parameters || "0x")])
               };
+              // Wildcard support; use EIP-2544 to resolve the request
+              let parseBytes = false;
+              if (yield this.supportsWildcard()) {
+                  parseBytes = true;
+                  // selector("resolve(bytes,bytes)")
+                  tx.data = hexConcat(["0x9061b923", encodeBytes([dnsEncode(this.name), tx.data])]);
+              }
               try {
-                  const result = yield this.provider.call(transaction);
-                  if (result === "0x") {
-                      return null;
+                  let result = yield this.provider.call(tx);
+                  if ((arrayify(result).length % 32) === 4) {
+                      logger$3.throwError("resolver threw error", Logger.errors.CALL_EXCEPTION, {
+                          transaction: tx, data: result
+                      });
                   }
-                  const offset = BigNumber.from(hexDataSlice(result, 0, 32)).toNumber();
-                  const length = BigNumber.from(hexDataSlice(result, offset, offset + 32)).toNumber();
-                  return hexDataSlice(result, offset + 32, offset + 32 + length);
+                  if (parseBytes) {
+                      result = _parseBytes(result, 0);
+                  }
+                  return result;
               }
               catch (error) {
                   if (error.code === Logger.errors.CALL_EXCEPTION) {
                       return null;
                   }
-                  return null;
+                  throw error;
               }
+          });
+      }
+      _fetchBytes(selector, parameters) {
+          return __awaiter$2(this, void 0, void 0, function* () {
+              const result = yield this._fetch(selector, parameters);
+              if (result != null) {
+                  return _parseBytes(result, 0);
+              }
+              return null;
           });
       }
       _getAddress(coinType, hexBytes) {
@@ -12878,16 +13298,12 @@
               if (coinType === 60) {
                   try {
                       // keccak256("addr(bytes32)")
-                      const transaction = {
-                          to: this.address,
-                          data: ("0x3b3b57de" + namehash(this.name).substring(2))
-                      };
-                      const hexBytes = yield this.provider.call(transaction);
+                      const result = yield this._fetch("0x3b3b57de");
                       // No address
-                      if (hexBytes === "0x" || hexBytes === HashZero) {
+                      if (result === "0x" || result === HashZero) {
                           return null;
                       }
-                      return this.provider.formatter.callAddress(hexBytes);
+                      return this.provider.formatter.callAddress(result);
                   }
                   catch (error) {
                       if (error.code === Logger.errors.CALL_EXCEPTION) {
@@ -12914,6 +13330,119 @@
               return address;
           });
       }
+      getAvatar() {
+          return __awaiter$2(this, void 0, void 0, function* () {
+              const linkage = [{ type: "name", content: this.name }];
+              try {
+                  // test data for ricmoo.eth
+                  //const avatar = "eip155:1/erc721:0x265385c7f4132228A0d54EB1A9e7460b91c0cC68/29233";
+                  const avatar = yield this.getText("avatar");
+                  if (avatar == null) {
+                      return null;
+                  }
+                  for (let i = 0; i < matchers.length; i++) {
+                      const match = avatar.match(matchers[i]);
+                      if (match == null) {
+                          continue;
+                      }
+                      const scheme = match[1].toLowerCase();
+                      switch (scheme) {
+                          case "https":
+                              linkage.push({ type: "url", content: avatar });
+                              return { linkage, url: avatar };
+                          case "data":
+                              linkage.push({ type: "data", content: avatar });
+                              return { linkage, url: avatar };
+                          case "ipfs":
+                              linkage.push({ type: "ipfs", content: avatar });
+                              return { linkage, url: getIpfsLink(avatar) };
+                          case "erc721":
+                          case "erc1155": {
+                              // Depending on the ERC type, use tokenURI(uint256) or url(uint256)
+                              const selector = (scheme === "erc721") ? "0xc87b56dd" : "0x0e89341c";
+                              linkage.push({ type: scheme, content: avatar });
+                              // The owner of this name
+                              const owner = (this._resolvedAddress || (yield this.getAddress()));
+                              const comps = (match[2] || "").split("/");
+                              if (comps.length !== 2) {
+                                  return null;
+                              }
+                              const addr = yield this.provider.formatter.address(comps[0]);
+                              const tokenId = hexZeroPad(BigNumber.from(comps[1]).toHexString(), 32);
+                              // Check that this account owns the token
+                              if (scheme === "erc721") {
+                                  // ownerOf(uint256 tokenId)
+                                  const tokenOwner = this.provider.formatter.callAddress(yield this.provider.call({
+                                      to: addr, data: hexConcat(["0x6352211e", tokenId])
+                                  }));
+                                  if (owner !== tokenOwner) {
+                                      return null;
+                                  }
+                                  linkage.push({ type: "owner", content: tokenOwner });
+                              }
+                              else if (scheme === "erc1155") {
+                                  // balanceOf(address owner, uint256 tokenId)
+                                  const balance = BigNumber.from(yield this.provider.call({
+                                      to: addr, data: hexConcat(["0x00fdd58e", hexZeroPad(owner, 32), tokenId])
+                                  }));
+                                  if (balance.isZero()) {
+                                      return null;
+                                  }
+                                  linkage.push({ type: "balance", content: balance.toString() });
+                              }
+                              // Call the token contract for the metadata URL
+                              const tx = {
+                                  to: this.provider.formatter.address(comps[0]),
+                                  data: hexConcat([selector, tokenId])
+                              };
+                              let metadataUrl = _parseString(yield this.provider.call(tx), 0);
+                              if (metadataUrl == null) {
+                                  return null;
+                              }
+                              linkage.push({ type: "metadata-url-base", content: metadataUrl });
+                              // ERC-1155 allows a generic {id} in the URL
+                              if (scheme === "erc1155") {
+                                  metadataUrl = metadataUrl.replace("{id}", tokenId.substring(2));
+                                  linkage.push({ type: "metadata-url-expanded", content: metadataUrl });
+                              }
+                              // Transform IPFS metadata links
+                              if (metadataUrl.match(/^ipfs:/i)) {
+                                  metadataUrl = getIpfsLink(metadataUrl);
+                              }
+                              linkage.push({ type: "metadata-url", content: metadataUrl });
+                              // Get the token metadata
+                              const metadata = yield fetchJson(metadataUrl);
+                              if (!metadata) {
+                                  return null;
+                              }
+                              linkage.push({ type: "metadata", content: JSON.stringify(metadata) });
+                              // Pull the image URL out
+                              let imageUrl = metadata.image;
+                              if (typeof (imageUrl) !== "string") {
+                                  return null;
+                              }
+                              if (imageUrl.match(/^(https:\/\/|data:)/i)) {
+                                  // Allow
+                              }
+                              else {
+                                  // Transform IPFS link to gateway
+                                  const ipfs = imageUrl.match(matcherIpfs);
+                                  if (ipfs == null) {
+                                      return null;
+                                  }
+                                  linkage.push({ type: "url-ipfs", content: imageUrl });
+                                  imageUrl = getIpfsLink(imageUrl);
+                              }
+                              linkage.push({ type: "url", content: imageUrl });
+                              return { linkage, url: imageUrl };
+                          }
+                      }
+                  }
+              }
+              catch (error) { }
+              return null;
+          });
+      }
       getContentHash() {
           return __awaiter$2(this, void 0, void 0, function* () {
               // keccak256("contenthash()")
@@ -12928,6 +13457,14 @@
                   const length = parseInt(ipfs[3], 16);
                   if (ipfs[4].length === length * 2) {
                       return "ipfs:/\/" + Base58.encode("0x" + ipfs[1]);
+                  }
+              }
+              // IPNS (CID: 1, Type: libp2p-key)
+              const ipns = hexBytes.match(/^0xe5010172(([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])([0-9a-f]*))$/);
+              if (ipns) {
+                  const length = parseInt(ipns[3], 16);
+                  if (ipns[4].length === length * 2) {
+                      return "ipns:/\/" + Base58.encode("0x" + ipns[1]);
                   }
               }
               // Swarm (CID: 1, Type: swarm-manifest; hash/length hard-coded to keccak256/32)
@@ -12980,6 +13517,7 @@
           // Events being listened to
           this._events = [];
           this._emitted = { block: -2 };
+          this.disableCcipRead = false;
           this.formatter = new.target.getFormatter();
           // If network is any, this Provider allows the underlying
           // network to change dynamically, and we auto-detect the
@@ -12996,7 +13534,7 @@
               this._ready().catch((error) => { });
           }
           else {
-              const knownNetwork = getStatic((new.target), "getNetwork")(network);
+              const knownNetwork = getStatic(new.target, "getNetwork")(network);
               if (knownNetwork) {
                   defineReadOnly(this, "_network", knownNetwork);
                   this.emit("network", knownNetwork, null);
@@ -13007,6 +13545,7 @@
           }
           this._maxInternalBlockNumber = -1024;
           this._lastBlockNumber = -2;
+          this._maxFilterBlockRange = 10;
           this._pollingInterval = 4000;
           this._fastQueryDate = 0;
       }
@@ -13045,7 +13584,7 @@
       }
       // This will always return the most recently established network.
       // For "any", this can change (a "network" event is emitted before
-      // any change is refelcted); otherwise this cannot change
+      // any change is reflected); otherwise this cannot change
       get ready() {
           return poll(() => {
               return this._ready().then((network) => {
@@ -13069,6 +13608,40 @@
       // @TODO: Remove this and just use getNetwork
       static getNetwork(network) {
           return getNetwork((network == null) ? "homestead" : network);
+      }
+      ccipReadFetch(tx, calldata, urls) {
+          return __awaiter$2(this, void 0, void 0, function* () {
+              if (this.disableCcipRead || urls.length === 0) {
+                  return null;
+              }
+              const sender = tx.to.toLowerCase();
+              const data = calldata.toLowerCase();
+              const errorMessages = [];
+              for (let i = 0; i < urls.length; i++) {
+                  const url = urls[i];
+                  // URL expansion
+                  const href = url.replace("{sender}", sender).replace("{data}", data);
+                  // If no {data} is present, use POST; otherwise GET
+                  const json = (url.indexOf("{data}") >= 0) ? null : JSON.stringify({ data, sender });
+                  const result = yield fetchJson({ url: href, errorPassThrough: true }, json, (value, response) => {
+                      value.status = response.statusCode;
+                      return value;
+                  });
+                  if (result.data) {
+                      return result.data;
+                  }
+                  const errorMessage = (result.message || "unknown error");
+                  // 4xx indicates the result is not present; stop
+                  if (result.status >= 400 && result.status < 500) {
+                      return logger$3.throwError(`response not found during CCIP fetch: ${errorMessage}`, Logger.errors.SERVER_ERROR, { url, errorMessage });
+                  }
+                  // 5xx indicates server issue; try the next url
+                  errorMessages.push(errorMessage);
+              }
+              return logger$3.throwError(`error encountered during CCIP fetch: ${errorMessages.map((m) => JSON.stringify(m)).join(", ")}`, Logger.errors.SERVER_ERROR, {
+                  urls, errorMessages
+              });
+          });
       }
       // Fetches the blockNumber, but will reuse any result that is less
       // than maxAge old or has been requested since the last request
@@ -13217,20 +13790,44 @@
                           break;
                       }
                       case "filter": {
-                          const filter = event.filter;
-                          filter.fromBlock = this._lastBlockNumber + 1;
-                          filter.toBlock = blockNumber;
-                          const runner = this.getLogs(filter).then((logs) => {
-                              if (logs.length === 0) {
-                                  return;
+                          // We only allow a single getLogs to be in-flight at a time
+                          if (!event._inflight) {
+                              event._inflight = true;
+                              // Filter from the last known event; due to load-balancing
+                              // and some nodes returning updated block numbers before
+                              // indexing events, a logs result with 0 entries cannot be
+                              // trusted and we must retry a range which includes it again
+                              const filter = event.filter;
+                              filter.fromBlock = event._lastBlockNumber + 1;
+                              filter.toBlock = blockNumber;
+                              // Prevent fitler ranges from growing too wild
+                              if (filter.toBlock - this._maxFilterBlockRange > filter.fromBlock) {
+                                  filter.fromBlock = filter.toBlock - this._maxFilterBlockRange;
                               }
-                              logs.forEach((log) => {
-                                  this._emitted["b:" + log.blockHash] = log.blockNumber;
-                                  this._emitted["t:" + log.transactionHash] = log.blockNumber;
-                                  this.emit(filter, log);
+                              const runner = this.getLogs(filter).then((logs) => {
+                                  // Allow the next getLogs
+                                  event._inflight = false;
+                                  if (logs.length === 0) {
+                                      return;
+                                  }
+                                  logs.forEach((log) => {
+                                      // Only when we get an event for a given block number
+                                      // can we trust the events are indexed
+                                      if (log.blockNumber > event._lastBlockNumber) {
+                                          event._lastBlockNumber = log.blockNumber;
+                                      }
+                                      // Make sure we stall requests to fetch blocks and txs
+                                      this._emitted["b:" + log.blockHash] = log.blockNumber;
+                                      this._emitted["t:" + log.transactionHash] = log.blockNumber;
+                                      this.emit(filter, log);
+                                  });
+                              }).catch((error) => {
+                                  this.emit("error", error);
+                                  // Allow another getLogs (the range was not updated)
+                                  event._inflight = false;
                               });
-                          }).catch((error) => { this.emit("error", error); });
-                          runners.push(runner);
+                              runners.push(runner);
+                          }
                           break;
                       }
                   }
@@ -13409,7 +14006,6 @@
                   };
                   this.on(transactionHash, minedHandler);
                   cancelFuncs.push(() => { this.removeListener(transactionHash, minedHandler); });
-                  console.log('replaceable?', replaceable);
                   if (replaceable) {
                       let lastBlockNumber = replaceable.startBlock;
                       let scannedBlock = null;
@@ -13743,23 +14339,97 @@
               return this.formatter.filter(yield resolveProperties(result));
           });
       }
-      call(transaction, blockTag) {
+      _call(transaction, blockTag, attempt) {
           return __awaiter$2(this, void 0, void 0, function* () {
-              yield this.getNetwork();
-              const params = yield resolveProperties({
-                  transaction: this._getTransactionRequest(transaction),
-                  blockTag: this._getBlockTag(blockTag)
-              });
-              const result = yield this.perform("call", params);
+              if (attempt >= MAX_CCIP_REDIRECTS) {
+                  logger$3.throwError("CCIP read exceeded maximum redirections", Logger.errors.SERVER_ERROR, {
+                      redirects: attempt, transaction
+                  });
+              }
+              const txSender = transaction.to;
+              const result = yield this.perform("call", { transaction, blockTag });
+              // CCIP Read request via OffchainLookup(address,string[],bytes,bytes4,bytes)
+              if (attempt >= 0 && blockTag === "latest" && txSender != null && result.substring(0, 10) === "0x556f1830" && (hexDataLength(result) % 32 === 4)) {
+                  try {
+                      const data = hexDataSlice(result, 4);
+                      // Check the sender of the OffchainLookup matches the transaction
+                      const sender = hexDataSlice(data, 0, 32);
+                      if (!BigNumber.from(sender).eq(txSender)) {
+                          logger$3.throwError("CCIP Read sender did not match", Logger.errors.CALL_EXCEPTION, {
+                              name: "OffchainLookup",
+                              signature: "OffchainLookup(address,string[],bytes,bytes4,bytes)",
+                              transaction, data: result
+                          });
+                      }
+                      // Read the URLs from the response
+                      const urls = [];
+                      const urlsOffset = BigNumber.from(hexDataSlice(data, 32, 64)).toNumber();
+                      const urlsLength = BigNumber.from(hexDataSlice(data, urlsOffset, urlsOffset + 32)).toNumber();
+                      const urlsData = hexDataSlice(data, urlsOffset + 32);
+                      for (let u = 0; u < urlsLength; u++) {
+                          const url = _parseString(urlsData, u * 32);
+                          if (url == null) {
+                              logger$3.throwError("CCIP Read contained corrupt URL string", Logger.errors.CALL_EXCEPTION, {
+                                  name: "OffchainLookup",
+                                  signature: "OffchainLookup(address,string[],bytes,bytes4,bytes)",
+                                  transaction, data: result
+                              });
+                          }
+                          urls.push(url);
+                      }
+                      // Get the CCIP calldata to forward
+                      const calldata = _parseBytes(data, 64);
+                      // Get the callbackSelector (bytes4)
+                      if (!BigNumber.from(hexDataSlice(data, 100, 128)).isZero()) {
+                          logger$3.throwError("CCIP Read callback selector included junk", Logger.errors.CALL_EXCEPTION, {
+                              name: "OffchainLookup",
+                              signature: "OffchainLookup(address,string[],bytes,bytes4,bytes)",
+                              transaction, data: result
+                          });
+                      }
+                      const callbackSelector = hexDataSlice(data, 96, 100);
+                      // Get the extra data to send back to the contract as context
+                      const extraData = _parseBytes(data, 128);
+                      const ccipResult = yield this.ccipReadFetch(transaction, calldata, urls);
+                      if (ccipResult == null) {
+                          logger$3.throwError("CCIP Read disabled or provided no URLs", Logger.errors.CALL_EXCEPTION, {
+                              name: "OffchainLookup",
+                              signature: "OffchainLookup(address,string[],bytes,bytes4,bytes)",
+                              transaction, data: result
+                          });
+                      }
+                      const tx = {
+                          to: txSender,
+                          data: hexConcat([callbackSelector, encodeBytes([ccipResult, extraData])])
+                      };
+                      return this._call(tx, blockTag, attempt + 1);
+                  }
+                  catch (error) {
+                      if (error.code === Logger.errors.SERVER_ERROR) {
+                          throw error;
+                      }
+                  }
+              }
               try {
                   return hexlify(result);
               }
               catch (error) {
                   return logger$3.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
                       method: "call",
-                      params, result, error
+                      params: { transaction, blockTag }, result, error
                   });
               }
+          });
+      }
+      call(transaction, blockTag) {
+          return __awaiter$2(this, void 0, void 0, function* () {
+              yield this.getNetwork();
+              const resolved = yield resolveProperties({
+                  transaction: this._getTransactionRequest(transaction),
+                  blockTag: this._getBlockTag(blockTag),
+                  ccipReadEnabled: Promise.resolve(transaction.ccipReadEnabled)
+              });
+              return this._call(resolved.transaction, resolved.blockTag, resolved.ccipReadEnabled ? 0 : -1);
           });
       }
       estimateGas(transaction) {
@@ -13782,6 +14452,10 @@
       }
       _getAddress(addressOrName) {
           return __awaiter$2(this, void 0, void 0, function* () {
+              addressOrName = yield addressOrName;
+              if (typeof (addressOrName) !== "string") {
+                  logger$3.throwArgumentError("invalid address or ENS name", "name", addressOrName);
+              }
               const address = yield this.resolveName(addressOrName);
               if (address == null) {
                   logger$3.throwError("ENS name not configured", Logger.errors.UNSUPPORTED_OPERATION, {
@@ -13805,7 +14479,7 @@
               }
               else {
                   try {
-                      params.blockTag = this.formatter.blockTag(yield this._getBlockTag(blockHashOrBlockTag));
+                      params.blockTag = yield this._getBlockTag(blockHashOrBlockTag);
                       if (isHexString(params.blockTag)) {
                           blockNumber = parseInt(params.blockTag.substring(2), 16);
                       }
@@ -13971,43 +14645,54 @@
       }
       getResolver(name) {
           return __awaiter$2(this, void 0, void 0, function* () {
-              try {
-                  const address = yield this._getResolver(name);
-                  if (address == null) {
+              let currentName = name;
+              while (true) {
+                  if (currentName === "" || currentName === ".") {
                       return null;
                   }
-                  return new Resolver(this, address, name);
-              }
-              catch (error) {
-                  if (error.code === Logger.errors.CALL_EXCEPTION) {
+                  // Optimization since the eth node cannot change and does
+                  // not have a wildcard resolver
+                  if (name !== "eth" && currentName === "eth") {
                       return null;
                   }
-                  return null;
+                  // Check the current node for a resolver
+                  const addr = yield this._getResolver(currentName, "getResolver");
+                  // Found a resolver!
+                  if (addr != null) {
+                      const resolver = new Resolver(this, addr, name);
+                      // Legacy resolver found, using EIP-2544 so it isn't safe to use
+                      if (currentName !== name && !(yield resolver.supportsWildcard())) {
+                          return null;
+                      }
+                      return resolver;
+                  }
+                  // Get the parent node
+                  currentName = currentName.split(".").slice(1).join(".");
               }
           });
       }
-      _getResolver(name) {
+      _getResolver(name, operation) {
           return __awaiter$2(this, void 0, void 0, function* () {
-              // Get the resolver from the blockchain
+              if (operation == null) {
+                  operation = "ENS";
+              }
               const network = yield this.getNetwork();
               // No ENS...
               if (!network.ensAddress) {
-                  logger$3.throwError("network does not support ENS", Logger.errors.UNSUPPORTED_OPERATION, { operation: "ENS", network: network.name });
+                  logger$3.throwError("network does not support ENS", Logger.errors.UNSUPPORTED_OPERATION, { operation, network: network.name });
               }
-              // keccak256("resolver(bytes32)")
-              const transaction = {
-                  to: network.ensAddress,
-                  data: ("0x0178b8bf" + namehash(name).substring(2))
-              };
               try {
-                  return this.formatter.callAddress(yield this.call(transaction));
+                  // keccak256("resolver(bytes32)")
+                  const addrData = yield this.call({
+                      to: network.ensAddress,
+                      data: ("0x0178b8bf" + namehash(name).substring(2))
+                  });
+                  return this.formatter.callAddress(addrData);
               }
               catch (error) {
-                  if (error.code === Logger.errors.CALL_EXCEPTION) {
-                      return null;
-                  }
-                  throw error;
+                  // ENS registry cannot throw errors on resolver(bytes32)
               }
+              return null;
           });
       }
       resolveName(name) {
@@ -14026,7 +14711,7 @@
               if (typeof (name) !== "string") {
                   logger$3.throwArgumentError("invalid ENS name", "name", name);
               }
-              // Get the addr from the resovler
+              // Get the addr from the resolver
               const resolver = yield this.getResolver(name);
               if (!resolver) {
                   return null;
@@ -14038,39 +14723,75 @@
           return __awaiter$2(this, void 0, void 0, function* () {
               address = yield address;
               address = this.formatter.address(address);
-              const reverseName = address.substring(2).toLowerCase() + ".addr.reverse";
-              const resolverAddress = yield this._getResolver(reverseName);
-              if (!resolverAddress) {
+              const node = address.substring(2).toLowerCase() + ".addr.reverse";
+              const resolverAddr = yield this._getResolver(node, "lookupAddress");
+              if (resolverAddr == null) {
                   return null;
               }
               // keccak("name(bytes32)")
-              let bytes = arrayify(yield this.call({
-                  to: resolverAddress,
-                  data: ("0x691f3431" + namehash(reverseName).substring(2))
-              }));
-              // Strip off the dynamic string pointer (0x20)
-              if (bytes.length < 32 || !BigNumber.from(bytes.slice(0, 32)).eq(32)) {
-                  return null;
-              }
-              bytes = bytes.slice(32);
-              // Not a length-prefixed string
-              if (bytes.length < 32) {
-                  return null;
-              }
-              // Get the length of the string (from the length-prefix)
-              const length = BigNumber.from(bytes.slice(0, 32)).toNumber();
-              bytes = bytes.slice(32);
-              // Length longer than available data
-              if (length > bytes.length) {
-                  return null;
-              }
-              const name = toUtf8String(bytes.slice(0, length));
-              // Make sure the reverse record matches the foward record
+              const name = _parseString(yield this.call({
+                  to: resolverAddr,
+                  data: ("0x691f3431" + namehash(node).substring(2))
+              }), 0);
               const addr = yield this.resolveName(name);
               if (addr != address) {
                   return null;
               }
               return name;
+          });
+      }
+      getAvatar(nameOrAddress) {
+          return __awaiter$2(this, void 0, void 0, function* () {
+              let resolver = null;
+              if (isHexString(nameOrAddress)) {
+                  // Address; reverse lookup
+                  const address = this.formatter.address(nameOrAddress);
+                  const node = address.substring(2).toLowerCase() + ".addr.reverse";
+                  const resolverAddress = yield this._getResolver(node, "getAvatar");
+                  if (!resolverAddress) {
+                      return null;
+                  }
+                  // Try resolving the avatar against the addr.reverse resolver
+                  resolver = new Resolver(this, resolverAddress, node);
+                  try {
+                      const avatar = yield resolver.getAvatar();
+                      if (avatar) {
+                          return avatar.url;
+                      }
+                  }
+                  catch (error) {
+                      if (error.code !== Logger.errors.CALL_EXCEPTION) {
+                          throw error;
+                      }
+                  }
+                  // Try getting the name and performing forward lookup; allowing wildcards
+                  try {
+                      // keccak("name(bytes32)")
+                      const name = _parseString(yield this.call({
+                          to: resolverAddress,
+                          data: ("0x691f3431" + namehash(node).substring(2))
+                      }), 0);
+                      resolver = yield this.getResolver(name);
+                  }
+                  catch (error) {
+                      if (error.code !== Logger.errors.CALL_EXCEPTION) {
+                          throw error;
+                      }
+                      return null;
+                  }
+              }
+              else {
+                  // ENS name; forward lookup with wildcard
+                  resolver = yield this.getResolver(nameOrAddress);
+                  if (!resolver) {
+                      return null;
+                  }
+              }
+              const avatar = yield resolver.getAvatar();
+              if (avatar == null) {
+                  return null;
+              }
+              return avatar.url;
           });
       }
       perform(method, params) {
@@ -14175,7 +14896,7 @@
       }
   }
 
-  const version = "abstract-signer/5.4.1";
+  const version = "abstract-signer/5.6.0";
 
   var __awaiter$1 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
       function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -14188,7 +14909,7 @@
   };
   const logger$2 = new Logger(version);
   const allowedTransactionKeys$1 = [
-      "accessList", "chainId", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value"
+      "accessList", "ccipReadEnabled", "chainId", "customData", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value"
   ];
   const forwardErrors = [
       Logger.errors.INSUFFICIENT_FUNDS,
@@ -14216,7 +14937,7 @@
               return yield this.provider.getTransactionCount(this.getAddress(), blockTag);
           });
       }
-      // Populates "from" if unspecified, and estimates the gas for the transation
+      // Populates "from" if unspecified, and estimates the gas for the transaction
       estimateGas(transaction) {
           return __awaiter$1(this, void 0, void 0, function* () {
               this._checkProvider("estimateGas");
@@ -14224,7 +14945,7 @@
               return yield this.provider.estimateGas(tx);
           });
       }
-      // Populates "from" if unspecified, and calls with the transation
+      // Populates "from" if unspecified, and calls with the transaction
       call(transaction, blockTag) {
           return __awaiter$1(this, void 0, void 0, function* () {
               this._checkProvider("call");
@@ -14323,7 +15044,7 @@
                   // Prevent this error from causing an UnhandledPromiseException
                   tx.to.catch((error) => { });
               }
-              // Do not allow mixing pre-eip-1559 and eip-1559 proerties
+              // Do not allow mixing pre-eip-1559 and eip-1559 properties
               const hasEip1559 = (tx.maxFeePerGas != null || tx.maxPriorityFeePerGas != null);
               if (tx.gasPrice != null && (tx.type === 2 || hasEip1559)) {
                   logger$2.throwArgumentError("eip-1559 transaction do not support gasPrice", "transaction", transaction);
@@ -14458,18 +15179,46 @@
   };
   const logger$1 = new Logger(version$3);
   const errorGas = ["call", "estimateGas"];
+  function spelunk(value) {
+      if (value == null) {
+          return null;
+      }
+      // These *are* the droids we're looking for.
+      if (typeof (value.message) === "string" && value.message.match("reverted") && isHexString(value.data)) {
+          return { message: value.message, data: value.data };
+      }
+      // Spelunk further...
+      if (typeof (value) === "object") {
+          for (const key in value) {
+              const result = spelunk(value[key]);
+              if (result) {
+                  return result;
+              }
+          }
+          return null;
+      }
+      // Might be a JSON string we can further descend...
+      if (typeof (value) === "string") {
+          try {
+              return spelunk(JSON.parse(value));
+          }
+          catch (error) { }
+      }
+      return null;
+  }
   function checkError(method, error, params) {
       // Undo the "convenience" some nodes are attempting to prevent backwards
       // incompatibility; maybe for v6 consider forwarding reverts as errors
-      if (method === "call" && error.code === Logger.errors.SERVER_ERROR) {
-          const e = error.error;
-          if (e && e.message.match("reverted") && isHexString(e.data)) {
-              return e.data;
+      if (method === "call") {
+          const result = spelunk(error);
+          if (result) {
+              return result.data;
           }
-          logger$1.throwError("missing revert data in call exception", Logger.errors.CALL_EXCEPTION, {
+          logger$1.throwError("missing revert data in call exception; Transaction reverted without a reason string", Logger.errors.CALL_EXCEPTION, {
               error, data: "0x"
           });
       }
+      // @TODO: Should we spelunk for message too?
       let message = error.message;
       if (error.code === Logger.errors.SERVER_ERROR && error.error && typeof (error.error.message) === "string") {
           message = error.error.message;
@@ -14483,25 +15232,25 @@
       message = (message || "").toLowerCase();
       const transaction = params.transaction || params.signedTransaction;
       // "insufficient funds for gas * price + value + cost(data)"
-      if (message.match(/insufficient funds|base fee exceeds gas limit/)) {
+      if (message.match(/insufficient funds|base fee exceeds gas limit/i)) {
           logger$1.throwError("insufficient funds for intrinsic transaction cost", Logger.errors.INSUFFICIENT_FUNDS, {
               error, method, transaction
           });
       }
       // "nonce too low"
-      if (message.match(/nonce too low/)) {
+      if (message.match(/nonce (is )?too low/i)) {
           logger$1.throwError("nonce has already been used", Logger.errors.NONCE_EXPIRED, {
               error, method, transaction
           });
       }
       // "replacement transaction underpriced"
-      if (message.match(/replacement transaction underpriced/)) {
+      if (message.match(/replacement transaction underpriced|transaction gas price.*too low/i)) {
           logger$1.throwError("replacement fee too low", Logger.errors.REPLACEMENT_UNDERPRICED, {
               error, method, transaction
           });
       }
       // "replacement transaction underpriced"
-      if (message.match(/only replay-protected/)) {
+      if (message.match(/only replay-protected/i)) {
           logger$1.throwError("legacy pre-eip-155 transactions not supported", Logger.errors.UNSUPPORTED_OPERATION, {
               error, method, transaction
           });
@@ -14657,6 +15406,13 @@
           });
       }
       signMessage(message) {
+          return __awaiter(this, void 0, void 0, function* () {
+              const data = ((typeof (message) === "string") ? toUtf8Bytes(message) : message);
+              const address = yield this.getAddress();
+              return yield this.provider.send("personal_sign", [hexlify(data), address.toLowerCase()]);
+          });
+      }
+      _legacySignMessage(message) {
           return __awaiter(this, void 0, void 0, function* () {
               const data = ((typeof (message) === "string") ? toUtf8Bytes(message) : message);
               const address = yield this.getAddress();
@@ -14895,7 +15651,7 @@
               if (method === "call" || method === "estimateGas") {
                   const tx = params.transaction;
                   if (tx && tx.type != null && BigNumber.from(tx.type).isZero()) {
-                      // If there are no EIP-1559 properties, it might be non-EIP-a559
+                      // If there are no EIP-1559 properties, it might be non-EIP-1559
                       if (tx.maxFeePerGas == null && tx.maxPriorityFeePerGas == null) {
                           const feeData = yield this.getFeeData();
                           if (feeData.maxFeePerGas == null && feeData.maxPriorityFeePerGas == null) {
@@ -14992,12 +15748,12 @@
           }
           checkProperties(transaction, allowed);
           const result = {};
-          // Some nodes (INFURA ropsten; INFURA mainnet is fine) do not like leading zeros.
-          ["gasLimit", "gasPrice", "type", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "value"].forEach(function (key) {
+          // JSON-RPC now requires numeric values to be "quantity" values
+          ["chainId", "gasLimit", "gasPrice", "type", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "value"].forEach(function (key) {
               if (transaction[key] == null) {
                   return;
               }
-              const value = hexValue(transaction[key]);
+              const value = hexValue(BigNumber.from(transaction[key]));
               if (key === "gasLimit") {
                   key = "gas";
               }
@@ -15021,12 +15777,6 @@
   function buildWeb3LegacyFetcher(provider, sendFunc) {
       const fetcher = "Web3LegacyFetcher";
       return function (method, params) {
-          // Metamask complains about eth_sign (and on some versions hangs)
-          if (method == "eth_sign" && (provider.isMetaMask || provider.isStatus)) {
-              // https://github.com/ethereum/go-ethereum/wiki/Management-APIs#personal_sign
-              method = "personal_sign";
-              params = [params[1], params[0]];
-          }
           const request = {
               method: method,
               params: params,
@@ -15073,12 +15823,6 @@
       return function (method, params) {
           if (params == null) {
               params = [];
-          }
-          // Metamask complains about eth_sign (and on some versions hangs)
-          if (method == "eth_sign" && (provider.isMetaMask || provider.isStatus)) {
-              // https://github.com/ethereum/go-ethereum/wiki/Management-APIs#personal_sign
-              method = "personal_sign";
-              params = [params[1], params[0]];
           }
           const request = { method, params };
           this.emit("debug", {
@@ -15391,13 +16135,10 @@
   };
 
   let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
-    switch (blockchain) {
-      case 'ethereum':
-        return spy(mock$3({ blockchain, configuration, window, provider }))
-      case 'bsc':
-        return spy(mock$3({ blockchain, configuration, window, provider }))
-      default:
-        raise$1('Web3Mock: Unknown blockchain!');
+    if(supported.evm.includes(blockchain)) {
+      return spy(mock$3({ blockchain, configuration, window, provider }))
+    } else {
+      raise$1('Web3Mock: Unknown blockchain!');
     }
   };
 
