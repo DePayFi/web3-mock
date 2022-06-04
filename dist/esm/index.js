@@ -440,7 +440,8 @@ let mockDataDoesNotMatchObjectArugment = (mock, type, contractArguments) => {
 };
 
 let mockHasWrongBlock = (mock, block) => {
-  if(typeof block == 'undefined' || block == 'latest' || typeof mock.block == 'undefined'){ return false }
+  if((typeof block == 'undefined' || block == 'latest') && typeof mock.block == 'undefined'){ return false }
+  if(typeof mock.block == 'undefined') { return true }
   return ethers.utils.hexlify(mock.block) != block
 };
 
