@@ -18,8 +18,8 @@ let callMock = ({ mock, params, provider })=> {
   }
 }
 
-let call = function ({ blockchain, params, provider }) {
-  let mock = findMock({ type: 'call', params, provider })
+let call = function ({ blockchain, params, block, provider }) {
+  let mock = findMock({ type: 'call', params, block, provider })
 
   if (mock) {
     if(mock.call.delay) {

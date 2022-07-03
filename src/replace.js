@@ -1,6 +1,6 @@
-import getRandomTransactionHash from './vms/evm/transaction/getRandomTransactionHash'
+import getRandomTransactionHash from './platforms/evm/transaction/getRandomTransactionHash'
 import raise from './raise'
-import { getTransactionCount, increaseTransactionCount } from './vms/evm/transaction/count'
+import { getTransactionCount, increaseTransactionCount } from './platforms/evm/transaction/count'
 import { increaseBlock, getCurrentBlock, setBlockData } from './block'
 
 export default (transactionMock, replacingTransactionMock, confirmed = true) => {

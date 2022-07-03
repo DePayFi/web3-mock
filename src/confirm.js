@@ -1,5 +1,5 @@
 import raise from './raise'
-import { confirm as confirmEvm } from './vms/evm/confirm'
+import { confirm as confirmEvm } from './platforms/evm/confirm'
 import { increaseBlock } from './block'
 import { mocks } from './mocks'
 import { supported } from './blockchains'

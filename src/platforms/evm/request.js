@@ -69,7 +69,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_call':
-      return call({ blockchain, params: request.params[0], provider })
+      return call({ blockchain, params: request.params[0], block: request.params[1], provider })
       break
 
     case 'eth_sendTransaction':

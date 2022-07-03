@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { mock, resetMocks, connect } from 'src'
 
-describe('mock for multiple providers across multiple chains', ()=> {
+describe('evm mock for multiple providers across multiple chains', ()=> {
 
   beforeEach(resetMocks)
 

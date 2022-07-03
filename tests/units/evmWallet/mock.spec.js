@@ -1,9 +1,9 @@
 import { mock } from 'src'
 import { supported } from "src/blockchains"
 
-describe('mock', () => {
+describe('evm mock', () => {
 
-  supported.forEach((blockchain)=>{
+  supported.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
   

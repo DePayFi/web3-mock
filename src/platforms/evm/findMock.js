@@ -91,6 +91,12 @@ let mockDataDoesNotMatchObjectArugment = (mock, type, contractArguments) => {
   )
 }
 
+let mockHasWrongBlock = (mock, block) => {
+  if((typeof block == 'undefined' || block == 'latest') && typeof mock.block == 'undefined'){ return false }
+  if(typeof mock.block == 'undefined') { return true }
+  return ethers.utils.hexValue(mock.block) != block
+}
+
 let mockHasWrongData = (mock, type, params, provider) => {
   if (mock[type]?.api == undefined) {
     return
@@ -126,7 +132,7 @@ let mockHasWrongNetworkAction = (mock, type, params) => {
   return Object.keys(mock.network)[0] != Object.keys(params)[0]
 }
 
-let findMock = ({ type, blockchain, params, provider }) => {
+let findMock = ({ type, blockchain, params, block, provider }) => {
   return mocks.find((mock) => {
     if (mockIsNotAnObject(mock)) {
       return
@@ -150,6 +156,9 @@ let findMock = ({ type, blockchain, params, provider }) => {
       return
     }
     if (mockHasWrongData(mock, type, params, provider)) {
+      return
+    }
+    if (mockHasWrongBlock(mock, block)) {
       return
     }
     if (mockHasWrongNetworkAction(mock, type, params)) {
