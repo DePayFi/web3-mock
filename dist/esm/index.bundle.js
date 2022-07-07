@@ -135598,8 +135598,12 @@ let balance = function ({ blockchain, params, provider }) {
   }
 };
 
-let rpcResponse = ({ value }) => {
-  return { jsonrpc: '2.0', id: '1', result: { context:{ apiVersion: '1.10.26', slot: 140152926 }, value } }
+let rpcResponse = ({ value, result }) => {
+  if(result) {
+    return { jsonrpc: '2.0', id: '1', result }
+  } else {
+    return { jsonrpc: '2.0', id: '1', result: { context:{ apiVersion: '1.10.26', slot: 140152926 }, value } }
+  }
 };
 
 let request$1 = ({ blockchain, provider, method, params }) => {
@@ -135610,6 +135614,9 @@ let request$1 = ({ blockchain, provider, method, params }) => {
       return balance({ blockchain, params: params[0], provider }).then((value)=>{ 
         return rpcResponse({ value })
       })
+
+    case 'getBlockHeight':
+      return rpcResponse({ result: getCurrentBlock() })
 
     default:
       raise$1('Web3Mock request: Unknown request method ' + method + '!');

@@ -18,7 +18,7 @@ describe('mocks solana basics', ()=> {
         expect(()=>{
           global.solana.request({ method: 'nonexisting' })
         }).toThrowError('Web3Mock request: Unknown request method nonexisting!')
-      })      
+      })
     })
   })
 });

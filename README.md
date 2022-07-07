@@ -148,7 +148,7 @@ This library supports the all crypto wallets that inject window.ethereum or wind
 
 ### Basic Implicit Mocks
 
-Mocks basic blockchain functionalities without explicit configuration:
+#### EVM Basic Implicit Mocks
 
 ```javascript
 mock('ethereum')
@@ -161,8 +161,16 @@ await window.ethereum.request({ method: 'eth_blockNumber' }) // '0x5daf3b'
 await window.ethereum.request({ method: 'eth_subscribe' }) // undefined
 ```
 
+#### Solana Basic Implicit Mocks
+
 ```javascript
 mock('solana') // requires explicit provider mocking (see #Providers)
+
+let connection = new Connection('https://api.mainnet-beta.solana.com')
+mock({ blockchain: 'solana', provider: connection })
+
+let block = connection.getBlockHeight()
+block // 1
 ```
 
 ### Accounts
@@ -745,6 +753,8 @@ mock({
 
 `web3-mock` allows you to mock balance requests:
 
+#### Balance for EVM
+
 ```javascript
 let balanceMock = mock({
   blockchain: 'ethereum',
@@ -772,6 +782,24 @@ let provider = new ethers.providers.Web3Provider(global.ethereum);
 let signer = provider.getSigner();
 let balance = await signer.getBalance()
 // BigNumber<'123'>
+```
+
+#### Balance for Solana
+
+```javascript
+let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+let balanceMock = mock({
+  provider: connection,
+  blockchain: 'solana',
+  balance: {
+    for: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa',
+    return: 232111122321
+  }
+})
+
+await connection.getBalance(new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'))
+// 232111122321
 ```
 
 ### Network
