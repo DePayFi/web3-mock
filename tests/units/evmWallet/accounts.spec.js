@@ -17,7 +17,7 @@ describe('mocks evm wallet accounts', ()=> {
         await expect(()=>
           provider.listAccounts()
         ).toThrow(
-          'Web3Mock: Please mock accounts: {\"blockchain\":\"ethereum\",\"accounts\":{\"return\":[\"YOUR ACCOUNT HERE\"]}}'
+          `Web3Mock: Please mock accounts: {\"blockchain\":\"${blockchain}\",\"accounts\":{\"return\":[\"YOUR ACCOUNT HERE\"]}}`
         )
       })
 

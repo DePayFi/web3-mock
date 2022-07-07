@@ -162,7 +162,7 @@ await window.ethereum.request({ method: 'eth_subscribe' }) // undefined
 ```
 
 ```javascript
-mock('solana')
+mock('solana') // requires explicit provider mocking (see #Providers)
 ```
 
 ### Accounts
@@ -901,8 +901,9 @@ In order to achieve event mocking, `web3-mock` mocks internal event handling via
 
 ### Providers
 
-If you want to mock Web3 calls and transactions for other providers but the usual, implicit ones (like window.ethereum),
-you can pass them explicitly to `web3-mock`:
+If you want to mock Web3 calls and transactions for a specific provider, pass the provider you want to instrument:
+
+#### Ethereum Providers
 
 ```javascript
 
@@ -913,6 +914,25 @@ mock({
   blockchain: 'ethereum'
   // ...
 })
+```
+
+#### Solana Providers
+
+```javascript
+let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+mock({
+  provider: connection,
+  blockchain: 'solana',
+  balance: {
+    for: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa',
+    return: 232111122321
+  }
+})
+
+let balance = await connection.getBalance(new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'))
+
+expect(balance).toEqual(232111122321)
 ```
 
 ### Wallets

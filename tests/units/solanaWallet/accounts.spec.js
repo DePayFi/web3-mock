@@ -16,7 +16,7 @@ describe('mocks solana wallet accounts', ()=> {
         await expect(()=>
           global.solana.connect()
         ).toThrow(
-          'Web3Mock: Please mock accounts: {\"blockchain\":\"solana\",\"accounts\":{\"return\":[\"YOUR ACCOUNT HERE\"]}}'
+          `Web3Mock: Please mock accounts: {\"blockchain\":\"${blockchain}\",\"accounts\":{\"return\":[\"YOUR ACCOUNT HERE\"]}}`
         )
       })
 

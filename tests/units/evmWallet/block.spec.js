@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 import { mock, resetMocks, anything } from 'src'
 import { supported } from "src/blockchains"
 
-describe('mocks evm wallets for a specific given block', ()=> {
+describe('evm mocks calls for a specific given block', ()=> {
 
   let rejectsWithMatch = async (method, match)=> {
     let raisedError

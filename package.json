@@ -38,6 +38,7 @@
   "peerDependencies": {
     "@depay/web3-blockchains": "^5.0.1",
     "@solana/web3.js": "^1.47.3",
+    "bn.js": "^5.0.0",
     "ethers": "^5.6.8"
   },
   "engines": {
@@ -56,6 +57,7 @@
     "@walletconnect/client": "^1.7.8",
     "babel-loader": "^8.2.2",
     "babel-preset-env": "^1.7.0",
+    "bn.js": "^5.0.0",
     "cypress": "^8.2.0",
     "eslint": "^7.15.0",
     "eslint-plugin-import": "^2.22.1",
@@ -64,6 +66,7 @@
     "regenerator-runtime": "^0.13.7",
     "rollup": "^2.34.2",
     "rollup-plugin-polyfill-node": "^0.8.0",
+    "superstruct": "^0.14.2",
     "web3": "^1.6.1",
     "web3-eth-contract": "^1.6.1"
   }

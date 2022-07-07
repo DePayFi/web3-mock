@@ -1,10 +1,17 @@
 import { connect } from './connect'
-import { request } from './request'
+import { request as providerRequest } from './provider'
+import { request as walletRequest } from './wallet'
 import { setCurrentNetwork } from '../../network'
 
 let mock = ({ blockchain, configuration, window, provider }) => {
 
   setCurrentNetwork(blockchain)
+
+  if(provider) {
+    provider._rpcRequest = (method, params)=>{
+      return providerRequest({ blockchain, provider, method, params })
+    }
+  }
 
   window.solana = {
     ...window.solana,
@@ -14,7 +21,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
       })
     },
     request: (payload) => {
-      return request({
+      return walletRequest({
         request: payload,
       })
     },
