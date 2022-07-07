@@ -2,22 +2,22 @@ import { ethers } from 'ethers'
 import { mock, resetMocks, anything } from 'src'
 import { supported } from "src/blockchains"
 
-describe('mocks web3 wallet accounts', ()=> {
+describe('mocks evm wallet accounts', ()=> {
 
-  supported.forEach((blockchain)=>{
+  supported.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
       beforeEach(resetMocks)
 
       it('fails suggesting to mock accounts if they havent', async ()=>{
-        mock('ethereum')
+        mock(blockchain)
 
         let provider = new ethers.providers.Web3Provider(global.ethereum)
         await expect(()=>
           provider.listAccounts()
         ).toThrow(
-          'Web3Mock: Please mock accounts: {\"blockchain\":\"ethereum\",\"accounts\":{\"return\":[\"YOUR ACCOUNT HERE\"]}}'
+          `Web3Mock: Please mock accounts: {\"blockchain\":\"${blockchain}\",\"accounts\":{\"return\":[\"YOUR ACCOUNT HERE\"]}}`
         )
       })
 

@@ -5,7 +5,7 @@ import { supported } from "src/blockchains"
 
 describe('mocks walletConnect requests', ()=> {
 
-  supported.forEach((blockchain)=>{
+  supported.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

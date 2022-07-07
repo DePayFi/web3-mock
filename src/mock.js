@@ -1,7 +1,8 @@
-import getRandomTransactionHash from './vms/evm/transaction/getRandomTransactionHash.js'
+import getRandomTransactionHash from './platforms/evm/transaction/getRandomTransactionHash.js'
 import raise from './raise'
 import { getWindow } from './window'
-import { mock as mockEvm } from './vms/evm/mock'
+import { mock as mockEvm } from './platforms/evm/mock'
+import { mock as mockSolana } from './platforms/solana/mock'
 import { mock as mockWalletConnect } from './wallets/walletConnect/mock'
 import { mock as mockWalletLink } from './wallets/walletLink/mock'
 import { mocks } from './mocks'
@@ -83,6 +84,9 @@ let mockWallet = ({ configuration, window }) => {
       window.ethereum.isCoinbaseWallet = true
       window.ethereum.isWalletLink = true
       break
+    case 'phantom':
+      window.solana.isPhantom = true
+      break
     case 'walletconnect':
       mockWalletConnect({ configuration, window })
       break
@@ -97,6 +101,8 @@ let mockWallet = ({ configuration, window }) => {
 let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
   if(supported.evm.includes(blockchain)) {
     return spy(mockEvm({ blockchain, configuration, window, provider }))
+  } else if(supported.solana.includes(blockchain)) {
+    return spy(mockSolana({ blockchain, configuration, window, provider }))
   } else {
     raise('Web3Mock: Unknown blockchain!')
   }

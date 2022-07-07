@@ -3,9 +3,9 @@ import Web3 from 'web3'
 import { mock, confirm, resetMocks } from 'src'
 import { supported } from "src/blockchains"
 
-describe('mock and trigger web3-js contract interactions', ()=> {
+describe('evm mock and trigger web3-js contract interactions', ()=> {
 
-  supported.forEach((blockchain)=>{
+  supported.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

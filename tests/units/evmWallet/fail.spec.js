@@ -2,9 +2,9 @@ import { ethers } from 'ethers'
 import { mock, resetMocks, fail } from 'src'
 import { supported } from "src/blockchains"
 
-describe('mock transaction failures/reverts', ()=> {
+describe('mock evm transaction failures/reverts', ()=> {
 
-  supported.forEach((blockchain)=>{
+  supported.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

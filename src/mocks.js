@@ -1,7 +1,7 @@
 import { getWindow } from './window'
 import { resetCurrentBlock, resetBlockData } from './block'
 import { resetRequire } from './require'
-import { resetTransactionCount } from './vms/evm/transaction/count'
+import { resetTransactionCount } from './platforms/evm/transaction/count'
 
 let WalletConnectClass, WalletLinkClass
 

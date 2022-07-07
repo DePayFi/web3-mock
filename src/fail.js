@@ -1,4 +1,4 @@
-import { fail as failEvm } from './vms/evm/fail'
+import { fail as failEvm } from './platforms/evm/fail'
 import { mocks } from './mocks'
 import { increaseBlock } from './block'
 import { supported } from './blockchains'

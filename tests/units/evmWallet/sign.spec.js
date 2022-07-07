@@ -2,9 +2,9 @@ import {ethers} from 'ethers'
 import {mock, resetMocks} from 'src'
 import { supported } from "src/blockchains"
 
-describe('mock signatures', ()=> {
+describe('evm mock signatures', ()=> {
 
-  supported.forEach((blockchain)=>{
+  supported.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
       const accounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']

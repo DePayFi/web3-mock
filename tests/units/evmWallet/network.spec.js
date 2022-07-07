@@ -2,7 +2,7 @@ import { Blockchain } from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { mock, resetMocks } from 'src'
 
-describe('network', ()=> {
+describe('evm network', ()=> {
 
   beforeEach(resetMocks)
 

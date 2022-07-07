@@ -1,11 +1,10 @@
 import { Blockchain } from '@depay/web3-blockchains'
-import { ethers } from 'ethers'
 import { mock, resetMocks } from 'src'
 import { supported } from "src/blockchains"
 
-describe('mock basics', ()=> {
+describe('mocks evm basics', ()=> {
 
-  supported.forEach((blockchain)=>{
+  supported.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

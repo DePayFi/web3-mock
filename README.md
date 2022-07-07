@@ -120,13 +120,29 @@ This library supports the following blockchains:
 - [Ethereum](https://ethereum.org)
 - [BNB Smart Chain](https://www.binance.org/smartChain)
 - [Polygon](https://polygon.technology)
+- [Solana](https://solana.com)
 
-This library supports the following crypto wallets:
+This library supports the all crypto wallets that inject window.ethereum or window.solana like:
 
 - [MetaMask](https://metamask.io)
-- [Coinbase](https://wallet.coinbase.com)
-- [WalletConnect](https://walletconnect.org/)
-- All major web3 wallets that implement/inject window.ethereum
+- [Coinbase Wallet](https://wallet.coinbase.com)
+- [Phantom](https://phantom.app/)
+
+100+ different wallets via [WalletConnect](https://walletconnect.org), such as:
+- [Trust Wallet](https://trustwallet.com)
+- [DeFi Wallet by crypto.com](https://crypto.com/defi-wallet)
+- [1inch Wallet](https://1inch.io/wallet/)
+- [imToken Wallet](https://www.token.im)
+- [TokenPocket](https://www.tokenpocket.pro/en)
+- [Pillar](https://www.pillar.fi/)
+- [Math Wallet](https://mathwallet.org/)
+- [Ledger Live](https://www.ledger.com/ledger-live)
+- [Argent Wallet](https://www.argent.xyz)
+- [AlphaWallet](https://alphawallet.com/)
+- [Unstoppable Wallet](https://unstoppable.money)
+- [Atomic Wallet](https://atomicwallet.io)
+- [Rainbow](https://rainbow.me/)
+- and more...
 
 ## Functionalities
 
@@ -137,17 +153,21 @@ Mocks basic blockchain functionalities without explicit configuration:
 ```javascript
 mock('ethereum')
 
-await window.ethereum.request(method: 'eth_chainId') // '0x1'
-await window.ethereum.request(method: 'net_version') // 1
-await window.ethereum.request(method: 'eth_getBalance') // '0x0'
-await window.ethereum.request(method: 'eth_estimateGas') // '0x2c4a0'
-await window.ethereum.request(method: 'eth_blockNumber') // '0x5daf3b'
-await window.ethereum.request(method: 'eth_subscribe') // undefined
+await window.ethereum.request({ method: 'eth_chainId' }) // '0x1'
+await window.ethereum.request({ method: 'net_version' }) // 1
+await window.ethereum.request({ method: 'eth_getBalance' }) // '0x0'
+await window.ethereum.request({ method: 'eth_estimateGas' }) // '0x2c4a0'
+await window.ethereum.request({ method: 'eth_blockNumber' }) // '0x5daf3b'
+await window.ethereum.request({ method: 'eth_subscribe' }) // undefined
+```
+
+```javascript
+mock('solana') // requires explicit provider mocking (see #Providers)
 ```
 
 ### Accounts
 
-Mocks accounts and connecting wallets (aka. eth_requestAccounts):
+Mocks accounts and wallet connect processes:
 
 ```javascript
 mock({
@@ -881,8 +901,9 @@ In order to achieve event mocking, `web3-mock` mocks internal event handling via
 
 ### Providers
 
-If you want to mock Web3 calls and transactions for other providers but the usual, implicit ones (like window.ethereum),
-you can pass them explicitly to `web3-mock`:
+If you want to mock Web3 calls and transactions for a specific provider, pass the provider you want to instrument:
+
+#### Ethereum Providers
 
 ```javascript
 
@@ -893,6 +914,25 @@ mock({
   blockchain: 'ethereum'
   // ...
 })
+```
+
+#### Solana Providers
+
+```javascript
+let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+mock({
+  provider: connection,
+  blockchain: 'solana',
+  balance: {
+    for: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa',
+    return: 232111122321
+  }
+})
+
+let balance = await connection.getBalance(new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'))
+
+expect(balance).toEqual(232111122321)
 ```
 
 ### Wallets

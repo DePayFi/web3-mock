@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 import { mock, resetMocks, anything } from 'src'
 import { supported } from "src/blockchains"
 
-describe('mock contract calls', ()=> {
+describe('mocks evm contract calls', ()=> {
 
   let rejectsWithMatch = async (method, match)=> {
     let raisedError
@@ -12,7 +12,7 @@ describe('mock contract calls', ()=> {
     expect(raisedError.message).toMatch(match)
   }
 
-  supported.forEach((blockchain)=>{
+  supported.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

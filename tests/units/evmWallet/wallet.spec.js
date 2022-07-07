@@ -1,9 +1,9 @@
 import { mock, resetMocks } from 'src'
 import { supported } from "src/blockchains"
 
-describe('mocks wallet specifics', ()=> {
+describe('evm mock wallet specifics', ()=> {
 
-  supported.forEach((blockchain)=>{
+  supported.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

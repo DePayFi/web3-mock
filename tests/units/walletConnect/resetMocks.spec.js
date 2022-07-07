@@ -4,7 +4,7 @@ import { supported } from "src/blockchains"
 
 describe('mock transactions', ()=> {
 
-  supported.forEach((blockchain)=>{
+  supported.evm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 
