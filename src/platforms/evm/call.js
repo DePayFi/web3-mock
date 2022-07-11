@@ -5,49 +5,49 @@ import { encode, getContractFunction, getContractArguments } from './data'
 
 let callMock = ({ mock, params, provider })=> {
   mock.calls.add(params)
-  if (mock.call.return instanceof Error) {
+  if (mock.request.return instanceof Error) {
     return Promise.reject({ 
       error: {
-        message: mock.call.return.message
+        message: mock.request.return.message
       }
     })
   } else {
     return Promise.resolve(
-      encode({ result: mock.call.return, api: mock.call.api, params, provider })
+      encode({ result: mock.request.return, api: mock.request.api, params, provider })
     )
   }
 }
 
 let call = function ({ blockchain, params, block, provider }) {
-  let mock = findMock({ type: 'call', params, block, provider })
+  let mock = findMock({ type: 'request', params, block, provider })
 
   if (mock) {
-    if(mock.call.delay) {
+    if(mock.request.delay) {
       return new Promise((resolve)=>{
-        setTimeout(()=>resolve(callMock({ mock, params, provider })), mock.call.delay)
+        setTimeout(()=>resolve(callMock({ mock, params, provider })), mock.request.delay)
       })
     } else {
       return callMock({ mock, params, provider })
     }
   } else {
-    mock = findAnyMockForThisAddress({ type: 'call', params })
-    if (mock && mock.call?.api) {
+    mock = findAnyMockForThisAddress({ type: 'request', params })
+    if (mock && mock.request?.api) {
       raise(
-        'Web3Mock: Please mock the contract call: ' +
+        'Web3Mock: Please mock the request: ' +
         JSON.stringify({
           blockchain,
-          call: getCallToBeMock({ mock, params, provider }),
+          request: getCallToBeMock({ mock, params, provider }),
         })
       )
     } else {
-      raise('Web3Mock: Please mock the contract call to: ' + params.to)
+      raise('Web3Mock: Please mock the request to: ' + params.to)
     }
   }
 }
 
 let getCallToBeMock = ({ mock, params, provider }) => {
   let address = params.to
-  let api = mock.call.api
+  let api = mock.request.api
   let contractFunction = getContractFunction({ data: params.data, address, api, provider })
   let contractArguments = getContractArguments({ params, api, provider })
 

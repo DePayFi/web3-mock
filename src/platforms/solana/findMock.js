@@ -1,7 +1,6 @@
 import normalize from '../../normalize'
 import { anything, anythingMatch, anythingDeepMatch } from '../../anything'
 import { ethers } from 'ethers'
-import { getContractArguments, getContractFunction } from './data'
 import { mocks } from '../../mocks'
 
 let mockIsNotAnObject = (mock) => {
@@ -103,12 +102,7 @@ let mockHasWrongData = (mock, type, params, provider) => {
   }
 
   let api = mock[type].api
-  let contractFunction = getContractFunction({
-    data: params.data,
-    address: params.to,
-    api,
-    provider,
-  })
+  let contractFunction;
 
   if (mock[type].method !== contractFunction.name) {
     return true

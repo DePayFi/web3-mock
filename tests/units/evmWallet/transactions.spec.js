@@ -253,7 +253,7 @@ describe('evm mock transactions', ()=> {
         
         mock({
           blockchain,
-          call: {
+          request: {
             api: []
           }
         })

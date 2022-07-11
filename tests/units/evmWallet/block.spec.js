@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 import { mock, resetMocks, anything } from 'src'
 import { supported } from "src/blockchains"
 
-describe('evm mocks calls for a specific given block', ()=> {
+describe('evm mocks request for a specific given block', ()=> {
 
   let rejectsWithMatch = async (method, match)=> {
     let raisedError
@@ -21,12 +21,12 @@ describe('evm mocks calls for a specific given block', ()=> {
       beforeEach(resetMocks)
       let block = 14904791
 
-      it('mocks a call for a specific given block', async ()=>{
+      it('mocks a request for a specific given block', async ()=>{
 
-        let callMock = mock({
+        let requestMock = mock({
           blockchain,
           block,
-          call: {
+          request: {
             to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
             api: api,
             method: 'name',
@@ -43,15 +43,15 @@ describe('evm mocks calls for a specific given block', ()=> {
         );
 
         expect(await contract.name({ blockTag: block })).toEqual('DePay')
-        expect(callMock).toHaveBeenCalled()
+        expect(requestMock).toHaveBeenCalled()
       })
 
-      it('asks to mock correctly if call for wrong block', async ()=>{
+      it('asks to mock correctly if request for wrong block', async ()=>{
 
-        let callMock = mock({
+        let requestMock = mock({
           blockchain,
           block: block-1,
-          call: {
+          request: {
             to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
             api: api,
             method: 'name',
@@ -69,15 +69,15 @@ describe('evm mocks calls for a specific given block', ()=> {
 
         await rejectsWithMatch(
           async ()=>{ await contract.name({ blockTag: block }) },
-          'Web3Mock: Please mock the contract call'
+          'Web3Mock: Please mock the request'
         )
       })
 
       it('asks to mock correctly if mock does not defines block', async ()=>{
 
-        let callMock = mock({
+        let requestMock = mock({
           blockchain,
-          call: {
+          request: {
             to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
             api: api,
             method: 'name',
@@ -95,7 +95,7 @@ describe('evm mocks calls for a specific given block', ()=> {
 
         await rejectsWithMatch(
           async ()=>{ await contract.name({ blockTag: block }) },
-          'Web3Mock: Please mock the contract call'
+          'Web3Mock: Please mock the request'
         )
       })
     })

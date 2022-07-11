@@ -14,7 +14,7 @@ describe('evm findMock', () => {
 
         mock({
           blockchain: 'ethereum',
-          call: {
+          request: {
             to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
             api: api,
             method: 'name',
@@ -24,7 +24,7 @@ describe('evm findMock', () => {
 
         mock({
           blockchain: 'ethereum',
-          call: {
+          request: {
             to: '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
             api: api,
             method: 'name',

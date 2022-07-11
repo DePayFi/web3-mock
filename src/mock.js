@@ -50,8 +50,8 @@ let preflight = (configuration) => {
   } else if (typeof configuration != 'string' && typeof configuration != 'object') {
     raise('Web3Mock: Unknown mock configuration type!')
   }
-  if (apiIsMissing('call', configuration)) {
-    raise(apiMissingErrorText('call', configuration))
+  if (apiIsMissing('request', configuration)) {
+    raise(apiMissingErrorText('request', configuration))
   } else if (apiIsMissing('transaction', configuration)) {
     raise(apiMissingErrorText('transaction', configuration))
   } else if (apiIsMissing('estimate', configuration)) {
