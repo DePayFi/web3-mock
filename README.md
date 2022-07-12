@@ -164,7 +164,7 @@ await window.ethereum.request({ method: 'eth_subscribe' }) // undefined
 #### Solana: Basic Implicit Mocks
 
 ```javascript
-mock('solana') // requires explicit provider mocking (see #Providers)
+// requires explicit provider mocking (see #Providers)
 
 let connection = new Connection('https://api.mainnet-beta.solana.com')
 mock({ blockchain: 'solana', provider: connection })
