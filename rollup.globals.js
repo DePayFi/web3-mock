@@ -1,5 +1,5 @@
 export default {
   'ethers': 'ethers',
-  '@solana/web3.js': 'solanaWeb3',
+  '@depay/solana-web3.js': 'SolanaWeb3js',
   '@depay/web3-blockchains': 'Web3Blockchains',
 }

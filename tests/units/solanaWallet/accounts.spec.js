@@ -1,4 +1,3 @@
-import { ethers } from 'ethers'
 import { mock, resetMocks, anything } from 'src'
 import { supported } from "src/blockchains"
 

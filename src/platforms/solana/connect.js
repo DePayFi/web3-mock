@@ -1,7 +1,7 @@
 import raise from '../../raise'
 import normalize from '../../normalize'
 import { findMock } from './findMock'
-import { PublicKey } from '@solana/web3.js'
+import { PublicKey } from '@depay/solana-web3.js'
 
 let requestAccounts = ({ mock })=> {
   mock.calls.add({})
