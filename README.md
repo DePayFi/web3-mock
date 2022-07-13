@@ -216,6 +216,8 @@ You need to mock requests before they are executed.
 
 #### Simple Requests
 
+##### EVM: Simple Requests
+
 ```javascript
 let requestMock = mock({
   blockchain: 'ethereum',
@@ -235,6 +237,58 @@ let contract = new ethers.Contract(
 
 expect(await contract.name()).toEqual('DePay')
 expect(requestMock).toHaveBeenCalled()
+```
+
+##### Solana: Simple Requests
+
+```javascript
+import { Connection, PublicKey, struct, publicKey, u64, u32, u8 } from '@depay/solana-web3.js'
+
+let api = struct([
+  publicKey('mint'),
+  publicKey('owner'),
+  u64('amount'),
+  u32('delegateOption'),
+  publicKey('delegate'),
+  u8('state'),
+  u32('isNativeOption'),
+  u64('isNative'),
+  u64('delegatedAmount'),
+  u32('closeAuthorityOption'),
+  publicKey('closeAuthority')
+])
+
+let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+let requestMock = mock({
+  provider: connection,
+  blockchain,
+  request: {
+    method: 'getAccountInfo',
+    to: '2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9',
+    api,
+    return: {
+      mint: '8rUUP52Bb6Msg6E14odyPWUFafi5wLEMpLjtmNfBp3r',
+      owner: 'Cq7CPoJ3b84nANKnz61HCCywSMVJNbRzmoaqvAxBi4vX',
+      amount: '2511210038936013080',
+      delegateOption: 70962703,
+      delegate: 'BSFGxQ38xesdoUd3qsvNhjRu2FLPq9CwCBiGE42fc9hR',
+      state: 0,
+      isNativeOption: 0,
+      isNative: '0',
+      delegatedAmount: '0',
+      closeAuthorityOption: 0,
+      closeAuthority: '11111111111111111111111111111111'
+    }
+  }
+})
+
+let info = await connection.getAccountInfo(new PublicKey('2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9'))
+
+expect(requestMock).toHaveBeenCalled()
+
+const decoded = api.decode(info.data)
+decoded.mint.toString() // 8rUUP52Bb6Msg6E14odyPWUFafi5wLEMpLjtmNfBp3r
 ```
 
 #### Simple Request with Parameters

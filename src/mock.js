@@ -30,13 +30,15 @@ let apiIsMissing = (type, configuration) => {
 }
 
 let apiMissingErrorText = (type, configuration) => {
+  let configurationDuplicate = configuration
+  if(configuration.provider) { configurationDuplicate.provider = "PROVIDER" }
   return (
     'Web3Mock: Please provide the api for the ' +
     type +
     ': ' +
     JSON.stringify(
-      Object.assign(configuration, {
-        [type]: Object.assign(configuration[type], { api: ['PLACE API HERE'] }),
+      Object.assign(configurationDuplicate, {
+        [type]: Object.assign(configurationDuplicate[type], { api: ['PLACE API HERE'] }),
       }),
     )
   )

@@ -61,7 +61,7 @@ describe('mocks evm requests', ()=> {
         )
       })
 
-      it('does not raise an error but asks you to mock if other mocks exist', async ()=> {
+      it('asks you to mock if other mocks exist', async ()=> {
         
         mock({
           blockchain,

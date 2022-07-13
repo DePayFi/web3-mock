@@ -23,7 +23,7 @@ let mockHasWrongProvider = (mock, provider) => {
 
 let mockHasWrongTransactionData = (mock, type, params) => {
   return (
-    (mock[type].to && normalize(params.to) !== normalize(mock[type].to)) ||
+    (mock[type].to && normalize(params[0]) !== normalize(mock[type].to)) ||
     (mock[type].from && normalize(params.from) !== normalize(mock[type].from)) ||
     (mock[type].value &&
       ethers.BigNumber.from(params.value).toString() !== normalize(mock[type].value))
@@ -35,7 +35,7 @@ let mockHasWrongBalanceData = (mock, type, params) => {
 }
 
 let mockHasWrongToAddress = (mock, type, params) => {
-  return normalize(mock[type].to) !== normalize(params?.to)
+  return normalize(mock[type].to) !== normalize(params[0])
 }
 
 let mockDataDoesNotMatchSingleArgument = (mock, type, contractArguments) => {
@@ -102,23 +102,6 @@ let mockHasWrongData = (mock, type, params, provider) => {
   }
 
   let api = mock[type].api
-  let contractFunction;
-
-  if (mock[type].method !== contractFunction.name) {
-    return true
-  }
-
-  let contractArguments = getContractArguments({ params, api, provider })
-
-  if (mockDataDoesNotMatchSingleArgument(mock, type, contractArguments)) {
-    return true
-  }
-  if (mockDataDoesNotMatchArrayArgument(mock, type, contractArguments)) {
-    return true
-  }
-  if (mockDataDoesNotMatchObjectArugment(mock, type, contractArguments)) {
-    return true
-  }
 }
 
 let mockHasWrongNetworkAction = (mock, type, params) => {
@@ -165,7 +148,7 @@ let findMock = ({ type, blockchain, params, block, provider }) => {
 
 let findAnyMockForThisAddress = ({ type, params }) => {
   return mocks.find((mock) => {
-    if (normalize(mock[type]?.to) !== normalize(params.to)) {
+    if (normalize(mock[type]?.to) !== normalize(params[0])) {
       return
     }
     return mock
