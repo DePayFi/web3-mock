@@ -1,5 +1,5 @@
 import { mock, resetMocks, anything } from 'src'
-import { Connection, PublicKey } from '@solana/web3.js'
+import { Connection, PublicKey } from '@depay/solana-web3.js'
 import { supported } from "src/blockchains"
 
 describe('mocks solana wallet balances', ()=> {

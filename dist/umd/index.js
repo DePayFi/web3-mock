@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('ethers'), require('@depay/web3-blockchains'), require('buffer'), require('util'), require('@depay/solana-web3.js'), require('@depay/web3-constants')) :
   typeof define === 'function' && define.amd ? define(['exports', 'ethers', '@depay/web3-blockchains', 'buffer', 'util', '@depay/solana-web3.js', '@depay/web3-constants'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Mock = {}, global.ethers, global.Web3Blockchains, global.require$$0, global.require$$0$1, global.SolanaWeb3js, global.web3Constants));
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Mock = {}, global.ethers, global.Web3Blockchains, global.require$$0, global.require$$0$1, global.SolanaWeb3js, global.Web3Constants));
 }(this, (function (exports, ethers, web3Blockchains, require$$0, require$$0$1, solanaWeb3_js, web3Constants) { 'use strict';
 
   function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
