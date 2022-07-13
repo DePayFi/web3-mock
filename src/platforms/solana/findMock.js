@@ -35,6 +35,7 @@ let mockHasWrongBalanceData = (mock, type, params) => {
 }
 
 let mockHasWrongToAddress = (mock, type, params) => {
+  if(mock[type].to == undefined) { return false }
   return normalize(mock[type].to) !== normalize(params[0])
 }
 
