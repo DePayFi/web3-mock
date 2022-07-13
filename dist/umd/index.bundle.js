@@ -22151,7 +22151,7 @@
   };
 
   function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-  let callMock = ({ mock, params, provider })=> {
+  let callMock$1 = ({ mock, params, provider })=> {
     mock.calls.add(params);
     if (mock.request.return instanceof Error) {
       return Promise.reject({ 
@@ -22172,10 +22172,10 @@
     if (mock) {
       if(mock.request.delay) {
         return new Promise((resolve)=>{
-          setTimeout(()=>resolve(callMock({ mock, params, provider })), mock.request.delay);
+          setTimeout(()=>resolve(callMock$1({ mock, params, provider })), mock.request.delay);
         })
       } else {
-        return callMock({ mock, params, provider })
+        return callMock$1({ mock, params, provider })
       }
     } else {
       mock = findAnyMockForThisAddress$1({ type: 'request', params });
@@ -81740,11 +81740,12 @@
   CONSTANTS$4['solana'] = CONSTANTS$3;
 
   function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-  let responseData = function ({ blockchain, provider, method, params }) {
-    let mock = findMock({ blockchain, type: 'request', params, provider });
+  let callMock = ({ blockchain, mock, params, provider })=> {
+    mock.calls.add(params);
 
-    if(mock) {
-      mock.calls.add(params);
+    if (mock.request.return instanceof Error) {
+      return Promise.reject(mock.request.return.message)
+    } else {
       let response = {};
       Object.keys(mock.request.return).forEach((key)=>{
         let value = mock.request.return[key];
@@ -81766,7 +81767,23 @@
       let buffer = Buffer.alloc(mock.request.api.span);
       mock.request.api.encode(response, buffer);
 
-      return [buffer.toString('base64'), 'base64']
+      return Promise.resolve(
+        [buffer.toString('base64'), 'base64']
+      )
+    }
+  };
+
+  let responseData = function ({ blockchain, provider, method, params }) {
+    let mock = findMock({ blockchain, type: 'request', params, provider });
+
+    if(mock) {
+      if(mock.request.delay) {
+        return new Promise((resolve)=>{
+          setTimeout(()=>resolve(callMock({ blockchain, mock, params, provider })), mock.request.delay);
+        })
+      } else {
+        return callMock({ blockchain, mock, params, provider })
+      }
 
     } else {
       
@@ -81823,20 +81840,23 @@
         }
 
       case 'getAccountInfo':
-        return Promise.resolve({
-          jsonrpc: '2.0',
-          id: '1', 
-          result: {
-            context:{ apiVersion: '1.10.26', slot: 140152926 }, 
-            value: {
-              data: responseData({ blockchain, provider, method, params }),
-              executable: false,
-              owner: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-              lamports: 3361680,
-              rentEpoch: 326
-            },
-          } 
-        })
+        return responseData({ blockchain, provider, method, params })
+          .then((data)=>{
+            return({
+              jsonrpc: '2.0',
+              id: '1', 
+              result: {
+                context:{ apiVersion: '1.10.26', slot: 140152926 }, 
+                value: {
+                  data,
+                  executable: false,
+                  owner: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                  lamports: 3361680,
+                  rentEpoch: 326
+                },
+              } 
+            })
+          })
 
       default:
         raise$1('Web3Mock request: Unknown request method ' + method + '!');

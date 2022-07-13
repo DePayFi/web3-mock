@@ -29,20 +29,23 @@ let request = ({ blockchain, provider, method, params }) => {
     break
 
     case 'getAccountInfo':
-      return Promise.resolve({
-        jsonrpc: '2.0',
-        id: '1', 
-        result: {
-          context:{ apiVersion: '1.10.26', slot: 140152926 }, 
-          value: {
-            data: responseData({ blockchain, provider, method, params }),
-            executable: false,
-            owner: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-            lamports: 3361680,
-            rentEpoch: 326
-          },
-        } 
-      })
+      return responseData({ blockchain, provider, method, params })
+        .then((data)=>{
+          return({
+            jsonrpc: '2.0',
+            id: '1', 
+            result: {
+              context:{ apiVersion: '1.10.26', slot: 140152926 }, 
+              value: {
+                data,
+                executable: false,
+                owner: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                lamports: 3361680,
+                rentEpoch: 326
+              },
+            } 
+          })
+        })
     break
 
     default:

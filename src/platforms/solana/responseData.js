@@ -3,11 +3,12 @@ import { CONSTANTS } from '@depay/web3-constants'
 import { findMock, findAnyMockForThisAddress } from './findMock'
 import { PublicKey, Buffer, BN } from '@depay/solana-web3.js'
 
-let responseData = function ({ blockchain, provider, method, params }) {
-  let mock = findMock({ blockchain, type: 'request', params, provider })
+let callMock = ({ blockchain, mock, params, provider })=> {
+  mock.calls.add(params)
 
-  if(mock) {
-    mock.calls.add(params)
+  if (mock.request.return instanceof Error) {
+    return Promise.reject(mock.request.return.message)
+  } else {
     let response = {}
     Object.keys(mock.request.return).forEach((key)=>{
       let value = mock.request.return[key]
@@ -29,7 +30,23 @@ let responseData = function ({ blockchain, provider, method, params }) {
     let buffer = Buffer.alloc(mock.request.api.span)
     mock.request.api.encode(response, buffer)
 
-    return [buffer.toString('base64'), 'base64']
+    return Promise.resolve(
+      [buffer.toString('base64'), 'base64']
+    )
+  }
+}
+
+let responseData = function ({ blockchain, provider, method, params }) {
+  let mock = findMock({ blockchain, type: 'request', params, provider })
+
+  if(mock) {
+    if(mock.request.delay) {
+      return new Promise((resolve)=>{
+        setTimeout(()=>resolve(callMock({ blockchain, mock, params, provider })), mock.request.delay)
+      })
+    } else {
+      return callMock({ blockchain, mock, params, provider })
+    }
 
   } else {
     

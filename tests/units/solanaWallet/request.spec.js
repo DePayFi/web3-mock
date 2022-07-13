@@ -142,6 +142,27 @@ describe('mocks solana requests', ()=> {
           })
         }).toThrowError(`Web3Mock: Please provide the api for the request: {\"provider\":\"PROVIDER\",\"blockchain\":\"${blockchain}\",\"request\":{\"method\":\"getAccountInfo\",\"to\":\"2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9\",\"return\":{},\"api\":[\"PLACE API HERE\"]}}`)
       })
+
+      it('throws an error if the contract was mocked to raise an error', async ()=>{
+        
+        let connection = new Connection('https://api.mainnet-beta.solana.com')
+        
+        mock({
+          provider: connection,
+          blockchain,
+          request: {
+            method: 'getAccountInfo',
+            to: '2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9',
+            api,
+            return: Error('SOMETHING WENT WRONG')
+          }
+        })
+
+        await rejectsWithMatch(
+          async ()=>{ await connection.getAccountInfo(new PublicKey('2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9')) },
+          'SOMETHING WENT WRONG'
+        )
+      })
     })
   })
 });
