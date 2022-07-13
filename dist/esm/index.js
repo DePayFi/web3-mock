@@ -19250,6 +19250,7 @@ let mockHasWrongBalanceData = (mock, type, params) => {
 };
 
 let mockHasWrongToAddress = (mock, type, params) => {
+  if(mock[type].to == undefined) { return false }
   return normalize(mock[type].to) !== normalize(params[0])
 };
 
@@ -19398,6 +19399,8 @@ let responseData = function ({ blockchain, provider, method, params }) {
         response[key] = new PublicKey(value);
       } else if (typeof value == 'string' && !value.match(/\D/)) {
         response[key] = new BN$1(value, 10);
+      } else if (typeof value == 'boolean') {
+        response[key] = value;
       } else {
         raise$1(`Web3Mock: Unknown value type ${value}`);
       }

@@ -1,4 +1,4 @@
-import { Connection, PublicKey, struct, publicKey, u64, u32, u8 } from '@depay/solana-web3.js'
+import { Connection, PublicKey, struct, publicKey, u64, u32, u8, bool } from '@depay/solana-web3.js'
 import { mock, resetMocks, anything } from 'src'
 import { supported } from "src/blockchains"
 
@@ -28,7 +28,8 @@ describe('mocks solana requests', ()=> {
         u64('isNative'),
         u64('delegatedAmount'),
         u32('closeAuthorityOption'),
-        publicKey('closeAuthority')
+        publicKey('closeAuthority'),
+        bool('freezeAuthorityOption'),
       ])
       
       beforeEach(resetMocks)
@@ -55,7 +56,8 @@ describe('mocks solana requests', ()=> {
               isNative: '0',
               delegatedAmount: '0',
               closeAuthorityOption: 0,
-              closeAuthority: '11111111111111111111111111111111'
+              closeAuthority: '11111111111111111111111111111111',
+              freezeAuthorityOption: true
             }
           }
         })
@@ -76,6 +78,7 @@ describe('mocks solana requests', ()=> {
         expect(decoded.delegatedAmount.toString()).toEqual('0')
         expect(decoded.closeAuthorityOption).toEqual(0)
         expect(decoded.closeAuthority.toString()).toEqual('11111111111111111111111111111111')
+        expect(decoded.freezeAuthorityOption).toEqual(true)
       })
 
       it('throws an error if the contract was not mocked at all', async ()=>{

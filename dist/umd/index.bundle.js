@@ -22647,6 +22647,7 @@
   };
 
   let mockHasWrongToAddress = (mock, type, params) => {
+    if(mock[type].to == undefined) { return false }
     return normalize$1(mock[type].to) !== normalize$1(params[0])
   };
 
@@ -81755,6 +81756,8 @@
           response[key] = new PublicKey(value);
         } else if (typeof value == 'string' && !value.match(/\D/)) {
           response[key] = new BN(value, 10);
+        } else if (typeof value == 'boolean') {
+          response[key] = value;
         } else {
           raise$1(`Web3Mock: Unknown value type ${value}`);
         }

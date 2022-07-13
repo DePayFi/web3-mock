@@ -19,6 +19,8 @@ let responseData = function ({ blockchain, provider, method, params }) {
         response[key] = new PublicKey(value)
       } else if (typeof value == 'string' && !value.match(/\D/)) {
         response[key] = new BN(value, 10)
+      } else if (typeof value == 'boolean') {
+        response[key] = value
       } else {
         raise(`Web3Mock: Unknown value type ${value}`)
       }
