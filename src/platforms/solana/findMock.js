@@ -97,12 +97,18 @@ let mockHasWrongBlock = (mock, block) => {
   return ethers.utils.hexValue(mock.block) != block
 }
 
-let mockHasWrongData = (mock, type, params, provider) => {
-  if (mock[type]?.api == undefined) {
-    return
-  }
+let mockHasWrongParams = (mock, type, params, provider) => {
+  if(mock.request == undefined) { return false }
+  if(mock.request.params == undefined) { return false }
 
-  let api = mock[type].api
+  if(params == undefined || params[1] == undefined) { return true }
+
+  let requestParams = JSON.parse(JSON.stringify(params[1]))
+  delete requestParams.encoding
+
+  if(JSON.stringify(requestParams) != JSON.stringify(mock.request.params)) {
+    return true
+  }
 }
 
 let mockHasWrongNetworkAction = (mock, type, params) => {
@@ -133,7 +139,7 @@ let findMock = ({ type, blockchain, params, block, provider }) => {
     if (mockHasWrongToAddress(mock, type, params)) {
       return
     }
-    if (mockHasWrongData(mock, type, params, provider)) {
+    if (mockHasWrongParams(mock, type, params, provider)) {
       return
     }
     if (mockHasWrongBlock(mock, block)) {

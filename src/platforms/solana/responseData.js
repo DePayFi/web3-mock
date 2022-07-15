@@ -66,12 +66,12 @@ let responseData = function ({ blockchain, provider, method, params }) {
   } else {
     
     mock = findAnyMockForThisAddress({ type: 'request', params })
-    if (mock && mock.request?.api) {
+    if (mock) {
       raise(
         'Web3Mock: Please mock the request: ' +
         JSON.stringify({
           blockchain,
-          request: getRequestToBeMocked({ mock, params, provider }),
+          request: getRequestToBeMocked({ mock, method, params, provider }),
         })
       )
     } else {
@@ -80,15 +80,24 @@ let responseData = function ({ blockchain, provider, method, params }) {
   }
 }
 
-let getRequestToBeMocked = ({ mock, params, provider }) => {
+let getRequestToBeMocked = ({ mock, params, method, provider }) => {
   let address = params[0]
   let api = mock.request.api
 
   let toBeMocked = {
     to: address,
-    api: ['PLACE API HERE'],
-    method: contractFunction.name,
+    method: method,
     return: 'Your Value',
+  }
+
+  if(mock.api){
+    toBeMocked.api = ['PLACE API HERE']
+  }
+
+  if(params[1]) {
+    let requestParams = JSON.parse(JSON.stringify(params[1]))
+    delete requestParams.encoding
+    toBeMocked.params = requestParams
   }
 
   return toBeMocked

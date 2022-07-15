@@ -209,6 +209,51 @@ describe('mocks solana requests', ()=> {
           'F7e4iBrxoSmHhEzhuBcXXs1KAknYvEoZWieiocPvrCD9'
         ])
       })
+
+      it('fails if a request was mocked with other params', async ()=>{
+
+        let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+        let wallet = '2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9'
+        let mint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+
+        let requestMock = mock({
+          provider: connection,
+          blockchain,
+          request: {
+            method: 'getProgramAccounts',
+            to: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+            params: { 
+              filters: [
+                { dataSize: 165 },
+                { memcmp: { offset: 32, bytes: wallet }},
+                { memcmp: { offset: 0, bytes: mint }}
+              ]
+            },
+            return: [
+              {
+                account: { data: new Buffer([]), executable: false, lamports: 2039280, owner: mint, rentEpoch: 327 },
+                pubkey: '3JdKXacGdntfNKXzSGC2EwUDKFPrXdsqowbuc9hEiNBb'
+              }, {
+                account: { data: new Buffer([]), executable: false, lamports: 2039280, owner: mint, rentEpoch: 327 },
+                pubkey: 'FjtHL8ki3GXMhCqY2Lum9CCAv5tSQMkhJEnXbEkajTrZ'
+              }, {
+                account: { data: new Buffer([]), executable: false, lamports: 2039280, owner: mint, rentEpoch: 327 },
+                pubkey: 'F7e4iBrxoSmHhEzhuBcXXs1KAknYvEoZWieiocPvrCD9'
+              }
+            ]
+          }
+        })
+
+        await expect(
+          connection.getProgramAccounts(new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), { 
+            filters: [
+              { dataSize: 165 },
+              { memcmp: { offset: 32, bytes: wallet }},
+            ]
+          })
+        ).rejects.toEqual("Web3Mock: Please mock the request: {\"blockchain\":\"solana\",\"request\":{\"to\":\"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\"method\":\"getProgramAccounts\",\"return\":\"Your Value\",\"params\":{\"filters\":[{\"dataSize\":165},{\"memcmp\":{\"offset\":32,\"bytes\":\"2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9\"}}]}}}")
+      })
     })
   })
 });
