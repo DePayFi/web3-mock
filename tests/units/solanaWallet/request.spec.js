@@ -126,7 +126,7 @@ describe('mocks solana requests', ()=> {
         )
       })
 
-      it('throws an error if the api for the request was not provided', ()=>{
+      it('does NOT throw an error if the api for the request was not provided (as solana requests can have no apis)', ()=>{
 
         let connection = new Connection('https://api.mainnet-beta.solana.com')
 
@@ -135,12 +135,12 @@ describe('mocks solana requests', ()=> {
             provider: connection,
             blockchain,
             request: {
-              method: 'getAccountInfo',
+              method: 'getProgramAccounts',
               to: '2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9',
               return: {}
             }
           })
-        }).toThrowError(`Web3Mock: Please provide the api for the request: {\"provider\":\"PROVIDER\",\"blockchain\":\"${blockchain}\",\"request\":{\"method\":\"getAccountInfo\",\"to\":\"2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9\",\"return\":{},\"api\":[\"PLACE API HERE\"]}}`)
+        }).not.toThrowError(`Web3Mock: Please provide the api for the request: {\"provider\":\"PROVIDER\",\"blockchain\":\"${blockchain}\",\"request\":{\"method\":\"getAccountInfo\",\"to\":\"2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9\",\"return\":{},\"api\":[\"PLACE API HERE\"]}}`)
       })
 
       it('throws an error if the contract was mocked to raise an error', async ()=>{

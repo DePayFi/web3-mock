@@ -68,7 +68,7 @@ describe('mocks solana wallet balances', ()=> {
         )
       })
 
-      it.only('fails the balance if you mock an Error', async ()=> {
+      it('fails the balance if you mock an Error', async ()=> {
         
         let connection = new Connection('https://api.mainnet-beta.solana.com')
 

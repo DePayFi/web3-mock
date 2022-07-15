@@ -19676,7 +19676,8 @@
   let apiIsMissing = (type, configuration) => {
     if (
       typeof configuration[type] == 'undefined' ||
-      typeof configuration[type].method == 'undefined'
+      typeof configuration[type].method == 'undefined' ||
+      supported.solana.includes(configuration.blockchain)
     ) {
       return false
     }
