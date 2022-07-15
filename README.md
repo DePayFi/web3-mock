@@ -348,7 +348,9 @@ await contract.balanceOf("0x5Af489c8786A018EC4814194dC8048be1007e390", { blockTa
 // 1000000000000000000
 ```
 
-#### Complex Requests with Multiple Parameters
+#### Complex Requests with Parameters
+
+##### EVM: Complex Requests with Parameters
 
 ```javascript
 let contractMock = mock({
@@ -378,6 +380,53 @@ expect(
 ).toEqual(["773002376389189", "1000000000000000000"])
 
 expect(contractMock).toHaveBeenCalled()
+```
+
+##### Solana: Complex Requests with Parameters
+
+```javascript
+let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+let wallet = '2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9'
+let mint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+
+let filters = [
+  { dataSize: 165 },
+  { memcmp: { offset: 32, bytes: wallet }},
+  { memcmp: { offset: 0, bytes: mint }}
+]
+
+let requestMock = mock({
+  provider: connection,
+  blockchain,
+  request: {
+    method: 'getProgramAccounts',
+    to: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+    params: { filters },
+    return: [
+      {
+        account: { data: new Buffer([]), executable: false, lamports: 2039280, owner: mint, rentEpoch: 327 },
+        pubkey: '3JdKXacGdntfNKXzSGC2EwUDKFPrXdsqowbuc9hEiNBb'
+      }, {
+        account: { data: new Buffer([]), executable: false, lamports: 2039280, owner: mint, rentEpoch: 327 },
+        pubkey: 'FjtHL8ki3GXMhCqY2Lum9CCAv5tSQMkhJEnXbEkajTrZ'
+      }, {
+        account: { data: new Buffer([]), executable: false, lamports: 2039280, owner: mint, rentEpoch: 327 },
+        pubkey: 'F7e4iBrxoSmHhEzhuBcXXs1KAknYvEoZWieiocPvrCD9'
+      }
+    ]
+  }
+})
+
+let accounts = await connection.getProgramAccounts(new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), { filters })
+
+expect(requestMock).toHaveBeenCalled()
+
+expect(accounts.map((account)=>account.pubkey.toString())).toEqual([
+  '3JdKXacGdntfNKXzSGC2EwUDKFPrXdsqowbuc9hEiNBb',
+  'FjtHL8ki3GXMhCqY2Lum9CCAv5tSQMkhJEnXbEkajTrZ',
+  'F7e4iBrxoSmHhEzhuBcXXs1KAknYvEoZWieiocPvrCD9'
+])
 ```
 
 #### The "anything" Parameter

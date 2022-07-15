@@ -48,6 +48,17 @@ let request = ({ blockchain, provider, method, params }) => {
         })
     break
 
+    case 'getProgramAccounts':
+      return responseData({ blockchain, provider, method, params })
+        .then((data)=>{
+          return({
+            jsonrpc: '2.0',
+            id: '1', 
+            result: data
+          })
+        })
+    break
+
     default:
       raise('Web3Mock request: Unknown request method ' + method + '!')
   }
