@@ -81732,36 +81732,51 @@ CONSTANTS$4['polygon'] = CONSTANTS$2;
 CONSTANTS$4['solana'] = CONSTANTS$3;
 
 function _optionalChain$3(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+let marshalValue = (value, blockchain)=>{
+  if(typeof value == 'number') {
+    return value
+  } else if (typeof value == 'string' && value == CONSTANTS$4[blockchain].NATIVE) {
+    return new PublicKey(value)
+  } else if (typeof value == 'string' && value.match(/\D/)) {
+    return new PublicKey(value)
+  } else if (typeof value == 'string' && !value.match(/\D/)) {
+    return new BN(value, 10)
+  } else if (typeof value == 'boolean') {
+    return value
+  } else if (value instanceof Buffer) {
+    return value
+  } else if (value instanceof Array) {
+    return value.map((value)=>marshalValue(value, blockchain))
+  } else if (value instanceof Object) {
+    let valueObject = {};
+    Object.keys(value).forEach((key)=>{
+      let singleValue = value[key];
+      valueObject[key] = marshalValue(singleValue, blockchain);
+    });
+    return valueObject
+  } else {
+    raise$1(`Web3Mock: Unknown value type ${value}`);
+  }
+};
+
 let callMock = ({ blockchain, mock, params, provider })=> {
   mock.calls.add(params);
 
   if (mock.request.return instanceof Error) {
     return Promise.reject(mock.request.return.message)
   } else {
-    let response = {};
-    Object.keys(mock.request.return).forEach((key)=>{
-      let value = mock.request.return[key];
-      if(typeof value == 'number') {
-        response[key] = value;
-      } else if (typeof value == 'string' && value == CONSTANTS$4[blockchain].NATIVE) {
-        response[key] = new PublicKey(value);
-      } else if (typeof value == 'string' && value.match(/\D/)) {
-        response[key] = new PublicKey(value);
-      } else if (typeof value == 'string' && !value.match(/\D/)) {
-        response[key] = new BN(value, 10);
-      } else if (typeof value == 'boolean') {
-        response[key] = value;
-      } else {
-        raise$1(`Web3Mock: Unknown value type ${value}`);
-      }
-    });
+    let response = marshalValue(mock.request.return, blockchain);
 
-    let buffer = Buffer.alloc(mock.request.api.span);
-    mock.request.api.encode(response, buffer);
+    if(mock.request.api) {
+      let buffer = Buffer.alloc(mock.request.api.span);
+      mock.request.api.encode(response, buffer);
 
-    return Promise.resolve(
-      [buffer.toString('base64'), 'base64']
-    )
+      return Promise.resolve(
+        [buffer.toString('base64'), 'base64']
+      )
+    } else {
+      return Promise.resolve(response)
+    }
   }
 };
 
@@ -81847,6 +81862,16 @@ let request$1 = ({ blockchain, provider, method, params }) => {
                 rentEpoch: 326
               },
             } 
+          })
+        })
+
+    case 'getProgramAccounts':
+      return responseData({ blockchain, provider, method, params })
+        .then((data)=>{
+          return({
+            jsonrpc: '2.0',
+            id: '1', 
+            result: data
           })
         })
 
