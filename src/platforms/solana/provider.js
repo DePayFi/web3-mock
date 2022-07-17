@@ -59,6 +59,20 @@ let request = ({ blockchain, provider, method, params }) => {
         })
     break
 
+    case 'getTokenAccountBalance':
+      return responseData({ blockchain, provider, method, params, raw: true })
+        .then((value)=>{
+          return({
+            jsonrpc: '2.0',
+            id: '1', 
+            result: {
+              context:{ apiVersion: '1.10.26', slot: 140152926 }, 
+              value
+            }
+          })
+        })
+    break
+
     default:
       raise('Web3Mock request: Unknown request method ' + method + '!')
   }

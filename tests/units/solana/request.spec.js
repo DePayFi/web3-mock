@@ -164,7 +164,7 @@ describe('mocks solana requests', ()=> {
         )
       })
 
-      it('mocks a request with params', async ()=>{
+      it('mocks a getProgramAccounts request with params', async ()=>{
 
         let connection = new Connection('https://api.mainnet-beta.solana.com')
 
@@ -253,6 +253,36 @@ describe('mocks solana requests', ()=> {
             ]
           })
         ).rejects.toEqual("Web3Mock: Please mock the request: {\"blockchain\":\"solana\",\"request\":{\"to\":\"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\"method\":\"getProgramAccounts\",\"return\":\"Your Value\",\"params\":{\"filters\":[{\"dataSize\":165},{\"memcmp\":{\"offset\":32,\"bytes\":\"2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9\"}}]}}}")
+      })
+
+      it('mocks a getTokenAccountBalance request with params', async ()=>{
+
+        let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+        let tokenAccount = '2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9'
+
+        let returnedBalance = {
+          amount: "10000617",
+          decimals: 6,
+          uiAmount: 10.000617,
+          uiAmountString: "10.000617"
+        }
+
+        let requestMock = mock({
+          provider: connection,
+          blockchain,
+          request: {
+            method: 'getTokenAccountBalance',
+            to: tokenAccount,
+            return: returnedBalance
+          }
+        })
+
+        let balance = await connection.getTokenAccountBalance(new PublicKey(tokenAccount))
+
+        expect(requestMock).toHaveBeenCalled()
+
+        expect(balance.value).toEqual(returnedBalance)
       })
     })
   })

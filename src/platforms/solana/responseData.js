@@ -30,11 +30,13 @@ let marshalValue = (value, blockchain)=>{
   }
 }
 
-let callMock = ({ blockchain, mock, params, provider })=> {
+let callMock = ({ blockchain, mock, params, provider, raw })=> {
   mock.calls.add(params)
 
   if (mock.request.return instanceof Error) {
     return Promise.reject(mock.request.return.message)
+  } else if(raw) {
+    return Promise.resolve(mock.request.return)
   } else {
     let response = marshalValue(mock.request.return, blockchain)
 
@@ -51,16 +53,16 @@ let callMock = ({ blockchain, mock, params, provider })=> {
   }
 }
 
-let responseData = function ({ blockchain, provider, method, params }) {
+let responseData = function ({ blockchain, provider, method, params, raw }) {
   let mock = findMock({ blockchain, type: 'request', params, provider })
 
   if(mock) {
     if(mock.request.delay) {
       return new Promise((resolve)=>{
-        setTimeout(()=>resolve(callMock({ blockchain, mock, params, provider })), mock.request.delay)
+        setTimeout(()=>resolve(callMock({ blockchain, mock, params, provider, raw })), mock.request.delay)
       })
     } else {
-      return callMock({ blockchain, mock, params, provider })
+      return callMock({ blockchain, mock, params, provider, raw })
     }
 
   } else {
