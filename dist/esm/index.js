@@ -19394,7 +19394,11 @@ let marshalValue = (value, blockchain)=>{
   } else if (typeof value == 'string' && value == CONSTANTS[blockchain].NATIVE) {
     return new PublicKey(value)
   } else if (typeof value == 'string' && value.match(/\D/)) {
-    return new PublicKey(value)
+    try {
+      return new PublicKey(value)
+    } catch(e) { // normal string
+      return Buffer.from(value, 'utf-8')
+    }
   } else if (typeof value == 'string' && !value.match(/\D/)) {
     return new BN$1(value, 10)
   } else if (typeof value == 'boolean') {
@@ -19428,7 +19432,7 @@ let callMock = ({ blockchain, mock, params, provider, raw })=> {
     let response = marshalValue(mock.request.return, blockchain);
 
     if(mock.request.api) {
-      let buffer = Buffer.alloc(mock.request.api.span);
+      let buffer = Buffer.alloc(mock.request.api.span < 0 ? 1000 : mock.request.api.span);
       mock.request.api.encode(response, buffer);
 
       return Promise.resolve(

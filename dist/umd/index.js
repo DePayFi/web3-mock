@@ -19398,7 +19398,11 @@
     } else if (typeof value == 'string' && value == web3Constants.CONSTANTS[blockchain].NATIVE) {
       return new solanaWeb3_js.PublicKey(value)
     } else if (typeof value == 'string' && value.match(/\D/)) {
-      return new solanaWeb3_js.PublicKey(value)
+      try {
+        return new solanaWeb3_js.PublicKey(value)
+      } catch(e) { // normal string
+        return solanaWeb3_js.Buffer.from(value, 'utf-8')
+      }
     } else if (typeof value == 'string' && !value.match(/\D/)) {
       return new solanaWeb3_js.BN(value, 10)
     } else if (typeof value == 'boolean') {
@@ -19432,7 +19436,7 @@
       let response = marshalValue(mock.request.return, blockchain);
 
       if(mock.request.api) {
-        let buffer = solanaWeb3_js.Buffer.alloc(mock.request.api.span);
+        let buffer = solanaWeb3_js.Buffer.alloc(mock.request.api.span < 0 ? 1000 : mock.request.api.span);
         mock.request.api.encode(response, buffer);
 
         return Promise.resolve(
