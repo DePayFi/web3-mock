@@ -1,4 +1,4 @@
-import { Connection, PublicKey, struct, publicKey, u64, u32, u8, bool, Buffer } from '@depay/solana-web3.js'
+import { Connection, PublicKey, struct, publicKey, u64, u32, u8, bool, str, Buffer } from '@depay/solana-web3.js'
 import { mock, resetMocks, anything } from 'src'
 import { supported } from "src/blockchains"
 
@@ -79,6 +79,41 @@ describe('mocks solana requests', ()=> {
         expect(decoded.closeAuthorityOption).toEqual(0)
         expect(decoded.closeAuthority.toString()).toEqual('11111111111111111111111111111111')
         expect(decoded.freezeAuthorityOption).toEqual(true)
+      })
+
+      it('mocks a strings in response data', async ()=>{
+
+        let api = struct([
+          publicKey('mint'),
+          str('name'),
+          str('symbol'),
+        ])
+
+        let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+        let requestMock = mock({
+          provider: connection,
+          blockchain,
+          request: {
+            method: 'getAccountInfo',
+            to: '2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9',
+            api,
+            return: {
+              mint: '8rUUP52Bb6Msg6E14odyPWUFafi5wLEMpLjtmNfBp3r',
+              name: 'USD Coin',
+              symbol: 'USDC',
+            }
+          }
+        })
+
+        let info = await connection.getAccountInfo(new PublicKey('2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9'))
+
+        expect(requestMock).toHaveBeenCalled()
+
+        const decoded = api.decode(info.data)
+        expect(decoded.mint.toString()).toEqual('8rUUP52Bb6Msg6E14odyPWUFafi5wLEMpLjtmNfBp3r')
+        expect(decoded.name).toEqual('USD Coin')
+        expect(decoded.symbol).toEqual('USDC')
       })
 
       it('throws an error if the contract was not mocked at all', async ()=>{
