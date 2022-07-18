@@ -81767,6 +81767,8 @@
         valueObject[key] = marshalValue(singleValue, blockchain);
       });
       return valueObject
+    } else if (value === null) {
+      return null
     } else {
       raise$1(`Web3Mock: Unknown value type ${value}`);
     }

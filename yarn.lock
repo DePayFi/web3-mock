@@ -982,10 +982,10 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@depay/solana-web3.js@^1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.3.0.tgz#2359876f5a19522e1241b2be58a85f9e542891a1"
-  integrity sha512-KzrBLt21asGOYy9yPv5ARVyU14MzSwU0zqv/oBKnmO49gv+UPMKWei0fZ+SQ2MYmaKeJLp9Ojug6IoNM3y2MYw==
+"@depay/solana-web3.js@^1.5.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.7.0.tgz#f73c48886a6ae2dcb18786c94e6aab3deee687d0"
+  integrity sha512-Fi6+qkUy6rextiojoeS8ka7TahIr5XUplU9GObuXwTJkuM/HqaFCQH6ZT7Vfzv+Sex4WWcBLqJSYMbi8887nog==
 
 "@depay/web3-blockchains@^5.0.1":
   version "5.0.1"

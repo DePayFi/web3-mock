@@ -25,6 +25,8 @@ let marshalValue = (value, blockchain)=>{
       valueObject[key] = marshalValue(singleValue, blockchain)
     })
     return valueObject
+  } else if (value === null) {
+    return null
   } else {
     raise(`Web3Mock: Unknown value type ${value}`)
   }
