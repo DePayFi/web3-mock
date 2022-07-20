@@ -19432,6 +19432,8 @@
       return Promise.reject(mock.request.return.message)
     } else if(raw) {
       return Promise.resolve(mock.request.return)
+    } else if(!mock.request.return) {
+      return Promise.resolve(mock.request.return)
     } else {
       let response = marshalValue(mock.request.return, blockchain);
 
@@ -19526,18 +19528,26 @@
       case 'getAccountInfo':
         return responseData({ blockchain, provider, method, params })
           .then((data)=>{
+            let value;
+            
+            if(data) {
+              value = {
+                data,
+                executable: false,
+                owner: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                lamports: 3361680,
+                rentEpoch: 326
+              };
+            } else {
+              value = data;
+            }
+
             return({
               jsonrpc: '2.0',
               id: '1', 
               result: {
                 context:{ apiVersion: '1.10.26', slot: 140152926 }, 
-                value: {
-                  data,
-                  executable: false,
-                  owner: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-                  lamports: 3361680,
-                  rentEpoch: 326
-                },
+                value
               } 
             })
           })
