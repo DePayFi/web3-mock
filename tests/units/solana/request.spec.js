@@ -81,7 +81,7 @@ describe('mocks solana requests', ()=> {
         expect(decoded.freezeAuthorityOption).toEqual(true)
       })
 
-      it('mocks a strings in response data', async ()=>{
+      it('mocks strings in response data', async ()=>{
 
         let api = struct([
           publicKey('mint'),
@@ -114,6 +114,27 @@ describe('mocks solana requests', ()=> {
         expect(decoded.mint.toString()).toEqual('8rUUP52Bb6Msg6E14odyPWUFafi5wLEMpLjtmNfBp3r')
         expect(decoded.name).toEqual('USD Coin')
         expect(decoded.symbol).toEqual('USDC')
+      })
+
+      it('returns null if null was mocked', async ()=>{
+
+        let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+        let requestMock = mock({
+          provider: connection,
+          blockchain,
+          request: {
+            method: 'getAccountInfo',
+            to: '2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9',
+            api,
+            return: null
+          }
+        })
+
+        let info = await connection.getAccountInfo(new PublicKey('2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9'))
+
+        expect(requestMock).toHaveBeenCalled()
+        expect(info).toEqual(null)
       })
 
       it('throws an error if the contract was not mocked at all', async ()=>{

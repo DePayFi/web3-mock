@@ -43,6 +43,8 @@ let callMock = ({ blockchain, mock, params, provider, raw })=> {
     return Promise.reject(mock.request.return.message)
   } else if(raw) {
     return Promise.resolve(mock.request.return)
+  } else if(!mock.request.return) {
+    return Promise.resolve(mock.request.return)
   } else {
     let response = marshalValue(mock.request.return, blockchain)
 
