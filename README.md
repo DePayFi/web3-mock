@@ -3,13 +3,13 @@ Simplify testing your dApps by mocking blockchain providers and wallets with web
 ## Quickstart
 
 ```
-yarn add @depay/web3-mock @depay/web3-blockchains
+yarn add @depay/web3-mock @depay/web3-blockchains --dev
 ```
 
 or 
 
 ```
-npm install --save @depay/web3-mock @depay/web3-blockchains
+npm install --save-dev @depay/web3-mock @depay/web3-blockchains
 ```
 
 ### Basic
