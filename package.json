@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-mock",
   "moduleName": "Web3Mock",
-  "version": "13.6.6",
+  "version": "13.6.7",
   "description": "JavaScript library to mock web3 responses either by emulating web3 wallets or web3 RPC requests.",
   "main": "./dist/umd/index.js",
   "module": "./dist/esm/index.js",
@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/DePayFi/web3-mock#readme",
   "private": false,
-  "peerDependencies": {
+  "dependencies": {
     "@depay/solana-web3.js": "^1.13.0",
     "@depay/web3-blockchains": "^5.0.2",
     "@depay/web3-constants": "^6.2.1",
