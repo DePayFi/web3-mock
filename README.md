@@ -1190,10 +1190,20 @@ npm publish
 
 In your jest test environment `global` is the `window` available to your code.
 
-Hence `@depay/web3-mock` takes jest's `global` automatically when using `@depay/web3-mock` in a jest test environment.
+Hence `web3-mock` instrumentalizes Jest's `global` automatically when using `web3-mock` in a jest test environment.
 
 #### Cypress
 
 In your cypress test environment `cy.window().specWindow.window` is the `window` available to your code.
 
-Hence `@depay/web3-mock` takes cypress's `cy.window().specWindow.window` automatically when using `@depay/web3-mock` in a cypress test environment.
+Hence `web3-mock` takes cypress's `cy.window().specWindow.window` automatically when using `web3-mock` in a cypress test environment.
+
+`web3-mock` supports [Cypress's Sinon-Chai](https://docs.cypress.io/guides/references/assertions#Sinon-Chai) matchers for `called`, `calledOnce` and `callCount(n)`:
+
+```javascript
+let transactionMock = mock({ ... })
+
+expect(transactionMock).to.have.been.called
+expect(transactionMock).to.have.been.calledOnce
+expect(transactionMock).to.have.been.callCount(n)
+```
