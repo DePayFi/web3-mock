@@ -82144,15 +82144,31 @@
     if (typeof mock != 'object') {
       return mock
     }
-    let all = [];
-    mock.calls = {
+    
+    let spy = ()=>{};
+    if(mock) { Object.keys(mock).forEach((key)=>{ spy[key] = mock[key]; }); }
+
+    let calls = [];
+    spy.callCount = 0;
+    mock.calls = spy.calls = {
       add: (call) => {
-        all.push(call);
+        spy.callCount++;
+        calls.push(call);
       },
-      all: () => all,
-      count: () => all.length,
+      all: () => calls,
+      count: () => calls.length,
     };
-    return mock
+    spy.getCalls = (a)=>{ return calls };
+    spy.getCall = ()=>{ return calls[calls.length-1] };
+    spy.calledWithExactly = ()=>{};
+    spy.printf = (string)=> { 
+      string = string.replace("%n", "Web3Mock");
+      string = string.replace("%C", calls.map((call)=>{return JSON.stringify(call)}).join("\n"));
+      return string
+    };
+    spy.called = ()=> { return calls.length > 1 };
+    spy.calledOnce = ()=> { return calls.length == 1 };
+    return spy
   };
 
   let mockWallet = ({ configuration, window }) => {
@@ -82181,9 +82197,9 @@
 
   let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
     if(supported.evm.includes(blockchain)) {
-      return spy(mock$4({ blockchain, configuration, window, provider }))
+      return mock$4({ blockchain, configuration, window, provider })
     } else if(supported.solana.includes(blockchain)) {
-      return spy(mock$3({ blockchain, configuration, window, provider }))
+      return mock$3({ blockchain, configuration, window, provider })
     } else {
       raise$1('Web3Mock: Unknown blockchain!');
     }
@@ -82200,13 +82216,15 @@
     if (configuration.transaction) {
       configuration.transaction._id = getRandomTransactionHash();
     }
-    if (blockchain) { mock = mockBlockchain({ blockchain, configuration, window, provider }); }
+    
+    mock = mockBlockchain({ blockchain, configuration, window, provider });
+    mocks.unshift(mock);
+    
     if (configuration.wallet) { mockWallet({ configuration, window }); }
     if (configuration.require) { requireMock(configuration.require); }
     if (provider) { provider._blockchain = blockchain; }
-    mocks.unshift(mock);
 
-    return mock
+    return spy(mock)
   };
 
   var trigger = (eventName, value) => {
