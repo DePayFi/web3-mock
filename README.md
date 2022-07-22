@@ -1207,3 +1207,13 @@ expect(transactionMock).to.have.been.called
 expect(transactionMock).to.have.been.calledOnce
 expect(transactionMock).to.have.been.callCount(n)
 ```
+
+#### Playwright
+
+Playwright requires the following setup in your playwright config file:
+
+```javascript
+// web3-mock polyfills:
+global.XMLHttpRequest = require('xhr2')
+global.location = { host: undefined }
+```

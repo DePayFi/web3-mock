@@ -17,7 +17,7 @@
     "test:playwright": "npx playwright test",
     "test:cypress:debug": "yarn cypress run --headed --no-exit",
     "test:jest": "npx jest --no-cache --forceExit",
-    "test": "yarn test:jest && yarn test:cypress"
+    "test": "yarn test:jest && yarn test:cypress && test:playwright"
   },
   "repository": "git@github.com:DePayFi/web3-mock.git",
   "keywords": [
@@ -39,7 +39,8 @@
     "@depay/solana-web3.js": "^1.13.0",
     "@depay/web3-blockchains": "^5.0.2",
     "@depay/web3-constants": "^6.2.1",
-    "ethers": "^5.6.8"
+    "ethers": "^5.6.8",
+    "xhr2": "^0.2.1"
   },
   "engines": {
     "node": ">=16"
