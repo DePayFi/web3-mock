@@ -5713,11 +5713,11 @@ var config$1 = {};
 
 function noop$1() {}
 
-var on$4 = noop$1;
+var on$5 = noop$1;
 var addListener$1 = noop$1;
 var once$1 = noop$1;
 var off$2 = noop$1;
-var removeListener$3 = noop$1;
+var removeListener$4 = noop$1;
 var removeAllListeners$1 = noop$1;
 var emit$1 = noop$1;
 
@@ -5772,11 +5772,11 @@ var browser$1$2 = {
   argv: argv$1,
   version: version$j,
   versions: versions$1,
-  on: on$4,
+  on: on$5,
   addListener: addListener$1,
   once: once$1,
   off: off$2,
-  removeListener: removeListener$3,
+  removeListener: removeListener$4,
   removeAllListeners: removeAllListeners$1,
   emit: emit$1,
   binding: binding$2,
@@ -21611,27 +21611,27 @@ var fail = (mock) => {
   }
 };
 
-let events$2 = {};
+let events$3 = {};
 
-let triggerEvent$2 = (eventName, value) => {
-  if(events$2[eventName] == undefined) { return }
-  events$2[eventName].forEach(function (callback) {
+let triggerEvent$3 = (eventName, value) => {
+  if(events$3[eventName] == undefined) { return }
+  events$3[eventName].forEach(function (callback) {
     callback(value);
   });
 };
 
-let on$3 = (eventName, callback) => {
-  if (events$2[eventName] === undefined) {
-    events$2[eventName] = [];
+let on$4 = (eventName, callback) => {
+  if (events$3[eventName] === undefined) {
+    events$3[eventName] = [];
   }
-  events$2[eventName].push(callback);
+  events$3[eventName].push(callback);
 };
 
-let removeListener$2 = (eventName, callback) => {
-  if (events$2[eventName]) {
-    let index = events$2[eventName].indexOf(callback);
+let removeListener$3 = (eventName, callback) => {
+  if (events$3[eventName]) {
+    let index = events$3[eventName].indexOf(callback);
     if (index >= 0) {
-      events$2[eventName].splice(index, 1);
+      events$3[eventName].splice(index, 1);
     }
   }
 };
@@ -22635,8 +22635,8 @@ let mock$4 = ({ blockchain, configuration, window, provider }) => {
   } else {
     window.ethereum = {
       ...window.ethereum,
-      on: on$3,
-      removeListener: removeListener$2,
+      on: on$4,
+      removeListener: removeListener$3,
       request: (payload) => {
         return request$3({
           request: payload,
@@ -35166,11 +35166,11 @@ var config = {};
 
 function noop() {}
 
-var on$2 = noop;
+var on$3 = noop;
 var addListener = noop;
 var once = noop;
 var off$1 = noop;
-var removeListener$1 = noop;
+var removeListener$2 = noop;
 var removeAllListeners = noop;
 var emit = noop;
 
@@ -35225,11 +35225,11 @@ var browser$1$1 = {
   argv: argv,
   version: version$5,
   versions: versions,
-  on: on$2,
+  on: on$3,
   addListener: addListener,
   once: once,
   off: off$1,
-  removeListener: removeListener$1,
+  removeListener: removeListener$2,
   removeAllListeners: removeAllListeners,
   emit: emit,
   binding: binding$1,
@@ -81724,6 +81724,31 @@ let connect = function ({ blockchain, provider }) {
   }
 };
 
+let events$2 = {};
+
+let triggerEvent$2 = (eventName, value) => {
+  if(events$2[eventName] == undefined) { return }
+  events$2[eventName].forEach(function (callback) {
+    callback(value);
+  });
+};
+
+let on$2 = (eventName, callback) => {
+  if (events$2[eventName] === undefined) {
+    events$2[eventName] = [];
+  }
+  events$2[eventName].push(callback);
+};
+
+let removeListener$1 = (eventName, callback) => {
+  if (events$2[eventName]) {
+    let index = events$2[eventName].indexOf(callback);
+    if (index >= 0) {
+      events$2[eventName].splice(index, 1);
+    }
+  }
+};
+
 function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 let balance = function ({ blockchain, params, provider }) {
   let mock = findMock({ blockchain, type: 'balance', params, provider });
@@ -82092,6 +82117,8 @@ let mock$3 = ({ blockchain, configuration, window, provider }) => {
     };
     provider.signAndSendTransaction = async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider });
     provider.getSignatureStatus = async (signature)=>getSignatureStatus({ blockchain, signature, provider });
+    provider.on = on$2;
+    provider.removeListener = removeListener$1;
   }
 
   window.solana = {
@@ -82101,6 +82128,8 @@ let mock$3 = ({ blockchain, configuration, window, provider }) => {
         blockchain, provider
       })
     },
+    on: on$2,
+    removeListener: removeListener$1,
     request: (payload) => {
       return request({
         request: payload,
@@ -82384,6 +82413,7 @@ let mock = (configuration, call) => {
 };
 
 var trigger = (eventName, value) => {
+  triggerEvent$3(eventName, value);
   triggerEvent$2(eventName, value);
   triggerEvent$1(eventName, value);
   triggerEvent(eventName, value);

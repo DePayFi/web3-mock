@@ -257,27 +257,27 @@ var fail = (mock) => {
   }
 };
 
-let events$2 = {};
+let events$3 = {};
 
-let triggerEvent$2 = (eventName, value) => {
-  if(events$2[eventName] == undefined) { return }
-  events$2[eventName].forEach(function (callback) {
+let triggerEvent$3 = (eventName, value) => {
+  if(events$3[eventName] == undefined) { return }
+  events$3[eventName].forEach(function (callback) {
     callback(value);
   });
 };
 
-let on$2 = (eventName, callback) => {
-  if (events$2[eventName] === undefined) {
-    events$2[eventName] = [];
+let on$3 = (eventName, callback) => {
+  if (events$3[eventName] === undefined) {
+    events$3[eventName] = [];
   }
-  events$2[eventName].push(callback);
+  events$3[eventName].push(callback);
 };
 
-let removeListener$1 = (eventName, callback) => {
-  if (events$2[eventName]) {
-    let index = events$2[eventName].indexOf(callback);
+let removeListener$2 = (eventName, callback) => {
+  if (events$3[eventName]) {
+    let index = events$3[eventName].indexOf(callback);
     if (index >= 0) {
-      events$2[eventName].splice(index, 1);
+      events$3[eventName].splice(index, 1);
     }
   }
 };
@@ -19246,8 +19246,8 @@ let mock$4 = ({ blockchain, configuration, window, provider }) => {
   } else {
     window.ethereum = {
       ...window.ethereum,
-      on: on$2,
-      removeListener: removeListener$1,
+      on: on$3,
+      removeListener: removeListener$2,
       request: (payload) => {
         return request$2({
           request: payload,
@@ -19430,6 +19430,31 @@ let connect = function ({ blockchain, provider }) {
         }
       })
     );
+  }
+};
+
+let events$2 = {};
+
+let triggerEvent$2 = (eventName, value) => {
+  if(events$2[eventName] == undefined) { return }
+  events$2[eventName].forEach(function (callback) {
+    callback(value);
+  });
+};
+
+let on$2 = (eventName, callback) => {
+  if (events$2[eventName] === undefined) {
+    events$2[eventName] = [];
+  }
+  events$2[eventName].push(callback);
+};
+
+let removeListener$1 = (eventName, callback) => {
+  if (events$2[eventName]) {
+    let index = events$2[eventName].indexOf(callback);
+    if (index >= 0) {
+      events$2[eventName].splice(index, 1);
+    }
   }
 };
 
@@ -19742,6 +19767,8 @@ let mock$3 = ({ blockchain, configuration, window, provider }) => {
     };
     provider.signAndSendTransaction = async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider });
     provider.getSignatureStatus = async (signature)=>getSignatureStatus({ blockchain, signature, provider });
+    provider.on = on$2;
+    provider.removeListener = removeListener$1;
   }
 
   window.solana = {
@@ -19751,6 +19778,8 @@ let mock$3 = ({ blockchain, configuration, window, provider }) => {
         blockchain, provider
       })
     },
+    on: on$2,
+    removeListener: removeListener$1,
     request: (payload) => {
       return request({
         request: payload,
@@ -20034,6 +20063,7 @@ let mock = (configuration, call) => {
 };
 
 var trigger = (eventName, value) => {
+  triggerEvent$3(eventName, value);
   triggerEvent$2(eventName, value);
   triggerEvent$1(eventName, value);
   triggerEvent(eventName, value);

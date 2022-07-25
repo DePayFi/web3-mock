@@ -1,4 +1,5 @@
 import { connect } from './connect'
+import { on, removeListener } from './events'
 import { request as providerRequest } from './provider'
 import { request as walletRequest } from './wallet'
 import { setCurrentNetwork } from '../../network'
@@ -14,6 +15,8 @@ let mock = ({ blockchain, configuration, window, provider }) => {
     }
     provider.signAndSendTransaction = async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider })
     provider.getSignatureStatus = async (signature)=>getSignatureStatus({ blockchain, signature, provider })
+    provider.on = on
+    provider.removeListener = removeListener
   }
 
   window.solana = {
@@ -23,6 +26,8 @@ let mock = ({ blockchain, configuration, window, provider }) => {
         blockchain, provider
       })
     },
+    on,
+    removeListener,
     request: (payload) => {
       return walletRequest({
         request: payload,
