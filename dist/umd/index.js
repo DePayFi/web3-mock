@@ -19437,12 +19437,10 @@
     }
   };
 
-  const getRecentBlockhash = ({ blockchain })=>{
+  const getLatestBlockhash = ({ blockchain })=>{
     return({
       blockhash: getRandomTransactionHash(blockchain),
-      feeCalculator: {
-        lamportsPerSignature: 5000
-      }
+      lastValidBlockHeight: getCurrentBlock()
     })
   };
 
@@ -19782,7 +19780,7 @@
       provider.getSignatureStatus = async (signature)=>getSignatureStatus({ blockchain, signature, provider });
       provider.on = on$2;
       provider.removeListener = removeListener$1;
-      provider.getRecentBlockhash = getRecentBlockhash;
+      provider.getLatestBlockhash = ()=>getLatestBlockhash({ blockchain });
     }
 
     window.solana = {
@@ -19799,7 +19797,7 @@
           request: payload,
         })
       },
-      getRecentBlockhash,
+      getLatestBlockhash: ()=>getLatestBlockhash({ blockchain }),
       signAndSendTransaction: async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider }),
       getSignatureStatus: async (signature)=>getSignatureStatus({ blockchain, signature, provider })
     };

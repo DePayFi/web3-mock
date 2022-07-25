@@ -1,5 +1,5 @@
 import { connect } from './connect'
-import { getRecentBlockhash } from './blockHash'
+import { getLatestBlockhash } from './blockHash'
 import { on, removeListener } from './events'
 import { request as providerRequest } from './provider'
 import { request as walletRequest } from './wallet'
@@ -18,7 +18,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
     provider.getSignatureStatus = async (signature)=>getSignatureStatus({ blockchain, signature, provider })
     provider.on = on
     provider.removeListener = removeListener
-    provider.getRecentBlockhash = getRecentBlockhash
+    provider.getLatestBlockhash = ()=>getLatestBlockhash({ blockchain })
   }
 
   window.solana = {
@@ -35,7 +35,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
         request: payload,
       })
     },
-    getRecentBlockhash,
+    getLatestBlockhash: ()=>getLatestBlockhash({ blockchain }),
     signAndSendTransaction: async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider }),
     getSignatureStatus: async (signature)=>getSignatureStatus({ blockchain, signature, provider })
   }

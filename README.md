@@ -43,8 +43,8 @@ mock({ blockchain: 'solana', provider: connection })
 let block = connection.getBlockHeight()
 block // 1
 
-let blockHash = connection.getRecentBlockhash()
-blockHash // { blockhash: "6ErPTEaPmVUwEPeX4MAiCEEC7fJ254zCdq6M294JozDx", feeCalculator: { lamportsPerSignature: 5000 } }
+let blockHash = connection.getLatestBlockhash()
+blockHash // { blockhash: "6ErPTEaPmVUwEPeX4MAiCEEC7fJ254zCdq6M294JozDx", lastValidBlockHeight: 123 }
 ```
 
 ### Advanced

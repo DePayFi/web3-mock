@@ -1,14 +1,13 @@
 import { getRandomTransactionHash } from '../../transaction.js'
+import { getCurrentBlock } from '../../block'
 
-const getRecentBlockhash = ({ blockchain })=>{
+const getLatestBlockhash = ({ blockchain })=>{
   return({
     blockhash: getRandomTransactionHash(blockchain),
-    feeCalculator: {
-      lamportsPerSignature: 5000
-    }
+    lastValidBlockHeight: getCurrentBlock()
   })
 }
 
 export {
-  getRecentBlockhash
+  getLatestBlockhash
 }

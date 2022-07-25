@@ -16,10 +16,12 @@ describe('mocks solana block hash', ()=> {
 
         let connection = new Connection('https://api.mainnet-beta.solana.com')
 
-        let blockHash = await connection.getRecentBlockhash()
+        mock({ blockchain, provider: connection })
+
+        let blockHash = await connection.getLatestBlockhash()
 
         expect(blockHash.blockhash).toBeDefined()
-        expect(blockHash.feeCalculator.lamportsPerSignature).toEqual(5000)
+        expect(blockHash.lastValidBlockHeight).toEqual(1)
       })
     })
   })
