@@ -42,6 +42,9 @@ mock({ blockchain: 'solana', provider: connection })
 
 let block = connection.getBlockHeight()
 block // 1
+
+let blockHash = connection.getRecentBlockhash()
+blockHash // { blockhash: "6ErPTEaPmVUwEPeX4MAiCEEC7fJ254zCdq6M294JozDx", feeCalculator: { lamportsPerSignature: 5000 } }
 ```
 
 ### Advanced
@@ -696,6 +699,64 @@ let transaction = await contract.connect(signer).route(
 )
 
 expect(transaction).toBeDefined()
+
+expect(mockedTransaction).toHaveBeenCalled()
+````
+
+##### Solana: Mock Complex Contract Transactions
+
+```javascript
+let mockedTransaction = mock({
+  blockchain,
+  transaction: {
+    from: "2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1",
+    instructions:[{
+      to: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+      api: struct([
+        u8('instruction'),
+        u64('amount')
+      ])
+    }]
+  }
+})
+
+let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
+let toPubkey = new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa')
+
+let fromTokenAccount = new PublicKey('F7e4iBrxoSmHhEzhuBcXXs1KAknYvEoZWieiocPvrCD9')
+let toTokenAccount = new PublicKey('9vNeT1wshV1hgicUYJj7E68CXwU4oZRgtfDf5a2mMn7y')
+
+const keys = [
+  { pubkey: new PublicKey(fromTokenAccount), isSigner: false, isWritable: true },
+  { pubkey: new PublicKey(toTokenAccount), isSigner: false, isWritable: true },
+  { pubkey: fromPubkey, isSigner: true, isWritable: false }
+]
+
+let TRANSFER_LAYOUT = struct([
+  u8('instruction'),
+  u64('amount')
+])
+const amount = 1000000000
+const data = Buffer.alloc(TRANSFER_LAYOUT.span)
+TRANSFER_LAYOUT.encode({
+  instruction: 3, // TRANSFER
+  amount: new BN(amount)
+}, data)
+
+let transaction = new Transaction({
+  recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+  feePayer: fromPubkey
+})
+
+transaction.add(
+  new TransactionInstruction({ keys, programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), data })
+)
+
+let signedTransaction = await window.solana.signAndSendTransaction(transaction)
+
+expect(signedTransaction).toBeDefined()
+expect(signedTransaction.publicKey).toEqual('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
+expect(signedTransaction.signature).toEqual(mockedTransaction.transaction._id)
 
 expect(mockedTransaction).toHaveBeenCalled()
 ````

@@ -19433,6 +19433,15 @@ let connect = function ({ blockchain, provider }) {
   }
 };
 
+const getRecentBlockhash = ({ blockchain })=>{
+  return({
+    blockhash: getRandomTransactionHash(blockchain),
+    feeCalculator: {
+      lamportsPerSignature: 5000
+    }
+  })
+};
+
 let events$2 = {};
 
 let triggerEvent$2 = (eventName, value) => {
@@ -19769,6 +19778,7 @@ let mock$3 = ({ blockchain, configuration, window, provider }) => {
     provider.getSignatureStatus = async (signature)=>getSignatureStatus({ blockchain, signature, provider });
     provider.on = on$2;
     provider.removeListener = removeListener$1;
+    provider.getRecentBlockhash = getRecentBlockhash;
   }
 
   window.solana = {
@@ -19785,6 +19795,7 @@ let mock$3 = ({ blockchain, configuration, window, provider }) => {
         request: payload,
       })
     },
+    getRecentBlockhash,
     signAndSendTransaction: async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider }),
     getSignatureStatus: async (signature)=>getSignatureStatus({ blockchain, signature, provider })
   };
