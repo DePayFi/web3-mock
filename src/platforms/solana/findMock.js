@@ -23,10 +23,26 @@ let mockHasWrongProvider = (mock, provider) => {
 
 let mockHasWrongTransactionData = (mock, type, params) => {
   return (
-    (mock[type].to && normalize(params[0]) !== normalize(mock[type].to)) ||
-    (mock[type].from && normalize(params.from) !== normalize(mock[type].from)) ||
-    (mock[type].value &&
-      ethers.BigNumber.from(params.value).toString() !== normalize(mock[type].value))
+    (mock[type].from && normalize(params?.feePayer?.toString()) !== normalize(mock[type].from))
+  )
+}
+
+let mockHasWrongTransactionInstructions = (mock, type, params) => {
+  return (
+    (mock[type]?.instructions && mock[type].instructions.some((mockedInstruction)=>{
+      if(mockedInstruction?.params == anything) { return false }
+      return ! params?.instructions.some((instruction)=>{
+        if(normalize(instruction?.programId?.toString()) != normalize(mockedInstruction.to)) { return false }
+        const decodedInstructionData = mockedInstruction.api.decode(params.data)
+        if(Object.keys(decodedInstructionData).some((key)=>{
+          if(!mockedInstruction.params) { return false }
+          if(mockedInstruction.params[key] == anything) { return false }
+          return mockedInstruction.params[key] != decodedInstructionData[key]
+        })) { return false }
+
+        return true
+      })
+    }))
   )
 }
 
@@ -131,6 +147,9 @@ let findMock = ({ type, blockchain, params, block, provider }) => {
       return
     }
     if (mockHasWrongTransactionData(mock, type, params)) {
+      return
+    }
+    if (mockHasWrongTransactionInstructions(mock, type, params)) {
       return
     }
     if (mockHasWrongBalanceData(mock, type, params)) {

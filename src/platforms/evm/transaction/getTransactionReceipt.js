@@ -1,4 +1,4 @@
-import getRandomTransactionHash from './getRandomTransactionHash'
+import { getRandomTransactionHash } from '../../../transaction.js'
 import { ethers } from 'ethers'
 import { findMockByTransactionHash } from '../findMock'
 import { getCurrentBlock } from '../../../block'
@@ -12,7 +12,7 @@ export default (hash) => {
         transactionIndex: '0x1',
         blockNumber: ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
           ._hex,
-        blockHash: getRandomTransactionHash(),
+        blockHash: getRandomTransactionHash(mock.blockchain),
         cumulativeGasUsed: '0x33bc',
         gasUsed: '0x4dc',
         logs: [],

@@ -12,7 +12,9 @@ or
 npm install --save-dev @depay/web3-mock
 ```
 
-### Basic
+### Basics
+
+#### EVM: Basics
 
 ```javascript
 import { mock } from '@depay/web3-mock'
@@ -30,7 +32,21 @@ describe('something', ()=> {
 })
 ```
 
+#### Solana: Basics
+
+```javascript
+// requires explicit provider mocking (see #Providers)
+
+let connection = new Connection('https://api.mainnet-beta.solana.com')
+mock({ blockchain: 'solana', provider: connection })
+
+let block = connection.getBlockHeight()
+block // 1
+```
+
 ### Advanced
+
+#### EVM: Advanced
 
 ```javascript
 import { mock, resetMocks } from '@depay/web3-mock'
@@ -110,6 +126,84 @@ describe('something', ()=> {
     )
 
     expect(transactionMock).toHaveBeenCalled()
+  })
+```
+
+#### Solana: Advanced
+
+```javascript
+import { mock, resetMocks } from '@depay/web3-mock'
+
+describe('something', ()=> {
+
+  let blockchain = 'solana'
+  let accounts = ['5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa']
+  beforeEach(resetMocks)
+  beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
+
+  it('mocks balance requests', ()=>{
+
+    let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+    let balanceMock = mock({
+      provider: connection,
+      blockchain,
+      balance: {
+        for: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa',
+        return: 232111122321
+      }
+    })
+
+    let balance = await connection.getBalance(new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'))
+
+    expect(balance).toEqual(232111122321)
+    expect(balanceMock).toHaveBeenCalled()
+  })
+
+  it('mocks simple transactions', ()=>{
+    
+    let mockedTransaction = mock({
+      blockchain,
+      transaction: {
+        from: "2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1",
+        instructions:[{
+          to: '11111111111111111111111111111111',
+          api: struct([
+            u32('instruction'),
+            u64('lamports')
+          ])
+        }]
+      }
+    })
+
+    let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
+    let toPubkey = new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa')
+
+    let transaction = new Transaction({
+      recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+      feePayer: fromPubkey
+    })
+
+    transaction.add(
+      SystemProgram.transfer({
+        fromPubkey,
+        toPubkey,
+        lamports: 1000000000
+      })
+    )
+    
+    let signedTransaction = await window.solana.signAndSendTransaction(transaction)
+
+    expect(signedTransaction).toBeDefined()
+    expect(signedTransaction.publicKey).toEqual('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
+    expect(signedTransaction.signature).toEqual(mockedTransaction.transaction._id)
+
+    expect(mockedTransaction).toHaveBeenCalled()
+  })
+
+  it('mocks complex transactions', ()=>{
+    
+   
   })
 ```
 
@@ -320,6 +414,10 @@ expect(
 
 #### Requests for Specific Given Block
 
+EVM only:
+
+##### EVM: Requests for Specific Given Block
+
 ```javascript
 mock({
   blockchain: 'ethereum',
@@ -491,6 +589,8 @@ You need to mock transactions before they are executed.
 
 #### Simple Transactions
 
+##### EVM: Simple Transactions
+
 ```javascript
 let mockedTransaction = mock({
   blockchain: 'ethereum',
@@ -515,7 +615,51 @@ expect(transaction).toBeDefined()
 expect(mockedTransaction).toHaveBeenCalled()
 ````
 
+##### Solana: Simple Transactions
+
+```javascript
+let mockedTransaction = mock({
+  blockchain,
+  transaction: {
+    from: "2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1",
+    instructions:[{
+      to: '11111111111111111111111111111111',
+      api: struct([
+        u32('instruction'),
+        u64('lamports')
+      ])
+    }]
+  }
+})
+
+let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
+let toPubkey = new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa')
+
+let transaction = new Transaction({
+  recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+  feePayer: fromPubkey
+})
+
+transaction.add(
+  SystemProgram.transfer({
+    fromPubkey,
+    toPubkey,
+    lamports: 1000000000
+  })
+)
+
+let signedTransaction = await window.solana.signAndSendTransaction(transaction)
+
+expect(signedTransaction).toBeDefined()
+expect(signedTransaction.publicKey).toEqual('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
+expect(signedTransaction.signature).toEqual(mockedTransaction.transaction._id)
+
+expect(mockedTransaction).toHaveBeenCalled()
+```
+
 #### Mock Complex Contract Transactions
+
+##### EVM: Mock Complex Contract Transactions
 
 ```javascript
 let mockedTransaction = mock({
@@ -556,12 +700,14 @@ expect(transaction).toBeDefined()
 expect(mockedTransaction).toHaveBeenCalled()
 ````
 
-#### Mock transaction confirmations
+#### Confirm mocked transactions
 
-Mocking transaction confirmations consists of two steps:
+Confirming transaction mocks consists of two steps:
 
 1. Confirming the mocked transaction once (which also increase block number by 1 implicitly)
 2. Increase the blocknumber after the transaction has been confirmed (to increase transaction confirmation amount e.g. for safe amount of confirmations)
+
+##### EVM: Confirm mocked transactions
 
 ```javascript
 import { mock, confirm } from '@depay/web3-mock'
@@ -598,6 +744,76 @@ increaseBlock(12)
 await sentTransaction.wait(12).then(function(receipt){
   //... will be executed once increaseBlock(12) has been called
 })
+```
+
+##### Solana: Confirm mocked transactions
+
+```javascript
+let mockedTransaction = mock({
+  blockchain,
+  transaction: {
+    from: "2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1",
+    instructions:[{
+      to: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+      api: struct([
+        u8('instruction'),
+        u64('amount')
+      ]),
+      params: {
+        instruction: 3,
+        amount: anything
+      }
+    }]
+  }
+})
+
+let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
+let toPubkey = new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa')
+
+let fromTokenAccount = new PublicKey('F7e4iBrxoSmHhEzhuBcXXs1KAknYvEoZWieiocPvrCD9')
+let toTokenAccount = new PublicKey('9vNeT1wshV1hgicUYJj7E68CXwU4oZRgtfDf5a2mMn7y')
+
+const keys = [
+  { pubkey: new PublicKey(fromTokenAccount), isSigner: false, isWritable: true },
+  { pubkey: new PublicKey(toTokenAccount), isSigner: false, isWritable: true },
+  { pubkey: fromPubkey, isSigner: true, isWritable: false }
+]
+
+let TRANSFER_LAYOUT = struct([
+  u8('instruction'),
+  u64('amount')
+])
+const amount = 1000000000
+const data = Buffer.alloc(TRANSFER_LAYOUT.span)
+TRANSFER_LAYOUT.encode({
+  instruction: 3, // TRANSFER
+  amount: new BN(amount)
+}, data)
+
+let transaction = new Transaction({
+  recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+  feePayer: fromPubkey
+})
+
+transaction.add(
+  new TransactionInstruction({ keys, programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), data })
+)
+
+let signedTransaction = await window.solana.signAndSendTransaction(transaction)
+
+expect(signedTransaction).toBeDefined()
+expect(signedTransaction.publicKey).toEqual('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
+expect(signedTransaction.signature).toEqual(mockedTransaction.transaction._id)
+expect(mockedTransaction).toHaveBeenCalled()
+
+let status = await window.solana.getSignatureStatus(mockedTransaction.transaction._id)
+expect(status.value).toEqual(null)
+
+confirm(mockedTransaction)
+status = await window.solana.getSignatureStatus(mockedTransaction.transaction._id)
+expect(status.value).not.toEqual(null)
+expect(status.value.confirmationStatus).toEqual('confirmed')
+expect(status.value.confirmations).toEqual(0)
 ```
 
 #### Mock transactions fail/revert

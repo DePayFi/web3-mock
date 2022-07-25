@@ -1,4 +1,4 @@
-import getRandomTransactionHash from './getRandomTransactionHash'
+import { getRandomTransactionHash } from '../../../transaction.js'
 import { ethers } from 'ethers'
 import { findMockByTransactionHash } from '../findMock'
 import { getCurrentBlock } from '../../../block'
@@ -27,7 +27,7 @@ export default (hash) => {
 
   if (mock) {
     Object.assign(transaction, {
-      blockHash: getRandomTransactionHash(),
+      blockHash: getRandomTransactionHash(mock.blockchain),
       blockNumber: ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
         ._hex,
     })

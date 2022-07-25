@@ -1,4 +1,4 @@
-import getRandomTransactionHash from './platforms/evm/transaction/getRandomTransactionHash.js'
+import { getRandomTransactionHash } from './transaction.js'
 import raise from './raise'
 import { getWindow } from './window'
 import { mock as mockEvm } from './platforms/evm/mock'
@@ -20,28 +20,41 @@ let getBlockchain = (configuration) => {
 }
 
 let apiIsMissing = (type, configuration) => {
-  if (
-    typeof configuration[type] == 'undefined' ||
-    typeof configuration[type].method == 'undefined' ||
-    supported.solana.includes(configuration.blockchain)
-  ) {
-    return false
+  if(supported.evm.includes(configuration.blockchain)) {
+    if (
+      typeof configuration[type] == 'undefined' ||
+      typeof configuration[type].method == 'undefined'
+    ) {
+      return false
+    }
+    return configuration[type] && configuration[type]?.api === undefined
+  } else if (supported.solana.includes(configuration.blockchain)) {
+    if(type == 'transaction') {
+      return configuration.transaction?.instructions?.every((instruction)=>!instruction.api)
+    } else {
+      return false
+    }
   }
-  return configuration[type] && configuration[type]?.api === undefined
 }
 
 let apiMissingErrorText = (type, configuration) => {
   let configurationDuplicate = configuration
   if(configuration.provider) { configurationDuplicate.provider = "PROVIDER" }
+
+  let suggestedConfiguration
+  if(supported.evm.includes(configuration.blockchain)) {
+    suggestedConfiguration = Object.assign(configurationDuplicate, {
+      [type]: Object.assign(configurationDuplicate[type], { api: ['PLACE API HERE'] }),
+    })
+  } else if (supported.solana.includes(configuration.blockchain)) {
+    suggestedConfiguration = configurationDuplicate
+    suggestedConfiguration.transaction.instructions = suggestedConfiguration.transaction.instructions.map((instruction)=>Object.assign(instruction, { api: 'PLACE API HERE' }))
+  }
   return (
     'Web3Mock: Please provide the api for the ' +
     type +
     ': ' +
-    JSON.stringify(
-      Object.assign(configurationDuplicate, {
-        [type]: Object.assign(configurationDuplicate[type], { api: ['PLACE API HERE'] }),
-      }),
-    )
+    JSON.stringify(suggestedConfiguration)
   )
 }
 
@@ -136,7 +149,7 @@ let mock = (configuration, call) => {
   let mock
 
   if (configuration.transaction) {
-    configuration.transaction._id = getRandomTransactionHash()
+    configuration.transaction._id = getRandomTransactionHash(blockchain)
   }
   
   mock = mockBlockchain({ blockchain, configuration, window, provider })

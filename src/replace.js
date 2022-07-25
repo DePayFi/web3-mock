@@ -1,4 +1,4 @@
-import getRandomTransactionHash from './platforms/evm/transaction/getRandomTransactionHash'
+import { getRandomTransactionHash } from './transaction.js'
 import raise from './raise'
 import { getTransactionCount, increaseTransactionCount } from './platforms/evm/transaction/count'
 import { increaseBlock, getCurrentBlock, setBlockData } from './block'
@@ -7,7 +7,7 @@ export default (transactionMock, replacingTransactionMock, confirmed = true) => 
   if(transactionMock == undefined || replacingTransactionMock == undefined) { raise('replace requires (transactionMock, replacingTransactionMock)') }
   if(transactionMock.transaction.from == undefined) { raise('transactionMock to be replaced requires at least a "from"') }
 
-  replacingTransactionMock.transaction._id = getRandomTransactionHash()
+  replacingTransactionMock.transaction._id = getRandomTransactionHash(replacingTransactionMock.blockchain)
   if(confirmed){
     replacingTransactionMock.transaction._confirmed = true
   } else {
