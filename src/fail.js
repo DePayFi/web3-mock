@@ -1,6 +1,8 @@
+import raise from './raise'
 import { fail as failEvm } from './platforms/evm/fail'
-import { mocks } from './mocks'
+import { fail as failSolana } from './platforms/solana/fail'
 import { increaseBlock } from './block'
+import { mocks } from './mocks'
 import { supported } from './blockchains'
 
 export default (mock) => {
@@ -9,6 +11,8 @@ export default (mock) => {
     mock.transaction._confirmed = false
     if(supported.evm.includes(mock.blockchain)) {
       failEvm(mock.transaction)
+    } else if(supported.solana.includes(mock.blockchain)) {
+      failSolana(mock.transaction)
     } else {
       raise('Web3Mock: Unknown blockchain!')
     }

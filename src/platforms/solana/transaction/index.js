@@ -60,14 +60,15 @@ let getSignatureStatus = ({ signature }) => {
   let mock = findMockByTransactionHash(signature)
 
   if(mock && mock.transaction._confirmedAtBlock) {
+    const confirmations = getCurrentBlock()-mock.transaction._confirmedAtBlock-1
     return({
       context: {apiVersion: '1.10.31', slot: 143064206},
       value: {
-        confirmationStatus: "confirmed",
-        confirmations: getCurrentBlock()-mock.transaction._confirmedAtBlock-1,
-        err: null,
+        confirmationStatus: confirmations == 0 ? "confirmed" : "finalized",
+        confirmations,
+        err: mock.transaction._failed ? { InstructionError: [0, 'Error'] } : null,
         slot: 143062809,
-        status: { Ok: null }
+        status: mock.transaction._failed ? { Err: { InstructionError: [0, 'Error'] } } : { Ok: null }
       }
     })
   } else {

@@ -9,7 +9,7 @@
   var require$$0__default = /*#__PURE__*/_interopDefaultLegacy(require$$0$8);
   var require$$0__default$1 = /*#__PURE__*/_interopDefaultLegacy(require$$0$9);
 
-  var raise$1 = (msg)=>{
+  var raise = (msg)=>{
     console.log(msg);
     throw(msg)
   };
@@ -21486,11 +21486,11 @@
       } else if(supported.solana.includes(mock.blockchain)) {
         confirm$1(mock.transaction);
       } else {
-        raise$1('Web3Mock: Unknown blockchain!');
+        raise('Web3Mock: Unknown blockchain!');
       }
       increaseBlock();
     } else {
-      raise$1('Web3Mock: Given mock is not a sent transaction: ' + JSON.stringify(mock));
+      raise('Web3Mock: Given mock is not a sent transaction: ' + JSON.stringify(mock));
     }
   };
 
@@ -21541,8 +21541,8 @@
   };
 
   var replace = (transactionMock, replacingTransactionMock, confirmed = true) => {
-    if(transactionMock == undefined || replacingTransactionMock == undefined) { raise$1('replace requires (transactionMock, replacingTransactionMock)'); }
-    if(transactionMock.transaction.from == undefined) { raise$1('transactionMock to be replaced requires at least a "from"'); }
+    if(transactionMock == undefined || replacingTransactionMock == undefined) { raise('replace requires (transactionMock, replacingTransactionMock)'); }
+    if(transactionMock.transaction.from == undefined) { raise('transactionMock to be replaced requires at least a "from"'); }
 
     replacingTransactionMock.transaction._id = getRandomTransactionHash(replacingTransactionMock.blockchain);
     if(confirmed){
@@ -21598,7 +21598,14 @@
     increaseTransactionCount(transactionMock.transaction.from);
   };
 
+  let fail$2 = (transaction) => {
+    transaction._confirmedAtBlock = getCurrentBlock();
+    transaction._failed = true;
+    return transaction
+  };
+
   let fail$1 = (transaction) => {
+    transaction._confirmedAtBlock = getCurrentBlock();
     transaction._failed = true;
     return transaction
   };
@@ -21609,6 +21616,8 @@
       mock.transaction._failed = true;
       mock.transaction._confirmed = false;
       if(supported.evm.includes(mock.blockchain)) {
+        fail$2(mock.transaction);
+      } else if(supported.solana.includes(mock.blockchain)) {
         fail$1(mock.transaction);
       } else {
         raise('Web3Mock: Unknown blockchain!');
@@ -21730,9 +21739,9 @@
       return contract.interface.getFunction(methodSelector)
     } catch (error) {
       if (error.reason == 'no matching function') {
-        raise$1('Web3Mock: method not found in mocked api!');
+        raise('Web3Mock: method not found in mocked api!');
       } else {
-        raise$1(error);
+        raise(error);
       }
     }
   };
@@ -22008,7 +22017,7 @@
         return Promise.resolve(BigNumber.from(mock.balance.return))
       }
     } else {
-      raise$1(
+      raise(
         'Web3Mock: Please mock the balance request: ' +
         JSON.stringify({
           blockchain: blockchain,
@@ -22223,7 +22232,7 @@
     } else {
       mock = findAnyMockForThisAddress$1({ type: 'request', params });
       if (mock && _optionalChain$b([mock, 'access', _ => _.request, 'optionalAccess', _2 => _2.api])) {
-        raise$1(
+        raise(
           'Web3Mock: Please mock the request: ' +
           JSON.stringify({
             blockchain,
@@ -22231,7 +22240,7 @@
           })
         );
       } else {
-        raise$1('Web3Mock: Please mock the request to: ' + params.to);
+        raise('Web3Mock: Please mock the request to: ' + params.to);
       }
     }
   };
@@ -22262,7 +22271,7 @@
 
   function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   let throwSuggestedMock = ({ blockchain, mock, params, provider }) => {
-    raise$1(
+    raise(
       'Web3Mock: Please mock the estimate: ' +
       JSON.stringify({
         blockchain,
@@ -22365,7 +22374,7 @@
         return requestAccounts$1({ mock, params })
       }
     } else {
-      raise$1(
+      raise(
         'Web3Mock: Please mock accounts: ' +
         JSON.stringify({
           blockchain,
@@ -22412,7 +22421,7 @@
         }
       }
     } else {
-      raise$1(
+      raise(
         'Web3Mock: Please mock the sign request: ' +
         JSON.stringify({
           blockchain: blockchain,
@@ -22446,7 +22455,7 @@
         return Promise.resolve()
       }
     } else {
-      raise$1(
+      raise(
         'Web3Mock: Please mock the network switch: ' +
         JSON.stringify({
           blockchain,
@@ -22465,7 +22474,7 @@
       mock.calls.add(params);
       return Promise.resolve()
     } else {
-      raise$1(
+      raise(
         'Web3Mock: Please mock the network addition: ' +
         JSON.stringify({
           blockchain,
@@ -22504,7 +22513,7 @@
     } else {
       mock = findAnyMockForThisAddress$1({ type: 'transaction', params });
       if (mock && _optionalChain$7([mock, 'access', _ => _.transaction, 'optionalAccess', _2 => _2.api])) {
-        raise$1(
+        raise(
           'Web3Mock: Please mock the transaction: ' +
           JSON.stringify({
             blockchain,
@@ -22512,7 +22521,7 @@
           })
         );
       } else {
-        raise$1('Web3Mock: Please mock the transaction to: ' + params.to);
+        raise('Web3Mock: Please mock the transaction to: ' + params.to);
       }
     }
   };
@@ -22623,7 +22632,7 @@
         return sign({ blockchain, params: request.params, provider })
 
       default:
-        raise$1('Web3Mock request: Unknown request method ' + request.method + '!');
+        raise('Web3Mock request: Unknown request method ' + request.method + '!');
     }
   };
 
@@ -81720,7 +81729,7 @@
         return requestAccounts({ mock }).then((accounts)=>{ return { publicKey: new PublicKey(accounts[0]) } })
       }
     } else {
-      raise$1(
+      raise(
         'Web3Mock: Please mock accounts: ' +
         JSON.stringify({
           blockchain,
@@ -81776,7 +81785,7 @@
         return Promise.resolve(mock.balance.return)
       }
     } else {
-      raise$1(
+      raise(
         'Web3Mock: Please mock the balance request: ' +
         JSON.stringify({
           blockchain: blockchain,
@@ -81877,7 +81886,7 @@
     } else if (value === null) {
       return null
     } else {
-      raise$1(`Web3Mock: Unknown value type ${value}`);
+      raise(`Web3Mock: Unknown value type ${value}`);
     }
   };
 
@@ -81922,7 +81931,7 @@
       
       mock = findAnyMockForThisAddress({ type: 'request', params });
       if (mock) {
-        raise$1(
+        raise(
           'Web3Mock: Please mock the request: ' +
           JSON.stringify({
             blockchain,
@@ -81930,7 +81939,7 @@
           })
         );
       } else {
-        raise$1('Web3Mock: Please mock the request to: ' + params[0]);
+        raise('Web3Mock: Please mock the request to: ' + params[0]);
       }
     }
   };
@@ -82032,7 +82041,7 @@
           })
 
       default:
-        raise$1('Web3Mock request: Unknown request method ' + method + '!');
+        raise('Web3Mock request: Unknown request method ' + method + '!');
     }
   };
 
@@ -82041,7 +82050,7 @@
     switch (request.method) {
 
       default:
-        raise$1('Web3Mock request: Unknown request method ' + request.method + '!');
+        raise('Web3Mock request: Unknown request method ' + request.method + '!');
     }
   };
 
@@ -82076,7 +82085,7 @@
         }
       }
     } else {
-      raise$1(
+      raise(
         'Web3Mock: Please mock the following transaction: ' +
         JSON.stringify({
           blockchain,
@@ -82104,14 +82113,15 @@
     let mock = findMockByTransactionHash(signature);
 
     if(mock && mock.transaction._confirmedAtBlock) {
+      const confirmations = getCurrentBlock()-mock.transaction._confirmedAtBlock-1;
       return({
         context: {apiVersion: '1.10.31', slot: 143064206},
         value: {
-          confirmationStatus: "confirmed",
-          confirmations: getCurrentBlock()-mock.transaction._confirmedAtBlock-1,
-          err: null,
+          confirmationStatus: confirmations == 0 ? "confirmed" : "finalized",
+          confirmations,
+          err: mock.transaction._failed ? { InstructionError: [0, 'Error'] } : null,
           slot: 143062809,
-          status: { Ok: null }
+          status: mock.transaction._failed ? { Err: { InstructionError: [0, 'Error'] } } : { Ok: null }
         }
       })
     } else {
@@ -82282,7 +82292,7 @@
     } else if (typeof configuration === 'object' && !Array.isArray(configuration)) {
       return configuration.blockchain
     } else {
-      raise$1('Web3Mock: Unknown mock configuration type!');
+      raise('Web3Mock: Unknown mock configuration type!');
     }
   };
 
@@ -82327,18 +82337,18 @@
 
   let preflight = (configuration) => {
     if (configuration === undefined || configuration.length === 0) {
-      raise$1('Web3Mock: No mock defined!');
+      raise('Web3Mock: No mock defined!');
     } else if (typeof configuration === 'object' && Object.keys(configuration).length === 0) {
-      raise$1('Web3Mock: Mock configuration is empty!');
+      raise('Web3Mock: Mock configuration is empty!');
     } else if (typeof configuration != 'string' && typeof configuration != 'object') {
-      raise$1('Web3Mock: Unknown mock configuration type!');
+      raise('Web3Mock: Unknown mock configuration type!');
     }
     if (apiIsMissing('request', configuration)) {
-      raise$1(apiMissingErrorText('request', configuration));
+      raise(apiMissingErrorText('request', configuration));
     } else if (apiIsMissing('transaction', configuration)) {
-      raise$1(apiMissingErrorText('transaction', configuration));
+      raise(apiMissingErrorText('transaction', configuration));
     } else if (apiIsMissing('estimate', configuration)) {
-      raise$1(apiMissingErrorText('estimate', configuration));
+      raise(apiMissingErrorText('estimate', configuration));
     }
   };
 
@@ -82393,7 +82403,7 @@
         mock$1({ configuration, window });
         break
       default:
-        raise$1('Web3Mock: Unknown wallet!');
+        raise('Web3Mock: Unknown wallet!');
     }
   };
 
@@ -82403,7 +82413,7 @@
     } else if(supported.solana.includes(blockchain)) {
       return mock$3({ blockchain, configuration, window, provider })
     } else {
-      raise$1('Web3Mock: Unknown blockchain!');
+      raise('Web3Mock: Unknown blockchain!');
     }
   };
 
