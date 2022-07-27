@@ -19254,19 +19254,19 @@ let mock$4 = ({ blockchain, configuration, window, provider }) => {
       provider.sendTransaction = (method, params) =>
         request$2({ provider, request: { method: method, params: params } });
     }
-  } else {
-    window._ethereum = {
-      ...window.ethereum,
-      on: on$3,
-      removeListener: removeListener$2,
-      request: (payload) => {
-        return request$2({
-          request: payload,
-          provider: new Web3Provider(window._ethereum),
-        })
-      },
-    };
   }
+
+  window._ethereum = {
+    ...window.ethereum,
+    on: on$3,
+    removeListener: removeListener$2,
+    request: (payload) => {
+      return request$2({
+        request: payload,
+        provider: new Web3Provider(window._ethereum),
+      })
+    },
+  };
 
   return configuration
 };

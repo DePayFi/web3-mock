@@ -22651,19 +22651,19 @@
         provider.sendTransaction = (method, params) =>
           request$3({ provider, request: { method: method, params: params } });
       }
-    } else {
-      window._ethereum = {
-        ...window.ethereum,
-        on: on$4,
-        removeListener: removeListener$3,
-        request: (payload) => {
-          return request$3({
-            request: payload,
-            provider: new Web3Provider(window._ethereum),
-          })
-        },
-      };
     }
+
+    window._ethereum = {
+      ...window.ethereum,
+      on: on$4,
+      removeListener: removeListener$3,
+      request: (payload) => {
+        return request$3({
+          request: payload,
+          provider: new Web3Provider(window._ethereum),
+        })
+      },
+    };
 
     return configuration
   };
