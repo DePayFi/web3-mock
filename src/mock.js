@@ -106,17 +106,20 @@ let spy = (mock) => {
   return spy
 }
 
-let mockWallet = ({ configuration, window }) => {
+let mockWallet = ({ blockchain, configuration, window }) => {
   let wallet = configuration.wallet
   switch (wallet) {
     case 'metamask':
+      window.ethereum = window._ethereum
       window.ethereum.isMetaMask = true
       break
     case 'coinbase':
+      window.ethereum = window._ethereum
       window.ethereum.isCoinbaseWallet = true
       window.ethereum.isWalletLink = true
       break
     case 'phantom':
+      window.solana = window._solana
       window.solana.isPhantom = true
       break
     case 'walletconnect':
@@ -126,7 +129,11 @@ let mockWallet = ({ configuration, window }) => {
       mockWalletLink({ configuration, window })
       break
     default:
-      raise('Web3Mock: Unknown wallet!')
+      if(supported.evm.includes(blockchain)) {
+        window.ethereum = window._ethereum
+      } else if(supported.solana.includes(blockchain)) {
+        window.solana = window._solana
+      }
   }
 }
 
@@ -153,9 +160,9 @@ let mock = (configuration, call) => {
   }
   
   mock = mockBlockchain({ blockchain, configuration, window, provider })
+  mockWallet({ blockchain, configuration, window })
   mocks.unshift(mock)
-  
-  if (configuration.wallet) { mockWallet({ configuration, window }) }
+
   if (configuration.require) { requireMock(configuration.require) }
   if (provider) { provider._blockchain = blockchain }
 

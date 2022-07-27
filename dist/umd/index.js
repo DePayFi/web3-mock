@@ -19259,7 +19259,7 @@
           request$2({ provider, request: { method: method, params: params } });
       }
     } else {
-      window.ethereum = {
+      window._ethereum = {
         ...window.ethereum,
         on: on$3,
         removeListener: removeListener$2,
@@ -19818,7 +19818,7 @@
       provider.getConfirmedTransaction = async (signature)=>getConfirmedTransaction({ blockchain, signature, provider });
     }
 
-    window.solana = {
+    window._solana = {
       ...window.solana,
       connect: ()=>{
         return connect({
@@ -19875,12 +19875,12 @@
     instance.createSession = function(){ };
     
     instance.sendCustomRequest = async function(options){
-      return await window.ethereum.request(options)
+      return await window._ethereum.request(options)
     };
 
     instance.connect = async function(){
-      let accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      let chainId = await window.ethereum.request({ method: 'net_version' });
+      let accounts = await window._ethereum.request({ method: 'eth_accounts' });
+      let chainId = await window._ethereum.request({ method: 'net_version' });
 
       return {
         accounts,
@@ -19893,11 +19893,11 @@
     instance.off = off;
 
     instance.sendTransaction = async function(transaction){
-      return await window.ethereum.request({ method: 'eth_sendTransaction', params: [transaction] })
+      return await window._ethereum.request({ method: 'eth_sendTransaction', params: [transaction] })
     };
 
     instance.signPersonalMessage = async function(params){
-      return await window.ethereum.request({ method: 'eth_sign', params: [params[1], params[0]] })
+      return await window._ethereum.request({ method: 'eth_sign', params: [params[1], params[0]] })
     };
   };
 
@@ -19936,7 +19936,7 @@
     let instance = configuration.connector.instance = new configuration.connector();
 
     instance.enable = async function(){
-      let accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      let accounts = await window._ethereum.request({ method: 'eth_accounts' });
       return accounts
     };
 
@@ -19947,11 +19947,11 @@
     };
 
     instance.getChainId = async function() {
-      const blockchain = web3Blockchains.Blockchain.findById(await window.ethereum.request({ method: 'eth_chainId' }));
+      const blockchain = web3Blockchains.Blockchain.findById(await window._ethereum.request({ method: 'eth_chainId' }));
       return blockchain.networkId
     };
 
-    instance.request = window.ethereum.request;
+    instance.request = window._ethereum.request;
     
     instance.on = on;
     instance.removeListener = removeListener;
@@ -20055,17 +20055,20 @@
     return spy
   };
 
-  let mockWallet = ({ configuration, window }) => {
+  let mockWallet = ({ blockchain, configuration, window }) => {
     let wallet = configuration.wallet;
     switch (wallet) {
       case 'metamask':
+        window.ethereum = window._ethereum;
         window.ethereum.isMetaMask = true;
         break
       case 'coinbase':
+        window.ethereum = window._ethereum;
         window.ethereum.isCoinbaseWallet = true;
         window.ethereum.isWalletLink = true;
         break
       case 'phantom':
+        window.solana = window._solana;
         window.solana.isPhantom = true;
         break
       case 'walletconnect':
@@ -20075,7 +20078,11 @@
         mock$1({ configuration, window });
         break
       default:
-        raise('Web3Mock: Unknown wallet!');
+        if(supported.evm.includes(blockchain)) {
+          window.ethereum = window._ethereum;
+        } else if(supported.solana.includes(blockchain)) {
+          window.solana = window._solana;
+        }
     }
   };
 
@@ -20102,9 +20109,9 @@
     }
     
     mock = mockBlockchain({ blockchain, configuration, window, provider });
+    mockWallet({ blockchain, configuration, window });
     mocks.unshift(mock);
-    
-    if (configuration.wallet) { mockWallet({ configuration, window }); }
+
     if (configuration.require) { requireMock(configuration.require); }
     if (provider) { provider._blockchain = blockchain; }
 

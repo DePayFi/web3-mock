@@ -12,12 +12,12 @@ let mock = ({ configuration, window }) => {
   instance.createSession = function(){ }
   
   instance.sendCustomRequest = async function(options){
-    return await window.ethereum.request(options)
+    return await window._ethereum.request(options)
   }
 
   instance.connect = async function(){
-    let accounts = await window.ethereum.request({ method: 'eth_accounts' })
-    let chainId = await window.ethereum.request({ method: 'net_version' })
+    let accounts = await window._ethereum.request({ method: 'eth_accounts' })
+    let chainId = await window._ethereum.request({ method: 'net_version' })
 
     return {
       accounts,
@@ -30,11 +30,11 @@ let mock = ({ configuration, window }) => {
   instance.off = off
 
   instance.sendTransaction = async function(transaction){
-    return await window.ethereum.request({ method: 'eth_sendTransaction', params: [transaction] })
+    return await window._ethereum.request({ method: 'eth_sendTransaction', params: [transaction] })
   }
 
   instance.signPersonalMessage = async function(params){
-    return await window.ethereum.request({ method: 'eth_sign', params: [params[1], params[0]] })
+    return await window._ethereum.request({ method: 'eth_sign', params: [params[1], params[0]] })
   }
 }
 

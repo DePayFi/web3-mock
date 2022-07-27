@@ -17,7 +17,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
         request({ provider, request: { method: method, params: params } })
     }
   } else {
-    window.ethereum = {
+    window._ethereum = {
       ...window.ethereum,
       on,
       removeListener,

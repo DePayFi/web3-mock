@@ -22,7 +22,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
     provider.getConfirmedTransaction = async (signature)=>getConfirmedTransaction({ blockchain, signature, provider })
   }
 
-  window.solana = {
+  window._solana = {
     ...window.solana,
     connect: ()=>{
       return connect({

@@ -11,7 +11,7 @@ let mock = ({ configuration, window }) => {
   let instance = configuration.connector.instance = new configuration.connector()
 
   instance.enable = async function(){
-    let accounts = await window.ethereum.request({ method: 'eth_accounts' })
+    let accounts = await window._ethereum.request({ method: 'eth_accounts' })
     return accounts
   }
 
@@ -22,11 +22,11 @@ let mock = ({ configuration, window }) => {
   }
 
   instance.getChainId = async function() {
-    const blockchain = Blockchain.findById(await window.ethereum.request({ method: 'eth_chainId' }))
+    const blockchain = Blockchain.findById(await window._ethereum.request({ method: 'eth_chainId' }))
     return blockchain.networkId
   }
 
-  instance.request = window.ethereum.request
+  instance.request = window._ethereum.request
   
   instance.on = on
   instance.removeListener = removeListener
