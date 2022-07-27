@@ -24,7 +24,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
       request: (payload) => {
         return request({
           request: payload,
-          provider: new Web3Provider(window.ethereum),
+          provider: new Web3Provider(window._ethereum),
         })
       },
     }

@@ -10,9 +10,8 @@ describe('mocks walletLink connect', ()=> {
 
       class WalletLinkStub {}
 
-      const mockedAccounts = ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045']
+      const account = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
       beforeEach(resetMocks)
-      beforeEach(()=>mock({ blockchain, accounts: { return: mockedAccounts } }))
 
       it('fails if you try to mock WalletLink without passing a connector instance', async ()=>{
         await expect(()=>{
@@ -21,13 +20,13 @@ describe('mocks walletLink connect', ()=> {
       })
 
       it('mocks the WalletLink client constructor, and methods', async ()=>{
-        mock({ blockchain, connector: WalletLinkStub, wallet: 'walletlink' })
+        mock({ blockchain, connector: WalletLinkStub, wallet: 'walletlink', accounts: { return: [account] } })
         
         let accounts = await WalletLinkStub.instance.enable()
         let chainId = await WalletLinkStub.instance.getChainId()
         let relay = await WalletLinkStub.instance._relayProvider()
 
-        expect(accounts).toEqual(mockedAccounts)
+        expect(accounts).toEqual([account])
         expect(chainId).toEqual(Blockchain.findByName(blockchain).networkId)
         expect(typeof relay.setConnectDisabled).toEqual('function')
       })

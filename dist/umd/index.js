@@ -19266,7 +19266,7 @@
         request: (payload) => {
           return request$2({
             request: payload,
-            provider: new Web3Provider(window.ethereum),
+            provider: new Web3Provider(window._ethereum),
           })
         },
       };
