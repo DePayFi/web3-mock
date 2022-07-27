@@ -892,7 +892,7 @@ let mockedTransaction = mock({
   }
 })
 
-fail(mockedTransaction)
+fail(mockedTransaction, 'REASON')
 
 await sentTransaction.wait(1).catch(()=>{ console.log('transaction failed') })
 ```

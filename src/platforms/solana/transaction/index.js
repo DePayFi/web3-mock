@@ -79,7 +79,30 @@ let getSignatureStatus = ({ signature }) => {
   }
 }
 
+let getConfirmedTransaction = ({ signature }) => {
+  let mock = findMockByTransactionHash(signature)
+
+  if(mock && mock.transaction._confirmedAtBlock) {
+    const confirmations = getCurrentBlock()-mock.transaction._confirmedAtBlock-1
+    return({
+      blockTime: 1658913018,
+      slot: 143351809,
+      transaction: {},
+      meta: {
+        err: mock.transaction._failed ? { InstructionError: [0, 'Error'] } : null,
+        logMessages: mock.transaction._failedReason ? [mock.transaction._failedReason] : []
+      }
+    })
+  } else {
+    return({
+      context: {apiVersion: '1.10.31', slot: 143064206},
+      value: null
+    })
+  }
+}
+
 export { 
   signAndSendTransaction,
-  getSignatureStatus
+  getSignatureStatus,
+  getConfirmedTransaction,
 }

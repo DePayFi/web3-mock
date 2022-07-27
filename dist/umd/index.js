@@ -240,27 +240,29 @@
     increaseTransactionCount(transactionMock.transaction.from);
   };
 
-  let fail$2 = (transaction) => {
+  let fail$2 = (transaction, reason) => {
     transaction._confirmedAtBlock = getCurrentBlock();
     transaction._failed = true;
+    transaction._failedReason = reason;
     return transaction
   };
 
-  let fail$1 = (transaction) => {
+  let fail$1 = (transaction, reason) => {
     transaction._confirmedAtBlock = getCurrentBlock();
     transaction._failed = true;
+    transaction._failedReason = reason;
     return transaction
   };
 
   function _optionalChain$g(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-  var fail = (mock) => {
+  var fail = (mock, reason) => {
     if (_optionalChain$g([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
       mock.transaction._failed = true;
       mock.transaction._confirmed = false;
       if(supported.evm.includes(mock.blockchain)) {
-        fail$2(mock.transaction);
+        fail$2(mock.transaction, reason);
       } else if(supported.solana.includes(mock.blockchain)) {
-        fail$1(mock.transaction);
+        fail$1(mock.transaction, reason);
       } else {
         raise('Web3Mock: Unknown blockchain!');
       }
@@ -19778,19 +19780,42 @@
     }
   };
 
+  let getConfirmedTransaction = ({ signature }) => {
+    let mock = findMockByTransactionHash(signature);
+
+    if(mock && mock.transaction._confirmedAtBlock) {
+      getCurrentBlock()-mock.transaction._confirmedAtBlock-1;
+      return({
+        blockTime: 1658913018,
+        slot: 143351809,
+        transaction: {},
+        meta: {
+          err: mock.transaction._failed ? { InstructionError: [0, 'Error'] } : null,
+          logMessages: mock.transaction._failedReason ? [mock.transaction._failedReason] : []
+        }
+      })
+    } else {
+      return({
+        context: {apiVersion: '1.10.31', slot: 143064206},
+        value: null
+      })
+    }
+  };
+
   let mock$3 = ({ blockchain, configuration, window, provider }) => {
 
     setCurrentNetwork(blockchain);
 
     if(provider) {
+      provider.on = on$2;
+      provider.removeListener = removeListener$1;
       provider._rpcRequest = (method, params)=>{
         return request$1({ blockchain, provider, method, params })
       };
+      provider.getLatestBlockhash = ()=>getLatestBlockhash({ blockchain });
       provider.signAndSendTransaction = async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider });
       provider.getSignatureStatus = async (signature)=>getSignatureStatus({ blockchain, signature, provider });
-      provider.on = on$2;
-      provider.removeListener = removeListener$1;
-      provider.getLatestBlockhash = ()=>getLatestBlockhash({ blockchain });
+      provider.getConfirmedTransaction = async (signature)=>getConfirmedTransaction({ blockchain, signature, provider });
     }
 
     window.solana = {
@@ -19809,7 +19834,8 @@
       },
       getLatestBlockhash: ()=>getLatestBlockhash({ blockchain }),
       signAndSendTransaction: async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider }),
-      getSignatureStatus: async (signature)=>getSignatureStatus({ blockchain, signature, provider })
+      getSignatureStatus: async (signature)=>getSignatureStatus({ blockchain, signature, provider }),
+      getConfirmedTransaction: async (signature)=>getConfirmedTransaction({ blockchain, signature, provider }),
     };
 
     return configuration
