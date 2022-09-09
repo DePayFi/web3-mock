@@ -170,7 +170,7 @@ const getRandomTransactionHash = (blockchain) => {
     )._hex
   } else if (supported.solana.includes(blockchain)) {
     return to_b58(
-      Array(64)
+      Array(32)
         .fill()
         .map(() => parseInt(Math.random().toString()[4]), 10),
       "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
