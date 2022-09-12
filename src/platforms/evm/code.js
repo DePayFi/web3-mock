@@ -40,7 +40,7 @@ let code = function ({ blockchain, params, provider }) {
 let getCallToBeMock = ({ mock, params, provider }) => {
 
   let toBeMocked = {
-    for: params,
+    for: params.address,
     return: 'Your Value',
   }
 

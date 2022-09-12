@@ -103,6 +103,23 @@ describe('evm mock given provider', ()=> {
 
         expect(transaction).toBeDefined()
       })
+
+      it('allows to mock a fallbackprovider', async()=>{
+        let provider = new ethers.providers.FallbackProvider([{ provider: new ethers.providers.StaticJsonRpcProvider('https://cloudflare-eth.com', 1) }], 1)
+
+        mock({
+          provider,
+          blockchain: 'ethereum',
+          code: {
+            for: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+            return: '0x'
+          }
+        })
+
+        const code = await provider.getCode('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
+
+        expect(code).toEqual('0x')
+      })
     })
   })
 })

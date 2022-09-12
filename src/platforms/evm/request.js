@@ -34,7 +34,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getBalance':
-      return balance({ blockchain, params: request.params[0], provider })
+      return balance({ blockchain, params: (request.params instanceof Array) ? request.params[0] : request.params, provider })
       break
 
     case 'net_version':
@@ -52,6 +52,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_blockNumber':
+    case 'eth_getBlockNumber':
       return Promise.resolve(ethers.BigNumber.from(getCurrentBlock())._hex)
       break
 
@@ -70,7 +71,11 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_call':
-      return call({ blockchain, params: request.params[0], block: request.params[1], provider })
+      if(request.params instanceof Array) {
+        return call({ blockchain, params: request.params[0], block: request.params[1], provider })
+      } else if(typeof request.params == 'object') {
+        return call({ blockchain, params: request.params.transaction, block: request.params.blockTag, provider })
+      }
       break
 
     case 'eth_sendTransaction':
@@ -78,7 +83,8 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getTransactionByHash':
-      return getTransactionByHash(request.params[0])
+    case 'eth_getTransaction':
+      return getTransactionByHash((request.params instanceof Array) ? request.params[0] : request.params.transactionHash)
       break
 
     case 'eth_getTransactionReceipt':
@@ -112,8 +118,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getCode':
-      console.log('PARAMS', request.params)
-      return code({ blockchain, params: request.params[0], provider })
+      return code({ blockchain, params: request.params, provider })
       break
 
     default:
