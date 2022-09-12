@@ -1,6 +1,6 @@
-import raise from '../../../raise'
-import { findMock, findMockByTransactionHash } from '../findMock'
-import { getCurrentBlock } from '../../../block'
+import raise from '../../raise'
+import { findMock, findMockByTransactionHash } from './findMock'
+import { getCurrentBlock } from '../../block'
 
 let signAndSendTransaction = ({ blockchain, params, provider }) => {
   let mock = findMock({ type: 'transaction', params, provider })

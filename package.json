@@ -33,7 +33,7 @@
   "bugs": {
     "url": "https://github.com/DePayFi/web3-mock/issues"
   },
-  "homepage": "https://github.com/DePayFi/web3-mock#readme",
+  "homepage": "https://depay.com",
   "private": false,
   "dependencies": {
     "@depay/solana-web3.js": "^1.17.3",

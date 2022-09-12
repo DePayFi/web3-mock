@@ -31,6 +31,8 @@ let apiIsMissing = (type, configuration) => {
   } else if (supported.solana.includes(configuration.blockchain)) {
     if(type == 'transaction') {
       return configuration.transaction?.instructions?.every((instruction)=>!instruction.api)
+    } else if(type == 'simulate') {
+      return configuration.simulate?.instructions?.every((instruction)=>!instruction.api)
     } else {
       return false
     }
@@ -48,7 +50,11 @@ let apiMissingErrorText = (type, configuration) => {
     })
   } else if (supported.solana.includes(configuration.blockchain)) {
     suggestedConfiguration = configurationDuplicate
-    suggestedConfiguration.transaction.instructions = suggestedConfiguration.transaction.instructions.map((instruction)=>Object.assign(instruction, { api: 'PLACE API HERE' }))
+    if(type == 'transaction') {
+      suggestedConfiguration.transaction.instructions = suggestedConfiguration.transaction.instructions.map((instruction)=>Object.assign(instruction, { api: 'PLACE API HERE' }))
+    } else if(type == 'simulate'){
+      suggestedConfiguration.simulate.instructions = suggestedConfiguration.simulate.instructions.map((instruction)=>Object.assign(instruction, { api: 'PLACE API HERE' }))
+    }
   }
   return (
     'Web3Mock: Please provide the api for the ' +
@@ -70,6 +76,8 @@ let preflight = (configuration) => {
     raise(apiMissingErrorText('request', configuration))
   } else if (apiIsMissing('transaction', configuration)) {
     raise(apiMissingErrorText('transaction', configuration))
+  } else if (apiIsMissing('simulate', configuration)) {
+    raise(apiMissingErrorText('simulate', configuration))
   } else if (apiIsMissing('estimate', configuration)) {
     raise(apiMissingErrorText('estimate', configuration))
   }
