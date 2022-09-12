@@ -5,6 +5,7 @@ import raise from '../../raise'
 import { balance } from './balance'
 import { Blockchain } from '@depay/web3-blockchains'
 import { call } from './call'
+import { code } from './code'
 import { estimate } from './estimate'
 import { ethers } from 'ethers'
 import { getAccounts } from './accounts'
@@ -108,6 +109,11 @@ let request = ({ blockchain, request, provider }) => {
     case 'eth_signTypedData_v3':
     case 'eth_signTypedData_v4':
       return sign({ blockchain, params: request.params, provider })
+      break
+
+    case 'eth_getCode':
+      console.log('PARAMS', request.params)
+      return code({ blockchain, params: request.params[0], provider })
       break
 
     default:

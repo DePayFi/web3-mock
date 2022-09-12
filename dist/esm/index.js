@@ -671,7 +671,7 @@ let balance$1 = function ({ blockchain, params, provider }) {
 };
 
 function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-let callMock$1 = ({ mock, params, provider })=> {
+let callMock$2 = ({ mock, params, provider })=> {
   mock.calls.add(params);
   if (mock.request.return instanceof Error) {
     return Promise.reject({ 
@@ -692,10 +692,10 @@ let call = function ({ blockchain, params, block, provider }) {
   if (mock) {
     if(mock.request.delay) {
       return new Promise((resolve)=>{
-        setTimeout(()=>resolve(callMock$1({ mock, params, provider })), mock.request.delay);
+        setTimeout(()=>resolve(callMock$2({ mock, params, provider })), mock.request.delay);
       })
     } else {
-      return callMock$1({ mock, params, provider })
+      return callMock$2({ mock, params, provider })
     }
   } else {
     mock = findAnyMockForThisAddress$1({ type: 'request', params });
@@ -704,7 +704,7 @@ let call = function ({ blockchain, params, block, provider }) {
         'Web3Mock: Please mock the request: ' +
         JSON.stringify({
           blockchain,
-          request: getCallToBeMock({ mock, params, provider }),
+          request: getCallToBeMock$1({ mock, params, provider }),
         })
       );
     } else {
@@ -713,7 +713,7 @@ let call = function ({ blockchain, params, block, provider }) {
   }
 };
 
-let getCallToBeMock = ({ mock, params, provider }) => {
+let getCallToBeMock$1 = ({ mock, params, provider }) => {
   let address = params.to;
   let api = mock.request.api;
   let contractFunction = getContractFunction({ data: params.data, address, api, provider });
@@ -733,6 +733,51 @@ let getCallToBeMock = ({ mock, params, provider }) => {
       toBeMocked['params'] = contractArguments.map((argument) => normalize(argument));
     }
   }
+
+  return toBeMocked
+};
+
+let callMock$1 = ({ mock, params, provider })=> {
+  mock.calls.add(params);
+  if (mock.code.return instanceof Error) {
+    return Promise.reject({ 
+      error: {
+        message: mock.code.return.message
+      }
+    })
+  } else {
+    return Promise.resolve(mock.code.return)
+  }
+};
+
+let code = function ({ blockchain, params, provider }) {
+  let mock = findMock$1({ type: 'code', params, provider });
+
+  if (mock) {
+    if(mock.code.delay) {
+      return new Promise((resolve)=>{
+        setTimeout(()=>resolve(callMock$1({ mock, params, provider })), mock.code.delay);
+      })
+    } else {
+      return callMock$1({ mock, params, provider })
+    }
+  } else {
+    raise(
+      'Web3Mock: Please mock the request: ' +
+      JSON.stringify({
+        blockchain,
+        code: getCallToBeMock({ mock, params, provider }),
+      })
+    );
+  }
+};
+
+let getCallToBeMock = ({ mock, params, provider }) => {
+
+  let toBeMocked = {
+    for: params,
+    return: 'Your Value',
+  };
 
   return toBeMocked
 };
@@ -1098,6 +1143,10 @@ let request$2 = ({ blockchain, request, provider }) => {
     case 'eth_signTypedData_v3':
     case 'eth_signTypedData_v4':
       return sign({ blockchain, params: request.params, provider })
+
+    case 'eth_getCode':
+      console.log('PARAMS', request.params);
+      return code({ blockchain, params: request.params[0], provider })
 
     default:
       raise('Web3Mock request: Unknown request method ' + request.method + '!');
