@@ -1,16 +1,29 @@
+import raise from './../../raise'
 import { findMock } from './findMock'
 
 let simulateTransaction = ({ blockchain, params, provider }) => {
   let mock = findMock({ type: 'simulate', params, provider })
 
-  return({
-    jsonrpc: '2.0',
-    id: '1', 
-    result: {
-      context:{ apiVersion: '1.10.26', slot: 140152926 }, 
-      value: mock._return
-    } 
-  })
+  if(!mock) {
+    raise(
+      'Web3Mock: Please mock the simulation: ' +
+      JSON.stringify({
+        blockchain,
+        simulate: {
+          from: params.feePayer.toString(),
+          instructions: params.instructions.map((instruction)=>{
+            return {
+              to: instruction.programId,
+              api: 'API HERE'
+            }
+          }),
+          return: "YOUR RETURN HERE"
+        }
+      })
+    )
+  } else {
+    return({ value: mock.simulate.return })
+  }
 }
 
 export {
