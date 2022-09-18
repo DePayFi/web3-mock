@@ -8,6 +8,11 @@ let mock = ({ blockchain, configuration, window, provider }) => {
   setCurrentNetwork(blockchain)
 
   if (provider) {
+    if (provider.perform) {
+      provider.perform = (method, params) =>{
+        return request({ provider, request: { method: `eth_${method}`, params: params } })
+      }
+    }
     if (provider.send) {
       provider.send = (method, params) =>
         request({ provider, request: { method: method, params: params } })

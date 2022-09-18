@@ -584,6 +584,25 @@ let requestMock = mock({
 await contract.name() // is gonna take at least 1000ms
 ```
 
+### Request Code
+
+#### EVM: Request Code
+
+```javascript
+mock({
+  blockchain: 'ethereum',
+  code: {
+    for: '0x5Af489c8786A018EC4814194dC8048be1007e390',
+    return: '0x'
+  }
+})
+
+let provider = new ethers.providers.Web3Provider(global.ethereum)
+
+await provider.getCode('0x5Af489c8786A018EC4814194dC8048be1007e390')
+// 0x
+```
+
 ### Transactions
 
 You need to mock transactions before they are executed.

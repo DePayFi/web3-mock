@@ -32,11 +32,16 @@ let mockHasWrongTransactionData = (mock, type, params) => {
 }
 
 let mockHasWrongBalanceData = (mock, type, params) => {
-  return mock[type].for && normalize(params) !== normalize(mock[type].for)
+  return mock[type].for && normalize(params.address) !== normalize(mock[type].for)
 }
 
 let mockHasWrongToAddress = (mock, type, params) => {
   return normalize(mock[type].to) !== normalize(params?.to)
+}
+
+let mockHasWrongForAddress = (mock, type, params) =>{
+  if(mock[type].for == null) { return false }
+  return normalize(mock[type].for) !== normalize(params?.address)
 }
 
 let mockDataDoesNotMatchSingleArgument = (mock, type, contractArguments) => {
@@ -153,6 +158,9 @@ let findMock = ({ type, blockchain, params, block, provider }) => {
       return
     }
     if (mockHasWrongToAddress(mock, type, params)) {
+      return
+    }
+    if (mockHasWrongForAddress(mock, type, params)) {
       return
     }
     if (mockHasWrongData(mock, type, params, provider)) {

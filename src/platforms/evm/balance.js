@@ -3,6 +3,7 @@ import { findMock } from './findMock'
 import { ethers } from 'ethers'
 
 let balance = function ({ blockchain, params, provider }) {
+  params = (typeof params == 'object') ? params : { address: params }
   let mock = findMock({ blockchain, type: 'balance', params, provider })
 
   if (mock && mock.balance?.return) {
@@ -18,7 +19,7 @@ let balance = function ({ blockchain, params, provider }) {
       JSON.stringify({
         blockchain: blockchain,
         balance: {
-          for: params,
+          for: params.address,
           return: 'PUT BALANCE AMOUNT HERE',
         },
       })

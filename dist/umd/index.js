@@ -441,11 +441,16 @@
   };
 
   let mockHasWrongBalanceData$1 = (mock, type, params) => {
-    return mock[type].for && normalize(params) !== normalize(mock[type].for)
+    return mock[type].for && normalize(params.address) !== normalize(mock[type].for)
   };
 
   let mockHasWrongToAddress$1 = (mock, type, params) => {
     return normalize(mock[type].to) !== normalize(_optionalChain$e([params, 'optionalAccess', _ => _.to]))
+  };
+
+  let mockHasWrongForAddress = (mock, type, params) =>{
+    if(mock[type].for == null) { return false }
+    return normalize(mock[type].for) !== normalize(_optionalChain$e([params, 'optionalAccess', _2 => _2.address]))
   };
 
   let mockDataDoesNotMatchSingleArgument = (mock, type, contractArguments) => {
@@ -507,7 +512,7 @@
   };
 
   let mockHasWrongData = (mock, type, params, provider) => {
-    if (_optionalChain$e([mock, 'access', _2 => _2[type], 'optionalAccess', _3 => _3.api]) == undefined) {
+    if (_optionalChain$e([mock, 'access', _3 => _3[type], 'optionalAccess', _4 => _4.api]) == undefined) {
       return
     }
 
@@ -564,6 +569,9 @@
       if (mockHasWrongToAddress$1(mock, type, params)) {
         return
       }
+      if (mockHasWrongForAddress(mock, type, params)) {
+        return
+      }
       if (mockHasWrongData(mock, type, params, provider)) {
         return
       }
@@ -580,7 +588,7 @@
 
   let findAnyMockForThisAddress$1 = ({ type, params }) => {
     return mocks.find((mock) => {
-      if (normalize(_optionalChain$e([mock, 'access', _4 => _4[type], 'optionalAccess', _5 => _5.to])) !== normalize(params.to)) {
+      if (normalize(_optionalChain$e([mock, 'access', _5 => _5[type], 'optionalAccess', _6 => _6.to])) !== normalize(params.to)) {
         return
       }
       return mock
@@ -589,8 +597,8 @@
 
   let findMockByTransactionHash$1 = (hash) => {
     return mocks.find((mock) => {
-      return _optionalChain$e([mock, 'optionalAccess', _6 => _6.transaction, 'optionalAccess', _7 => _7._id]) == hash && (
-        _optionalChain$e([mock, 'optionalAccess', _8 => _8.transaction, 'optionalAccess', _9 => _9._confirmed]) || _optionalChain$e([mock, 'optionalAccess', _10 => _10.transaction, 'optionalAccess', _11 => _11._failed])
+      return _optionalChain$e([mock, 'optionalAccess', _7 => _7.transaction, 'optionalAccess', _8 => _8._id]) == hash && (
+        _optionalChain$e([mock, 'optionalAccess', _9 => _9.transaction, 'optionalAccess', _10 => _10._confirmed]) || _optionalChain$e([mock, 'optionalAccess', _11 => _11.transaction, 'optionalAccess', _12 => _12._failed])
       )
     })
   };
@@ -651,6 +659,7 @@
 
   function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   let balance$1 = function ({ blockchain, params, provider }) {
+    params = (typeof params == 'object') ? params : { address: params };
     let mock = findMock$1({ blockchain, type: 'balance', params, provider });
 
     if (mock && _optionalChain$c([mock, 'access', _ => _.balance, 'optionalAccess', _2 => _2.return])) {
@@ -666,7 +675,7 @@
         JSON.stringify({
           blockchain: blockchain,
           balance: {
-            for: params,
+            for: params.address,
             return: 'PUT BALANCE AMOUNT HERE',
           },
         })
@@ -675,7 +684,7 @@
   };
 
   function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-  let callMock$1 = ({ mock, params, provider })=> {
+  let callMock$2 = ({ mock, params, provider })=> {
     mock.calls.add(params);
     if (mock.request.return instanceof Error) {
       return Promise.reject({ 
@@ -696,10 +705,10 @@
     if (mock) {
       if(mock.request.delay) {
         return new Promise((resolve)=>{
-          setTimeout(()=>resolve(callMock$1({ mock, params, provider })), mock.request.delay);
+          setTimeout(()=>resolve(callMock$2({ mock, params, provider })), mock.request.delay);
         })
       } else {
-        return callMock$1({ mock, params, provider })
+        return callMock$2({ mock, params, provider })
       }
     } else {
       mock = findAnyMockForThisAddress$1({ type: 'request', params });
@@ -708,7 +717,7 @@
           'Web3Mock: Please mock the request: ' +
           JSON.stringify({
             blockchain,
-            request: getCallToBeMock({ mock, params, provider }),
+            request: getCallToBeMock$1({ mock, params, provider }),
           })
         );
       } else {
@@ -717,7 +726,7 @@
     }
   };
 
-  let getCallToBeMock = ({ mock, params, provider }) => {
+  let getCallToBeMock$1 = ({ mock, params, provider }) => {
     let address = params.to;
     let api = mock.request.api;
     let contractFunction = getContractFunction({ data: params.data, address, api, provider });
@@ -737,6 +746,51 @@
         toBeMocked['params'] = contractArguments.map((argument) => normalize(argument));
       }
     }
+
+    return toBeMocked
+  };
+
+  let callMock$1 = ({ mock, params, provider })=> {
+    mock.calls.add(params);
+    if (mock.code.return instanceof Error) {
+      return Promise.reject({ 
+        error: {
+          message: mock.code.return.message
+        }
+      })
+    } else {
+      return Promise.resolve(mock.code.return)
+    }
+  };
+
+  let code = function ({ blockchain, params, provider }) {
+    let mock = findMock$1({ type: 'code', params, provider });
+
+    if (mock) {
+      if(mock.code.delay) {
+        return new Promise((resolve)=>{
+          setTimeout(()=>resolve(callMock$1({ mock, params, provider })), mock.code.delay);
+        })
+      } else {
+        return callMock$1({ mock, params, provider })
+      }
+    } else {
+      raise(
+        'Web3Mock: Please mock the request: ' +
+        JSON.stringify({
+          blockchain,
+          code: getCallToBeMock({ mock, params, provider }),
+        })
+      );
+    }
+  };
+
+  let getCallToBeMock = ({ mock, params, provider }) => {
+
+    let toBeMocked = {
+      for: params.address,
+      return: 'Your Value',
+    };
 
     return toBeMocked
   };
@@ -1042,7 +1096,7 @@
         return Promise.resolve(web3Blockchains.Blockchain.findByName(blockchain).id)
 
       case 'eth_getBalance':
-        return balance$1({ blockchain, params: request.params[0], provider })
+        return balance$1({ blockchain, params: (request.params instanceof Array) ? request.params[0] : request.params, provider })
 
       case 'net_version':
         return Promise.resolve(web3Blockchains.Blockchain.findByName(blockchain).networkId)
@@ -1056,6 +1110,7 @@
         return estimate({ blockchain, params: params, provider })
 
       case 'eth_blockNumber':
+      case 'eth_getBlockNumber':
         return Promise.resolve(ethers.ethers.BigNumber.from(getCurrentBlock())._hex)
 
       case 'eth_getBlockByNumber':
@@ -1071,13 +1126,19 @@
         return Promise.resolve('0x12fee89674')
 
       case 'eth_call':
-        return call({ blockchain, params: request.params[0], block: request.params[1], provider })
+        if(request.params instanceof Array) {
+          return call({ blockchain, params: request.params[0], block: request.params[1], provider })
+        } else if(typeof request.params == 'object') {
+          return call({ blockchain, params: request.params.transaction, block: request.params.blockTag, provider })
+        }
+        break
 
       case 'eth_sendTransaction':
         return transaction({ blockchain, params: request.params[0], provider })
 
       case 'eth_getTransactionByHash':
-        return getTransactionByHash(request.params[0])
+      case 'eth_getTransaction':
+        return getTransactionByHash((request.params instanceof Array) ? request.params[0] : request.params.transactionHash)
 
       case 'eth_getTransactionReceipt':
         return getTransactionReceipt(request.params[0])
@@ -1102,6 +1163,9 @@
       case 'eth_signTypedData_v3':
       case 'eth_signTypedData_v4':
         return sign({ blockchain, params: request.params, provider })
+
+      case 'eth_getCode':
+        return code({ blockchain, params: request.params, provider })
 
       default:
         raise('Web3Mock request: Unknown request method ' + request.method + '!');
@@ -19250,6 +19314,11 @@
     setCurrentNetwork(blockchain);
 
     if (provider) {
+      if (provider.perform) {
+        provider.perform = (method, params) =>{
+          return request$2({ provider, request: { method: `eth_${method}`, params: params } })
+        };
+      }
       if (provider.send) {
         provider.send = (method, params) =>
           request$2({ provider, request: { method: method, params: params } });

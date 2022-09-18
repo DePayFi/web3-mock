@@ -46,7 +46,25 @@ describe('evm mock given provider', ()=> {
 
       })
 
-    it('allows you to mock web3 transactions for a given provider', async ()=>{
+      it('allows you to mock explicit provider methods e.g. getCode', async ()=>{
+
+        let provider = new ethers.providers.JsonRpcProvider('https://example.com');
+        
+        mock({
+          provider,
+          blockchain: 'ethereum',
+          code: {
+            for: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+            return: '0x'
+          }
+        })
+
+        const code = await provider.getCode('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
+
+        expect(code).toEqual('0x')
+      })
+
+      it('allows you to mock web3 transactions for a given provider', async ()=>{
 
         let api = [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
         let provider = new ethers.providers.JsonRpcProvider('https://example.com');
@@ -84,6 +102,23 @@ describe('evm mock given provider', ()=> {
         )
 
         expect(transaction).toBeDefined()
+      })
+
+      it('allows to mock a fallbackprovider', async()=>{
+        let provider = new ethers.providers.FallbackProvider([{ provider: new ethers.providers.StaticJsonRpcProvider('https://cloudflare-eth.com', 1) }], 1)
+
+        mock({
+          provider,
+          blockchain: 'ethereum',
+          code: {
+            for: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+            return: '0x'
+          }
+        })
+
+        const code = await provider.getCode('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
+
+        expect(code).toEqual('0x')
       })
     })
   })

@@ -502,7 +502,7 @@ describe('solana mock transactions', ()=> {
                 u64('amount')
               ])
             }],
-            delay: 1000
+            delay: 1100
           }
         })
 

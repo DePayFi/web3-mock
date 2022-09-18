@@ -5,6 +5,7 @@ import raise from '../../raise'
 import { balance } from './balance'
 import { Blockchain } from '@depay/web3-blockchains'
 import { call } from './call'
+import { code } from './code'
 import { estimate } from './estimate'
 import { ethers } from 'ethers'
 import { getAccounts } from './accounts'
@@ -33,7 +34,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getBalance':
-      return balance({ blockchain, params: request.params[0], provider })
+      return balance({ blockchain, params: (request.params instanceof Array) ? request.params[0] : request.params, provider })
       break
 
     case 'net_version':
@@ -51,6 +52,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_blockNumber':
+    case 'eth_getBlockNumber':
       return Promise.resolve(ethers.BigNumber.from(getCurrentBlock())._hex)
       break
 
@@ -69,7 +71,11 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_call':
-      return call({ blockchain, params: request.params[0], block: request.params[1], provider })
+      if(request.params instanceof Array) {
+        return call({ blockchain, params: request.params[0], block: request.params[1], provider })
+      } else if(typeof request.params == 'object') {
+        return call({ blockchain, params: request.params.transaction, block: request.params.blockTag, provider })
+      }
       break
 
     case 'eth_sendTransaction':
@@ -77,7 +83,8 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getTransactionByHash':
-      return getTransactionByHash(request.params[0])
+    case 'eth_getTransaction':
+      return getTransactionByHash((request.params instanceof Array) ? request.params[0] : request.params.transactionHash)
       break
 
     case 'eth_getTransactionReceipt':
@@ -108,6 +115,10 @@ let request = ({ blockchain, request, provider }) => {
     case 'eth_signTypedData_v3':
     case 'eth_signTypedData_v4':
       return sign({ blockchain, params: request.params, provider })
+      break
+
+    case 'eth_getCode':
+      return code({ blockchain, params: request.params, provider })
       break
 
     default:
