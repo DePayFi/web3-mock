@@ -82230,6 +82230,31 @@
     }
   };
 
+  let simulateTransaction = ({ blockchain, params, provider }) => {
+    let mock = findMock({ type: 'simulate', params, provider });
+
+    if(!mock) {
+      raise(
+        'Web3Mock: Please mock the simulation: ' +
+        JSON.stringify({
+          blockchain,
+          simulate: {
+            from: params.feePayer.toString(),
+            instructions: params.instructions.map((instruction)=>{
+              return {
+                to: instruction.programId,
+                api: 'API HERE'
+              }
+            }),
+            return: "YOUR RETURN HERE"
+          }
+        })
+      );
+    } else {
+      return({ value: mock.simulate.return })
+    }
+  };
+
   let mock$3 = ({ blockchain, configuration, window, provider }) => {
 
     setCurrentNetwork(blockchain);
@@ -82242,6 +82267,7 @@
       };
       provider.getLatestBlockhash = ()=>getLatestBlockhash({ blockchain });
       provider.signAndSendTransaction = async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider });
+      provider.simulateTransaction = async (transaction)=>simulateTransaction({ blockchain, params: transaction, provider });
       provider.getSignatureStatus = async (signature)=>getSignatureStatus({ blockchain, signature, provider });
       provider.getConfirmedTransaction = async (signature)=>getConfirmedTransaction({ blockchain, signature, provider });
     }
@@ -82263,6 +82289,7 @@
       getLatestBlockhash: ()=>getLatestBlockhash({ blockchain }),
       signAndSendTransaction: async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider }),
       getSignatureStatus: async (signature)=>getSignatureStatus({ blockchain, signature, provider }),
+      simulateTransaction: async (transaction)=>simulateTransaction({ blockchain, params: transaction, provider }),
       getConfirmedTransaction: async (signature)=>getConfirmedTransaction({ blockchain, signature, provider }),
     };
 
@@ -82408,6 +82435,8 @@
     } else if (supported.solana.includes(configuration.blockchain)) {
       if(type == 'transaction') {
         return _optionalChain([configuration, 'access', _3 => _3.transaction, 'optionalAccess', _4 => _4.instructions, 'optionalAccess', _5 => _5.every, 'call', _6 => _6((instruction)=>!instruction.api)])
+      } else if(type == 'simulate') {
+        return _optionalChain([configuration, 'access', _7 => _7.simulate, 'optionalAccess', _8 => _8.instructions, 'optionalAccess', _9 => _9.every, 'call', _10 => _10((instruction)=>!instruction.api)])
       } else {
         return false
       }
@@ -82425,7 +82454,11 @@
       });
     } else if (supported.solana.includes(configuration.blockchain)) {
       suggestedConfiguration = configurationDuplicate;
-      suggestedConfiguration.transaction.instructions = suggestedConfiguration.transaction.instructions.map((instruction)=>Object.assign(instruction, { api: 'PLACE API HERE' }));
+      if(type == 'transaction') {
+        suggestedConfiguration.transaction.instructions = suggestedConfiguration.transaction.instructions.map((instruction)=>Object.assign(instruction, { api: 'PLACE API HERE' }));
+      } else if(type == 'simulate'){
+        suggestedConfiguration.simulate.instructions = suggestedConfiguration.simulate.instructions.map((instruction)=>Object.assign(instruction, { api: 'PLACE API HERE' }));
+      }
     }
     return (
       'Web3Mock: Please provide the api for the ' +
@@ -82447,6 +82480,8 @@
       raise(apiMissingErrorText('request', configuration));
     } else if (apiIsMissing('transaction', configuration)) {
       raise(apiMissingErrorText('transaction', configuration));
+    } else if (apiIsMissing('simulate', configuration)) {
+      raise(apiMissingErrorText('simulate', configuration));
     } else if (apiIsMissing('estimate', configuration)) {
       raise(apiMissingErrorText('estimate', configuration));
     }
