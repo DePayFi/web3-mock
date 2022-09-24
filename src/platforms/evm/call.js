@@ -1,7 +1,7 @@
-import raise from '../../raise'
 import normalize from '../../normalize'
-import { findMock, findAnyMockForThisAddress } from './findMock'
+import raise from '../../raise'
 import { encode, getContractFunction, getContractArguments } from './data'
+import { findMock, findAnyMockForThisAddress } from './findMock'
 
 let callMock = ({ mock, params, provider })=> {
   mock.calls.add(params)
@@ -36,7 +36,7 @@ let call = function ({ blockchain, params, block, provider }) {
         'Web3Mock: Please mock the request: ' +
         JSON.stringify({
           blockchain,
-          request: getCallToBeMock({ mock, params, provider }),
+          request: getCallToBeMock({ mock, params, provider, block }),
         })
       )
     } else {
@@ -45,7 +45,7 @@ let call = function ({ blockchain, params, block, provider }) {
   }
 }
 
-let getCallToBeMock = ({ mock, params, provider }) => {
+let getCallToBeMock = ({ mock, params, provider, block }) => {
   let address = params.to
   let api = mock.request.api
   let contractFunction = getContractFunction({ data: params.data, address, api, provider })
@@ -57,6 +57,8 @@ let getCallToBeMock = ({ mock, params, provider }) => {
     method: contractFunction.name,
     return: 'Your Value',
   }
+
+  if(block && block != 'latest') { toBeMocked['block'] = parseInt(block, 16) }
 
   if (contractArguments && contractArguments.length) {
     if (Array.isArray(contractArguments) && contractArguments.length === 1) {

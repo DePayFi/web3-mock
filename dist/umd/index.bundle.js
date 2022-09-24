@@ -22252,7 +22252,7 @@
           'Web3Mock: Please mock the request: ' +
           JSON.stringify({
             blockchain,
-            request: getCallToBeMock$1({ mock, params, provider }),
+            request: getCallToBeMock$1({ mock, params, provider, block }),
           })
         );
       } else {
@@ -22261,7 +22261,7 @@
     }
   };
 
-  let getCallToBeMock$1 = ({ mock, params, provider }) => {
+  let getCallToBeMock$1 = ({ mock, params, provider, block }) => {
     let address = params.to;
     let api = mock.request.api;
     let contractFunction = getContractFunction({ data: params.data, address, api, provider });
@@ -22273,6 +22273,8 @@
       method: contractFunction.name,
       return: 'Your Value',
     };
+
+    if(block && block != 'latest') { toBeMocked['block'] = parseInt(block, 16); }
 
     if (contractArguments && contractArguments.length) {
       if (Array.isArray(contractArguments) && contractArguments.length === 1) {
