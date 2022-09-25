@@ -30,10 +30,6 @@ describe('mocks solana simulations', ()=> {
               to: '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8',
               api: POOL_INFO
             }],
-            params: {
-              instruction: 12,
-              simulateType: 0
-            },
             return: {
               logs
             }
