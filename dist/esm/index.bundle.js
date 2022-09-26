@@ -22342,12 +22342,14 @@ let estimate = ({ blockchain, params, provider }) => {
   let defaultEstimate = Promise.resolve('0x2c4a0');
   let mock;
 
+  if(_optionalChain$a([params, 'optionalAccess', _ => _.transaction])) { params = params.transaction; }
+
   mock = findMock$1({ type: 'estimate', params, provider });
   if (mock) {
     mock.calls.add(params);
-    if (_optionalChain$a([mock, 'optionalAccess', _ => _.estimate, 'optionalAccess', _2 => _2.return]) instanceof Error) {
+    if (_optionalChain$a([mock, 'optionalAccess', _2 => _2.estimate, 'optionalAccess', _3 => _3.return]) instanceof Error) {
       return Promise.reject(mock.estimate.return)
-    } else if (_optionalChain$a([mock, 'access', _3 => _3.estimate, 'optionalAccess', _4 => _4.return])) {
+    } else if (_optionalChain$a([mock, 'access', _4 => _4.estimate, 'optionalAccess', _5 => _5.return])) {
       return Promise.resolve(BigNumber.from(mock.estimate.return))
     } else {
       return defaultEstimate
@@ -22382,7 +22384,7 @@ let getEstimateToBeMocked = ({ mock, params, provider }) => {
     return toBeMocked
   }
 
-  let api = _optionalChain$a([mock, 'access', _5 => _5.estimate, 'optionalAccess', _6 => _6.api]);
+  let api = _optionalChain$a([mock, 'access', _6 => _6.estimate, 'optionalAccess', _7 => _7.api]);
 
   if (api) {
     let contractFunction = getContractFunction({ data: params.data, address, api, provider });
