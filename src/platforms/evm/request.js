@@ -88,7 +88,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getTransactionReceipt':
-      return getTransactionReceipt(request.params[0])
+      return getTransactionReceipt((request.params instanceof Array) ? request.params[0] : request.params.transactionHash)
       break
 
     case 'eth_getTransactionCount':

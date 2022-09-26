@@ -1140,7 +1140,7 @@ let request$2 = ({ blockchain, request, provider }) => {
       return getTransactionByHash((request.params instanceof Array) ? request.params[0] : request.params.transactionHash)
 
     case 'eth_getTransactionReceipt':
-      return getTransactionReceipt(request.params[0])
+      return getTransactionReceipt((request.params instanceof Array) ? request.params[0] : request.params.transactionHash)
 
     case 'eth_getTransactionCount':
       return Promise.resolve(getTransactionCount(request.params[0]))
