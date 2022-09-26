@@ -179,6 +179,9 @@ let findMock = ({ type, blockchain, params, block, provider }) => {
 
 let findAnyMockForThisAddress = ({ type, params }) => {
   return mocks.find((mock) => {
+    if (mock[type] === undefined) {
+      return
+    }
     if (normalize(mock[type]?.to) !== normalize(params.to)) {
       return
     }

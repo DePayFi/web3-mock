@@ -21938,6 +21938,9 @@ let findMock$1 = ({ type, blockchain, params, block, provider }) => {
 
 let findAnyMockForThisAddress$1 = ({ type, params }) => {
   return mocks.find((mock) => {
+    if (mock[type] === undefined) {
+      return
+    }
     if (normalize$1(_optionalChain$e([mock, 'access', _5 => _5[type], 'optionalAccess', _6 => _6.to])) !== normalize$1(params.to)) {
       return
     }
@@ -22339,10 +22342,6 @@ let estimate = ({ blockchain, params, provider }) => {
   let defaultEstimate = Promise.resolve('0x2c4a0');
   let mock;
 
-  if (params === undefined) {
-    return defaultEstimate
-  }
-
   mock = findMock$1({ type: 'estimate', params, provider });
   if (mock) {
     mock.calls.add(params);
@@ -22635,8 +22634,8 @@ let request$3 = ({ blockchain, request, provider }) => {
       return getAccounts({ blockchain, provider })
 
     case 'eth_estimateGas':
-      let params = request.params ? request.params[0] : undefined;
-      return estimate({ blockchain, params: params, provider })
+      let params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined;
+      return estimate({ blockchain, params, provider })
 
     case 'eth_blockNumber':
     case 'eth_getBlockNumber':

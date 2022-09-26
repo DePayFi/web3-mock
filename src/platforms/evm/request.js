@@ -47,8 +47,8 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_estimateGas':
-      let params = request.params ? request.params[0] : undefined
-      return estimate({ blockchain, params: params, provider })
+      let params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined
+      return estimate({ blockchain, params, provider })
       break
 
     case 'eth_blockNumber':
