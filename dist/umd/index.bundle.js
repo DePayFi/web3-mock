@@ -22705,6 +22705,9 @@
       case 'eth_getCode':
         return code({ blockchain, params: request.params, provider })
 
+      case 'eth_getGasPrice':
+        return Promise.resolve(hexlify(13370000000))
+
       default:
         raise('Web3Mock request: Unknown request method ' + request.method + '!');
     }

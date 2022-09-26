@@ -121,6 +121,9 @@ let request = ({ blockchain, request, provider }) => {
       return code({ blockchain, params: request.params, provider })
       break
 
+    case 'eth_getGasPrice':
+      return Promise.resolve(ethers.utils.hexlify(13370000000))
+
     default:
       raise('Web3Mock request: Unknown request method ' + request.method + '!')
   }
