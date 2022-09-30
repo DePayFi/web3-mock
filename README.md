@@ -12,6 +12,8 @@ or
 npm install --save-dev @depay/web3-mock
 ```
 
+Make sure you setup [Cypress](https://github.com/DePayFi/web3-mock#cypress) or [Playwright](https://github.com/DePayFi/web3-mock#playwright) correctly before start using web3-mock.
+
 ### Basics
 
 #### EVM: Basics
