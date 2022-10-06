@@ -33,7 +33,7 @@ describe('solana mock transactions', ()=> {
         await expect(
           window.solana.signAndSendTransaction(transaction)
         ).rejects.toEqual(
-          'Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"data\":{\"value\":\"HERE\"}}]}}'
+          'Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"params\":{\"value\":\"HERE\"}}]}}'
         )
       })
 
@@ -135,6 +135,88 @@ describe('solana mock transactions', ()=> {
         expect(mockedTransaction).toHaveBeenCalled()
       })
 
+      it('mocks a complex transaction with multiple instructions (like a raydium swap)', async ()=> {
+
+        let from = '2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1'
+
+        let mockedTransaction = mock({
+          blockchain,
+          transaction: {
+            from,
+            instructions:[
+              {
+                to: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                api: struct([u8("instruction"), u64("amountIn"), u64("amountOut")]),
+                params: {
+                  instruction: 11,
+                  amountIn: '100',
+                  amountOut: '100',
+                }
+              },{
+                to: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                api: struct([u8("instruction"), u64("amountIn"), u64("amountOut")]),
+                params: {
+                  instruction: 9,
+                  amountIn: '100',
+                  amountOut: '100',
+                }
+              }
+            ]
+          }
+        })
+
+        let transaction = new Transaction({
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          feePayer: new PublicKey(from)
+        })
+
+        let LAYOUT, data
+
+        LAYOUT = struct([u8("instruction"), u64("maxAmountIn"), u64("amountOut")])
+        data = Buffer.alloc(LAYOUT.span)
+        LAYOUT.encode(
+          {
+            instruction: 11,
+            maxAmountIn: new BN('100'),
+            amountOut: new BN('100'),
+          },
+          data,
+        )
+        transaction.add(
+          new TransactionInstruction({
+            programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
+            data,
+            keys: [],
+          })
+        )
+
+        LAYOUT = struct([u8("instruction"), u64("amountIn"), u64("minAmountOut")])
+        data = Buffer.alloc(LAYOUT.span)
+        LAYOUT.encode(
+          {
+            instruction: 9,
+            amountIn: new BN('100'),
+            minAmountOut: new BN('100'),
+          },
+          data,
+        )
+        transaction.add(
+          new TransactionInstruction({
+            programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
+            data,
+            keys: [],
+          })
+        )
+        
+        let signedTransaction = await window.solana.signAndSendTransaction(transaction)
+
+        expect(signedTransaction).toBeDefined()
+        expect(signedTransaction.publicKey).toEqual('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
+        expect(signedTransaction.signature).toEqual(mockedTransaction.transaction._id)
+
+        expect(mockedTransaction).toHaveBeenCalled()
+      })
+
       it('requires you to mock contract call transactions', async ()=> {
         
         mock(blockchain)
@@ -174,7 +256,7 @@ describe('solana mock transactions', ()=> {
         await expect(
           window.solana.signAndSendTransaction(transaction)
         ).rejects.toEqual(
-          "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\"api\":[\"API HERE\"],\"data\":{\"value\":\"HERE\"}}]}}"
+          "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\"api\":[\"API HERE\"],\"params\":{\"value\":\"HERE\"}}]}}"
         )
       })
 
@@ -228,7 +310,7 @@ describe('solana mock transactions', ()=> {
         await expect(
           window.solana.signAndSendTransaction(transaction)
         ).rejects.toEqual(
-          "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"data\":{\"value\":\"HERE\"}}]}}"
+          "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"params\":{\"value\":\"HERE\"}}]}}"
         )
       })
 
@@ -239,7 +321,7 @@ describe('solana mock transactions', ()=> {
           transaction: {
             from: "2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1",
             instructions:[{
-              to: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa',
+              to: 'NOTTokenProgram',
               api: struct([
                 u32('instruction'),
                 u64('lamports')
@@ -267,7 +349,7 @@ describe('solana mock transactions', ()=> {
         await expect(
           window.solana.signAndSendTransaction(transaction)
         ).rejects.toEqual(
-          "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"data\":{\"value\":\"HERE\"}}]}}"
+          "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"params\":{\"value\":\"HERE\"}}]}}"
         )
       })
 
@@ -310,7 +392,7 @@ describe('solana mock transactions', ()=> {
         await expect(
           window.solana.signAndSendTransaction(transaction)
         ).rejects.toEqual(
-          "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"data\":{\"value\":\"HERE\"}}]}}"
+          "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"params\":{\"value\":\"HERE\"}}]}}"
         )
       })
 

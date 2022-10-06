@@ -31,10 +31,10 @@ let mockHasWrongTransactionInstructions = (mock, type, params) => {
   return (
     (mock[type]?.instructions && mock[type].instructions.some((mockedInstruction)=>{
       if(mockedInstruction?.params == anything) { return false }
-      return ! params?.instructions.some((instruction)=>{
+      return !params?.instructions.some((instruction)=>{
         if(normalize(instruction?.programId?.toString()) != normalize(mockedInstruction.to)) { return false }
-        let decodedInstructionData 
-        try { decodedInstructionData = mockedInstruction.api.decode(params.data) } catch {}
+        let decodedInstructionData
+        try { decodedInstructionData = mockedInstruction.api.decode(instruction.data) } catch {}
         if(!decodedInstructionData) { return false }
         if(Object.keys(decodedInstructionData).some((key)=>{
           if(!mockedInstruction.params) { return false }
