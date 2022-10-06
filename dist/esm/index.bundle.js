@@ -22771,7 +22771,9 @@ let mockHasWrongTransactionInstructions = (mock, type, params) => {
       if(_optionalChain$5([mockedInstruction, 'optionalAccess', _6 => _6.params]) == anything) { return false }
       return ! _optionalChain$5([params, 'optionalAccess', _7 => _7.instructions, 'access', _8 => _8.some, 'call', _9 => _9((instruction)=>{
         if(normalize$1(_optionalChain$5([instruction, 'optionalAccess', _10 => _10.programId, 'optionalAccess', _11 => _11.toString, 'call', _12 => _12()])) != normalize$1(mockedInstruction.to)) { return false }
-        const decodedInstructionData = mockedInstruction.api.decode(params.data);
+        let decodedInstructionData; 
+        try { decodedInstructionData = mockedInstruction.api.decode(params.data); } catch (e) {}
+        if(!decodedInstructionData) { return false }
         if(Object.keys(decodedInstructionData).some((key)=>{
           if(!mockedInstruction.params) { return false }
           if(mockedInstruction.params[key] == anything) { return false }

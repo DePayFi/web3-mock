@@ -33,7 +33,9 @@ let mockHasWrongTransactionInstructions = (mock, type, params) => {
       if(mockedInstruction?.params == anything) { return false }
       return ! params?.instructions.some((instruction)=>{
         if(normalize(instruction?.programId?.toString()) != normalize(mockedInstruction.to)) { return false }
-        const decodedInstructionData = mockedInstruction.api.decode(params.data)
+        let decodedInstructionData 
+        try { decodedInstructionData = mockedInstruction.api.decode(params.data) } catch {}
+        if(!decodedInstructionData) { return false }
         if(Object.keys(decodedInstructionData).some((key)=>{
           if(!mockedInstruction.params) { return false }
           if(mockedInstruction.params[key] == anything) { return false }
