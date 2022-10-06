@@ -82187,7 +82187,7 @@
         return {
           to: _optionalChain$3([instruction, 'optionalAccess', _4 => _4.programId, 'optionalAccess', _5 => _5.toString, 'call', _6 => _6()]),
           api: ["API HERE"],
-          data: { value: "HERE" }
+          params: { value: "HERE" }
         }
       })
     }

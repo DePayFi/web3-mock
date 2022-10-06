@@ -50,7 +50,7 @@ let getTransactionToBeMocked = (params) =>{
       return {
         to: instruction?.programId?.toString(),
         api: ["API HERE"],
-        data: { value: "HERE" }
+        params: { value: "HERE" }
       }
     })
   }
