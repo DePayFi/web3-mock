@@ -62,7 +62,7 @@ let callMock = ({ blockchain, mock, params, provider, raw })=> {
 }
 
 let responseData = function ({ blockchain, provider, method, params, raw }) {
-  let mock = findMock({ blockchain, type: 'request', params, provider })
+  let mock = findMock({ blockchain, type: 'request', params, method, provider })
 
   if(mock) {
     if(mock.request.delay) {

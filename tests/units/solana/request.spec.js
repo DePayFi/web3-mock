@@ -371,15 +371,6 @@ describe('mocks solana requests', ()=> {
           { memcmp: { offset: 0, bytes: mint }}
         ]
 
-        let rentMock = mock({
-          provider: connection,
-          blockchain,
-          request: {
-            method: 'getMinimumBalanceForRentExemption',
-            return: 2039280
-          }
-        })
-
         let requestMock = mock({
           provider: connection,
           blockchain,
@@ -399,6 +390,15 @@ describe('mocks solana requests', ()=> {
                 pubkey: 'F7e4iBrxoSmHhEzhuBcXXs1KAknYvEoZWieiocPvrCD9'
               }
             ]
+          }
+        })
+
+        let rentMock = mock({
+          provider: connection,
+          blockchain,
+          request: {
+            method: 'getMinimumBalanceForRentExemption',
+            return: 2039280
           }
         })
 

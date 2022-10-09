@@ -19355,6 +19355,11 @@ let mockHasWrongType = (mock, type) => {
   return mock[type] == undefined
 };
 
+let mockHasWrongMethod = (mock, method) => {
+  if(mock.request && mock.request.method) { return mock.request.method != method }
+  return false
+};
+
 let mockHasWrongBlockchain = (mock, blockchain) => {
   if(blockchain == undefined) { return false }
   return mock.blockchain != blockchain
@@ -19426,7 +19431,7 @@ let mockHasWrongNetworkAction = (mock, type, params) => {
   return Object.keys(mock.network)[0] != Object.keys(params)[0]
 };
 
-let findMock = ({ type, blockchain, params, block, provider }) => {
+let findMock = ({ type, blockchain, params, method, block, provider }) => {
   return mocks.find((mock) => {
     if (mockIsNotAnObject(mock)) {
       return
@@ -19438,6 +19443,9 @@ let findMock = ({ type, blockchain, params, block, provider }) => {
       return
     }
     if (mockHasWrongType(mock, type)) {
+      return
+    }
+    if (mockHasWrongMethod(mock, method)) {
       return
     }
     if (mockHasWrongTransactionData(mock, type, params)) {
@@ -19637,7 +19645,7 @@ let callMock = ({ blockchain, mock, params, provider, raw })=> {
 };
 
 let responseData = function ({ blockchain, provider, method, params, raw }) {
-  let mock = findMock({ blockchain, type: 'request', params, provider });
+  let mock = findMock({ blockchain, type: 'request', params, method, provider });
 
   if(mock) {
     if(mock.request.delay) {
