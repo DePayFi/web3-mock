@@ -82066,6 +82066,16 @@ let request$1 = ({ blockchain, provider, method, params }) => {
         result: getCurrentBlock()
       }
 
+    case 'getMinimumBalanceForRentExemption':
+      return responseData({ blockchain, provider, method, params })
+        .then((data)=>{
+          return({
+            jsonrpc: '2.0',
+            id: '1', 
+            result: data
+          })
+        })
+
     case 'getAccountInfo':
       return responseData({ blockchain, provider, method, params })
         .then((data)=>{

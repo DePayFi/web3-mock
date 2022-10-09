@@ -340,6 +340,78 @@ describe('mocks solana requests', ()=> {
 
         expect(balance.value).toEqual(returnedBalance)
       })
+
+      it('mocks a getMinimumBalanceForRentExemption request with params', async ()=>{
+        let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+        let rentMock = mock({
+          provider: connection,
+          blockchain,
+          request: {
+            method: 'getMinimumBalanceForRentExemption',
+            return: 2039280
+          }
+        })
+
+        const rent = await connection.getMinimumBalanceForRentExemption(struct([u8('amount')]).span)
+
+        expect(rentMock).toHaveBeenCalled()
+        expect(rent).toEqual(2039280)
+      })
+
+      it('mocks a getMinimumBalanceForRentExemption independently from getProgramAccounts', async ()=>{
+        let connection = new Connection('https://api.mainnet-beta.solana.com')
+        
+        let wallet = '2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9'
+        let mint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+
+        let filters = [
+          { dataSize: 165 },
+          { memcmp: { offset: 32, bytes: wallet }},
+          { memcmp: { offset: 0, bytes: mint }}
+        ]
+
+        let rentMock = mock({
+          provider: connection,
+          blockchain,
+          request: {
+            method: 'getMinimumBalanceForRentExemption',
+            return: 2039280
+          }
+        })
+
+        let requestMock = mock({
+          provider: connection,
+          blockchain,
+          request: {
+            method: 'getProgramAccounts',
+            to: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+            params: { filters },
+            return: [
+              {
+                account: { data: new Buffer([]), executable: false, lamports: 2039280, owner: mint, rentEpoch: 327 },
+                pubkey: '3JdKXacGdntfNKXzSGC2EwUDKFPrXdsqowbuc9hEiNBb'
+              }, {
+                account: { data: new Buffer([]), executable: false, lamports: 2039280, owner: mint, rentEpoch: 327 },
+                pubkey: 'FjtHL8ki3GXMhCqY2Lum9CCAv5tSQMkhJEnXbEkajTrZ'
+              }, {
+                account: { data: new Buffer([]), executable: false, lamports: 2039280, owner: mint, rentEpoch: 327 },
+                pubkey: 'F7e4iBrxoSmHhEzhuBcXXs1KAknYvEoZWieiocPvrCD9'
+              }
+            ]
+          }
+        })
+
+        let accounts = await connection.getProgramAccounts(new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), { filters })
+
+        expect(requestMock).toHaveBeenCalled()
+
+        expect(accounts.map((account)=>account.pubkey.toString())).toEqual([
+          '3JdKXacGdntfNKXzSGC2EwUDKFPrXdsqowbuc9hEiNBb',
+          'FjtHL8ki3GXMhCqY2Lum9CCAv5tSQMkhJEnXbEkajTrZ',
+          'F7e4iBrxoSmHhEzhuBcXXs1KAknYvEoZWieiocPvrCD9'
+        ])
+      })
     })
   })
 });

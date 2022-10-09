@@ -28,6 +28,17 @@ let request = ({ blockchain, provider, method, params }) => {
       }
     break
 
+    case 'getMinimumBalanceForRentExemption':
+      return responseData({ blockchain, provider, method, params })
+        .then((data)=>{
+          return({
+            jsonrpc: '2.0',
+            id: '1', 
+            result: data
+          })
+        })
+    break
+
     case 'getAccountInfo':
       return responseData({ blockchain, provider, method, params })
         .then((data)=>{
