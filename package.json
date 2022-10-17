@@ -9,7 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist && rollup -c rollup.module.config.js && npx rollup --config rollup.bundle.config.js",
+    "build": "rm -rf dist && rollup -c rollup.module.config.js && rollup -c rollup.module.evm.config.js && npx rollup --config rollup.bundle.config.js",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "prepublishOnly": "yarn build",

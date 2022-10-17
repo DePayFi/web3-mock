@@ -228,20 +228,14 @@ This library supports the all crypto wallets that inject window.ethereum or wind
 - [Phantom](https://phantom.app/)
 
 100+ different wallets via [WalletConnect](https://walletconnect.org), such as:
-- [Trust Wallet](https://trustwallet.com)
-- [DeFi Wallet by crypto.com](https://crypto.com/defi-wallet)
-- [1inch Wallet](https://1inch.io/wallet/)
-- [imToken Wallet](https://www.token.im)
-- [TokenPocket](https://www.tokenpocket.pro/en)
-- [Pillar](https://www.pillar.fi/)
-- [Math Wallet](https://mathwallet.org/)
-- [Ledger Live](https://www.ledger.com/ledger-live)
-- [Argent Wallet](https://www.argent.xyz)
-- [AlphaWallet](https://alphawallet.com/)
-- [Unstoppable Wallet](https://unstoppable.money)
-- [Atomic Wallet](https://atomicwallet.io)
-- [Rainbow](https://rainbow.me/)
-- and more...
+
+## Platform specific packaging
+
+In case you want to use and package only specific platforms, use platform specific entrypoints:
+
+```javascript
+import { mock } from '@depay/web3-mock/dist/umd/index.evm'
+```
 
 ## Functionalities
 
