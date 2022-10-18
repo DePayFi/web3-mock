@@ -1,8 +1,8 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks } from 'src'
-import { supported } from "src/blockchains"
+import { mock, resetMocks } from 'src/index.evm'
+import { supported } from "src/blockchains.evm"
 
-describe('evm mock signatures', ()=> {
+describe('evm mock signatures (evm)', ()=> {
 
   supported.evm.forEach((blockchain)=>{
 
