@@ -110,8 +110,8 @@
 
   resetMocks();
 
-  let supported = ['ethereum', 'bsc', 'polygon'];
-  supported.evm = ['ethereum', 'bsc', 'polygon'];
+  let supported = ['ethereum', 'bsc', 'polygon', 'velas'];
+  supported.evm = ['ethereum', 'bsc', 'polygon', 'velas'];
   supported.solana = [];
 
   function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
@@ -247,9 +247,9 @@
     }
   };
 
-  let normalize = function (input) {
+  let normalize$1 = function (input) {
     if (input instanceof Array) {
-      return input.map((element) => normalize(element))
+      return input.map((element) => normalize$1(element))
     } else if (typeof input === 'undefined') {
       return input
     } else if (typeof input === 'object' && input._isBigNumber) {
@@ -288,7 +288,7 @@
       })
     } else {
       if (mockParams === anything) {
-        return normalize(contractArguments)
+        return normalize$1(contractArguments)
       } else {
         return mockParams
       }
@@ -299,8 +299,8 @@
     let filledMockParams = fillMockParamsWithAnything({ contractArguments, mockParams });
     return Object.keys(filledMockParams).every((key) => {
       return (
-        JSON.stringify(normalize(filledMockParams[key])) ==
-        JSON.stringify(normalize(contractArguments[key]))
+        JSON.stringify(normalize$1(filledMockParams[key])) ==
+        JSON.stringify(normalize$1(contractArguments[key]))
       )
     })
   };
@@ -383,24 +383,24 @@
 
   let mockHasWrongTransactionData = (mock, type, params) => {
     return (
-      (mock[type].to && normalize(params.to) !== normalize(mock[type].to)) ||
-      (mock[type].from && normalize(params.from) !== normalize(mock[type].from)) ||
+      (mock[type].to && normalize$1(params.to) !== normalize$1(mock[type].to)) ||
+      (mock[type].from && normalize$1(params.from) !== normalize$1(mock[type].from)) ||
       (mock[type].value &&
-        ethers.ethers.BigNumber.from(params.value).toString() !== normalize(mock[type].value))
+        ethers.ethers.BigNumber.from(params.value).toString() !== normalize$1(mock[type].value))
     )
   };
 
   let mockHasWrongBalanceData = (mock, type, params) => {
-    return mock[type].for && normalize(params.address) !== normalize(mock[type].for)
+    return mock[type].for && normalize$1(params.address) !== normalize$1(mock[type].for)
   };
 
   let mockHasWrongToAddress = (mock, type, params) => {
-    return normalize(mock[type].to) !== normalize(_optionalChain$b([params, 'optionalAccess', _ => _.to]))
+    return normalize$1(mock[type].to) !== normalize$1(_optionalChain$b([params, 'optionalAccess', _ => _.to]))
   };
 
   let mockHasWrongForAddress = (mock, type, params) =>{
     if(mock[type].for == null) { return false }
-    return normalize(mock[type].for) !== normalize(_optionalChain$b([params, 'optionalAccess', _2 => _2.address]))
+    return normalize$1(mock[type].for) !== normalize$1(_optionalChain$b([params, 'optionalAccess', _2 => _2.address]))
   };
 
   let mockDataDoesNotMatchSingleArgument = (mock, type, contractArguments) => {
@@ -408,8 +408,8 @@
       Array.isArray(mock[type].params) == false &&
       contractArguments.length == 1 &&
       (
-        normalize(mock[type].params) != normalize(contractArguments[0]) && 
-        normalize(Object.values(mock[type].params)[0]) != normalize(contractArguments[0])
+        normalize$1(mock[type].params) != normalize$1(contractArguments[0]) && 
+        normalize$1(Object.values(mock[type].params)[0]) != normalize$1(contractArguments[0])
       ) &&
       !anythingMatch({ contractArguments, mockParams: mock[type].params })
     )
@@ -418,8 +418,8 @@
   let mockDataDoesNotMatchArrayArgument = (mock, type, contractArguments) => {
     return (
       Array.isArray(mock[type].params) &&
-      JSON.stringify(contractArguments.map((argument) => normalize(argument))) !==
-        JSON.stringify(mock[type].params.map((argument) => normalize(argument))) &&
+      JSON.stringify(contractArguments.map((argument) => normalize$1(argument))) !==
+        JSON.stringify(mock[type].params.map((argument) => normalize$1(argument))) &&
       !anythingMatch({ contractArguments, mockParams: mock[type].params })
     )
   };
@@ -437,8 +437,8 @@
     return Object.keys(mock[type].params).every((key) => {
       if (mock[type].params && mock[type].params[key]) {
         return (
-          JSON.stringify(normalize(mock[type].params[key])) ==
-            JSON.stringify(normalize(contractArguments[key])) || isDeepAnythingMatch
+          JSON.stringify(normalize$1(mock[type].params[key])) ==
+            JSON.stringify(normalize$1(contractArguments[key])) || isDeepAnythingMatch
         )
       } else {
         return true
@@ -449,7 +449,7 @@
   let mockDataDoesNotMatchObjectArugment = (mock, type, contractArguments) => {
     return (
       Array.isArray(mock[type].params) == false &&
-      normalize(mock[type].params) != normalize(contractArguments[0]) &&
+      normalize$1(mock[type].params) != normalize$1(contractArguments[0]) &&
       !mockedArgumentsDoMatch(mock, type, contractArguments) &&
       !anythingMatch({ contractArguments, mockParams: mock[type].params })
     )
@@ -541,7 +541,7 @@
       if (mock[type] === undefined) {
         return
       }
-      if (normalize(_optionalChain$b([mock, 'access', _5 => _5[type], 'optionalAccess', _6 => _6.to])) !== normalize(params.to)) {
+      if (normalize$1(_optionalChain$b([mock, 'access', _5 => _5[type], 'optionalAccess', _6 => _6.to])) !== normalize$1(params.to)) {
         return
       }
       return mock
@@ -696,9 +696,9 @@
 
     if (contractArguments && contractArguments.length) {
       if (Array.isArray(contractArguments) && contractArguments.length === 1) {
-        toBeMocked['params'] = normalize(contractArguments[0]);
+        toBeMocked['params'] = normalize$1(contractArguments[0]);
       } else {
-        toBeMocked['params'] = contractArguments.map((argument) => normalize(argument));
+        toBeMocked['params'] = contractArguments.map((argument) => normalize$1(argument));
       }
     }
 
@@ -819,7 +819,7 @@
         let paramsToBeMocked = {};
         Object.keys(contractArguments).forEach((key) => {
           if (key.match(/\D/)) {
-            paramsToBeMocked[key] = normalize(contractArguments[key]);
+            paramsToBeMocked[key] = normalize$1(contractArguments[key]);
           }
         });
         toBeMocked['params'] = paramsToBeMocked;
@@ -1021,7 +1021,7 @@
       let paramsToBeMocked = {};
       Object.keys(contractArguments).forEach((key) => {
         if (key.match(/\D/)) {
-          paramsToBeMocked[key] = normalize(contractArguments[key]);
+          paramsToBeMocked[key] = normalize$1(contractArguments[key]);
         }
       });
       toBeMocked['params'] = paramsToBeMocked;
@@ -4486,7 +4486,7 @@
   })(module, commonjsGlobal);
   });
 
-  const version$f = "logger/5.6.0";
+  const version$f = "logger/5.7.0";
 
   let _permanentCensorErrors = false;
   let _censorErrors = false;
@@ -4602,6 +4602,11 @@
       //   - replacement: the full TransactionsResponse for the replacement
       //   - receipt: the receipt of the replacement
       ErrorCode["TRANSACTION_REPLACED"] = "TRANSACTION_REPLACED";
+      ///////////////////
+      // Interaction Errors
+      // The user rejected the action, such as signing a message or sending
+      // a transaction
+      ErrorCode["ACTION_REJECTED"] = "ACTION_REJECTED";
   })(ErrorCode || (ErrorCode = {}));
   const HEX = "0123456789abcdef";
   class Logger {
@@ -4832,7 +4837,7 @@
   Logger.errors = ErrorCode;
   Logger.levels = LogLevel;
 
-  const version$e = "bytes/5.6.1";
+  const version$e = "bytes/5.7.0";
 
   const logger$h = new Logger(version$e);
   ///////////////////////////////
@@ -5232,7 +5237,7 @@
       return result;
   }
 
-  const version$d = "bignumber/5.6.2";
+  const version$d = "bignumber/5.7.0";
 
   var BN = bn$1.BN;
   const logger$g = new Logger(version$d);
@@ -5515,7 +5520,7 @@
       return (new BN(value, 36)).toString(16);
   }
 
-  const version$c = "properties/5.6.0";
+  const version$c = "properties/5.7.0";
 
   var __awaiter$7 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
       function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -5640,7 +5645,7 @@
       }
   }
 
-  const version$b = "abstract-provider/5.6.1";
+  const version$b = "abstract-provider/5.7.0";
 
   var __awaiter$6 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
       function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -5677,15 +5682,16 @@
                       return null;
                   })
               });
-              let maxFeePerGas = null, maxPriorityFeePerGas = null;
+              let lastBaseFeePerGas = null, maxFeePerGas = null, maxPriorityFeePerGas = null;
               if (block && block.baseFeePerGas) {
                   // We may want to compute this more accurately in the future,
                   // using the formula "check if the base fee is correct".
                   // See: https://eips.ethereum.org/EIPS/eip-1559
+                  lastBaseFeePerGas = block.baseFeePerGas;
                   maxPriorityFeePerGas = BigNumber.from("1500000000");
                   maxFeePerGas = block.baseFeePerGas.mul(2).add(maxPriorityFeePerGas);
               }
-              return { maxFeePerGas, maxPriorityFeePerGas, gasPrice };
+              return { lastBaseFeePerGas, maxFeePerGas, maxPriorityFeePerGas, gasPrice };
           });
       }
       // Alias for "on"
@@ -5701,7 +5707,7 @@
       }
   }
 
-  const version$a = "networks/5.6.3";
+  const version$a = "networks/5.7.1";
 
   const logger$d = new Logger(version$a);
   function isRenetworkable(value) {
@@ -5736,7 +5742,7 @@
               // network does not handle the Berlin hardfork, which is
               // live on these ones.
               // @TODO: This goes away once Pocket has upgraded their nodes
-              const skip = ["goerli", "ropsten", "rinkeby"];
+              const skip = ["goerli", "ropsten", "rinkeby", "sepolia"];
               try {
                   const provider = new providers.PocketProvider(network, options.pocket);
                   if (provider.network && skip.indexOf(provider.network.name) === -1) {
@@ -5753,7 +5759,11 @@
           }
           if (providers.AnkrProvider && options.ankr !== "-") {
               try {
-                  providerList.push(new providers.AnkrProvider(network, options.ankr));
+                  const skip = ["ropsten"];
+                  const provider = new providers.AnkrProvider(network, options.ankr);
+                  if (provider.network && skip.indexOf(provider.network.name) === -1) {
+                      providerList.push(provider);
+                  }
               }
               catch (error) { }
           }
@@ -5832,6 +5842,11 @@
           _defaultProvider: ethDefaultProvider("goerli")
       },
       kintsugi: { chainId: 1337702, name: "kintsugi" },
+      sepolia: {
+          chainId: 11155111,
+          name: "sepolia",
+          _defaultProvider: ethDefaultProvider("sepolia")
+      },
       // ETC (See: #351)
       classic: {
           chainId: 61,
@@ -5862,6 +5877,7 @@
       "optimism-goerli": { chainId: 420, name: "optimism-goerli" },
       arbitrum: { chainId: 42161, name: "arbitrum" },
       "arbitrum-rinkeby": { chainId: 421611, name: "arbitrum-rinkeby" },
+      "arbitrum-goerli": { chainId: 421613, name: "arbitrum-goerli" },
       bnb: { chainId: 56, name: "bnb" },
       bnbt: { chainId: 97, name: "bnbt" },
   };
@@ -6735,7 +6751,7 @@
       return '0x' + sha3$1.keccak_256(arrayify(data));
   }
 
-  const version$9 = "strings/5.6.1";
+  const version$9 = "strings/5.7.0";
 
   const logger$c = new Logger(version$9);
   ///////////////////////////////
@@ -6951,231 +6967,490 @@
       return getUtf8CodePoints(toUtf8Bytes(str, form));
   }
 
-  function bytes2(data) {
-      if ((data.length % 4) !== 0) {
-          throw new Error("bad data");
-      }
-      let result = [];
-      for (let i = 0; i < data.length; i += 4) {
-          result.push(parseInt(data.substring(i, i + 4), 16));
-      }
-      return result;
-  }
-  function createTable(data, func) {
-      if (!func) {
-          func = function (value) { return [parseInt(value, 16)]; };
-      }
-      let lo = 0;
-      let result = {};
-      data.split(",").forEach((pair) => {
-          let comps = pair.split(":");
-          lo += parseInt(comps[0], 16);
-          result[lo] = func(comps[1]);
-      });
-      return result;
-  }
-  function createRangeTable(data) {
-      let hi = 0;
-      return data.split(",").map((v) => {
-          let comps = v.split("-");
-          if (comps.length === 1) {
-              comps[1] = "0";
-          }
-          else if (comps[1] === "") {
-              comps[1] = "1";
-          }
-          let lo = hi + parseInt(comps[0], 16);
-          hi = parseInt(comps[1], 16);
-          return { l: lo, h: hi };
-      });
-  }
-  function matchMap(value, ranges) {
-      let lo = 0;
-      for (let i = 0; i < ranges.length; i++) {
-          let range = ranges[i];
-          lo += range.l;
-          if (value >= lo && value <= lo + range.h && ((value - lo) % (range.d || 1)) === 0) {
-              if (range.e && range.e.indexOf(value - lo) !== -1) {
-                  continue;
-              }
-              return range;
-          }
-      }
-      return null;
-  }
-  const Table_A_1_ranges = createRangeTable("221,13-1b,5f-,40-10,51-f,11-3,3-3,2-2,2-4,8,2,15,2d,28-8,88,48,27-,3-5,11-20,27-,8,28,3-5,12,18,b-a,1c-4,6-16,2-d,2-2,2,1b-4,17-9,8f-,10,f,1f-2,1c-34,33-14e,4,36-,13-,6-2,1a-f,4,9-,3-,17,8,2-2,5-,2,8-,3-,4-8,2-3,3,6-,16-6,2-,7-3,3-,17,8,3,3,3-,2,6-3,3-,4-a,5,2-6,10-b,4,8,2,4,17,8,3,6-,b,4,4-,2-e,2-4,b-10,4,9-,3-,17,8,3-,5-,9-2,3-,4-7,3-3,3,4-3,c-10,3,7-2,4,5-2,3,2,3-2,3-2,4-2,9,4-3,6-2,4,5-8,2-e,d-d,4,9,4,18,b,6-3,8,4,5-6,3-8,3-3,b-11,3,9,4,18,b,6-3,8,4,5-6,3-6,2,3-3,b-11,3,9,4,18,11-3,7-,4,5-8,2-7,3-3,b-11,3,13-2,19,a,2-,8-2,2-3,7,2,9-11,4-b,3b-3,1e-24,3,2-,3,2-,2-5,5,8,4,2,2-,3,e,4-,6,2,7-,b-,3-21,49,23-5,1c-3,9,25,10-,2-2f,23,6,3,8-2,5-5,1b-45,27-9,2a-,2-3,5b-4,45-4,53-5,8,40,2,5-,8,2,5-,28,2,5-,20,2,5-,8,2,5-,8,8,18,20,2,5-,8,28,14-5,1d-22,56-b,277-8,1e-2,52-e,e,8-a,18-8,15-b,e,4,3-b,5e-2,b-15,10,b-5,59-7,2b-555,9d-3,5b-5,17-,7-,27-,7-,9,2,2,2,20-,36,10,f-,7,14-,4,a,54-3,2-6,6-5,9-,1c-10,13-1d,1c-14,3c-,10-6,32-b,240-30,28-18,c-14,a0,115-,3,66-,b-76,5,5-,1d,24,2,5-2,2,8-,35-2,19,f-10,1d-3,311-37f,1b,5a-b,d7-19,d-3,41,57-,68-4,29-3,5f,29-37,2e-2,25-c,2c-2,4e-3,30,78-3,64-,20,19b7-49,51a7-59,48e-2,38-738,2ba5-5b,222f-,3c-94,8-b,6-4,1b,6,2,3,3,6d-20,16e-f,41-,37-7,2e-2,11-f,5-b,18-,b,14,5-3,6,88-,2,bf-2,7-,7-,7-,4-2,8,8-9,8-2ff,20,5-b,1c-b4,27-,27-cbb1,f7-9,28-2,b5-221,56,48,3-,2-,3-,5,d,2,5,3,42,5-,9,8,1d,5,6,2-2,8,153-3,123-3,33-27fd,a6da-5128,21f-5df,3-fffd,3-fffd,3-fffd,3-fffd,3-fffd,3-fffd,3-fffd,3-fffd,3-fffd,3-fffd,3-fffd,3,2-1d,61-ff7d");
-  // @TODO: Make this relative...
-  const Table_B_1_flags = "ad,34f,1806,180b,180c,180d,200b,200c,200d,2060,feff".split(",").map((v) => parseInt(v, 16));
-  const Table_B_2_ranges = [
-      { h: 25, s: 32, l: 65 },
-      { h: 30, s: 32, e: [23], l: 127 },
-      { h: 54, s: 1, e: [48], l: 64, d: 2 },
-      { h: 14, s: 1, l: 57, d: 2 },
-      { h: 44, s: 1, l: 17, d: 2 },
-      { h: 10, s: 1, e: [2, 6, 8], l: 61, d: 2 },
-      { h: 16, s: 1, l: 68, d: 2 },
-      { h: 84, s: 1, e: [18, 24, 66], l: 19, d: 2 },
-      { h: 26, s: 32, e: [17], l: 435 },
-      { h: 22, s: 1, l: 71, d: 2 },
-      { h: 15, s: 80, l: 40 },
-      { h: 31, s: 32, l: 16 },
-      { h: 32, s: 1, l: 80, d: 2 },
-      { h: 52, s: 1, l: 42, d: 2 },
-      { h: 12, s: 1, l: 55, d: 2 },
-      { h: 40, s: 1, e: [38], l: 15, d: 2 },
-      { h: 14, s: 1, l: 48, d: 2 },
-      { h: 37, s: 48, l: 49 },
-      { h: 148, s: 1, l: 6351, d: 2 },
-      { h: 88, s: 1, l: 160, d: 2 },
-      { h: 15, s: 16, l: 704 },
-      { h: 25, s: 26, l: 854 },
-      { h: 25, s: 32, l: 55915 },
-      { h: 37, s: 40, l: 1247 },
-      { h: 25, s: -119711, l: 53248 },
-      { h: 25, s: -119763, l: 52 },
-      { h: 25, s: -119815, l: 52 },
-      { h: 25, s: -119867, e: [1, 4, 5, 7, 8, 11, 12, 17], l: 52 },
-      { h: 25, s: -119919, l: 52 },
-      { h: 24, s: -119971, e: [2, 7, 8, 17], l: 52 },
-      { h: 24, s: -120023, e: [2, 7, 13, 15, 16, 17], l: 52 },
-      { h: 25, s: -120075, l: 52 },
-      { h: 25, s: -120127, l: 52 },
-      { h: 25, s: -120179, l: 52 },
-      { h: 25, s: -120231, l: 52 },
-      { h: 25, s: -120283, l: 52 },
-      { h: 25, s: -120335, l: 52 },
-      { h: 24, s: -119543, e: [17], l: 56 },
-      { h: 24, s: -119601, e: [17], l: 58 },
-      { h: 24, s: -119659, e: [17], l: 58 },
-      { h: 24, s: -119717, e: [17], l: 58 },
-      { h: 24, s: -119775, e: [17], l: 58 }
-  ];
-  const Table_B_2_lut_abs = createTable("b5:3bc,c3:ff,7:73,2:253,5:254,3:256,1:257,5:259,1:25b,3:260,1:263,2:269,1:268,5:26f,1:272,2:275,7:280,3:283,5:288,3:28a,1:28b,5:292,3f:195,1:1bf,29:19e,125:3b9,8b:3b2,1:3b8,1:3c5,3:3c6,1:3c0,1a:3ba,1:3c1,1:3c3,2:3b8,1:3b5,1bc9:3b9,1c:1f76,1:1f77,f:1f7a,1:1f7b,d:1f78,1:1f79,1:1f7c,1:1f7d,107:63,5:25b,4:68,1:68,1:68,3:69,1:69,1:6c,3:6e,4:70,1:71,1:72,1:72,1:72,7:7a,2:3c9,2:7a,2:6b,1:e5,1:62,1:63,3:65,1:66,2:6d,b:3b3,1:3c0,6:64,1b574:3b8,1a:3c3,20:3b8,1a:3c3,20:3b8,1a:3c3,20:3b8,1a:3c3,20:3b8,1a:3c3");
-  const Table_B_2_lut_rel = createTable("179:1,2:1,2:1,5:1,2:1,a:4f,a:1,8:1,2:1,2:1,3:1,5:1,3:1,4:1,2:1,3:1,4:1,8:2,1:1,2:2,1:1,2:2,27:2,195:26,2:25,1:25,1:25,2:40,2:3f,1:3f,33:1,11:-6,1:-9,1ac7:-3a,6d:-8,1:-8,1:-8,1:-8,1:-8,1:-8,1:-8,1:-8,9:-8,1:-8,1:-8,1:-8,1:-8,1:-8,b:-8,1:-8,1:-8,1:-8,1:-8,1:-8,1:-8,1:-8,9:-8,1:-8,1:-8,1:-8,1:-8,1:-8,1:-8,1:-8,9:-8,1:-8,1:-8,1:-8,1:-8,1:-8,c:-8,2:-8,2:-8,2:-8,9:-8,1:-8,1:-8,1:-8,1:-8,1:-8,1:-8,1:-8,49:-8,1:-8,1:-4a,1:-4a,d:-56,1:-56,1:-56,1:-56,d:-8,1:-8,f:-8,1:-8,3:-7");
-  const Table_B_2_complex = createTable("df:00730073,51:00690307,19:02BC006E,a7:006A030C,18a:002003B9,16:03B903080301,20:03C503080301,1d7:05650582,190f:00680331,1:00740308,1:0077030A,1:0079030A,1:006102BE,b6:03C50313,2:03C503130300,2:03C503130301,2:03C503130342,2a:1F0003B9,1:1F0103B9,1:1F0203B9,1:1F0303B9,1:1F0403B9,1:1F0503B9,1:1F0603B9,1:1F0703B9,1:1F0003B9,1:1F0103B9,1:1F0203B9,1:1F0303B9,1:1F0403B9,1:1F0503B9,1:1F0603B9,1:1F0703B9,1:1F2003B9,1:1F2103B9,1:1F2203B9,1:1F2303B9,1:1F2403B9,1:1F2503B9,1:1F2603B9,1:1F2703B9,1:1F2003B9,1:1F2103B9,1:1F2203B9,1:1F2303B9,1:1F2403B9,1:1F2503B9,1:1F2603B9,1:1F2703B9,1:1F6003B9,1:1F6103B9,1:1F6203B9,1:1F6303B9,1:1F6403B9,1:1F6503B9,1:1F6603B9,1:1F6703B9,1:1F6003B9,1:1F6103B9,1:1F6203B9,1:1F6303B9,1:1F6403B9,1:1F6503B9,1:1F6603B9,1:1F6703B9,3:1F7003B9,1:03B103B9,1:03AC03B9,2:03B10342,1:03B1034203B9,5:03B103B9,6:1F7403B9,1:03B703B9,1:03AE03B9,2:03B70342,1:03B7034203B9,5:03B703B9,6:03B903080300,1:03B903080301,3:03B90342,1:03B903080342,b:03C503080300,1:03C503080301,1:03C10313,2:03C50342,1:03C503080342,b:1F7C03B9,1:03C903B9,1:03CE03B9,2:03C90342,1:03C9034203B9,5:03C903B9,ac:00720073,5b:00B00063,6:00B00066,d:006E006F,a:0073006D,1:00740065006C,1:0074006D,124f:006800700061,2:00610075,2:006F0076,b:00700061,1:006E0061,1:03BC0061,1:006D0061,1:006B0061,1:006B0062,1:006D0062,1:00670062,3:00700066,1:006E0066,1:03BC0066,4:0068007A,1:006B0068007A,1:006D0068007A,1:00670068007A,1:00740068007A,15:00700061,1:006B00700061,1:006D00700061,1:006700700061,8:00700076,1:006E0076,1:03BC0076,1:006D0076,1:006B0076,1:006D0076,1:00700077,1:006E0077,1:03BC0077,1:006D0077,1:006B0077,1:006D0077,1:006B03C9,1:006D03C9,2:00620071,3:00632215006B0067,1:0063006F002E,1:00640062,1:00670079,2:00680070,2:006B006B,1:006B006D,9:00700068,2:00700070006D,1:00700072,2:00730076,1:00770062,c723:00660066,1:00660069,1:0066006C,1:006600660069,1:00660066006C,1:00730074,1:00730074,d:05740576,1:05740565,1:0574056B,1:057E0576,1:0574056D", bytes2);
-  const Table_C_ranges = createRangeTable("80-20,2a0-,39c,32,f71,18e,7f2-f,19-7,30-4,7-5,f81-b,5,a800-20ff,4d1-1f,110,fa-6,d174-7,2e84-,ffff-,ffff-,ffff-,ffff-,ffff-,ffff-,ffff-,ffff-,ffff-,ffff-,ffff-,ffff-,2,1f-5f,ff7f-20001");
-  function flatten(values) {
-      return values.reduce((accum, value) => {
-          value.forEach((value) => { accum.push(value); });
-          return accum;
-      }, []);
-  }
-  function _nameprepTableA1(codepoint) {
-      return !!matchMap(codepoint, Table_A_1_ranges);
-  }
-  function _nameprepTableB2(codepoint) {
-      let range = matchMap(codepoint, Table_B_2_ranges);
-      if (range) {
-          return [codepoint + range.s];
-      }
-      let codes = Table_B_2_lut_abs[codepoint];
-      if (codes) {
-          return codes;
-      }
-      let shift = Table_B_2_lut_rel[codepoint];
-      if (shift) {
-          return [codepoint + shift[0]];
-      }
-      let complex = Table_B_2_complex[codepoint];
-      if (complex) {
-          return complex;
-      }
-      return null;
-  }
-  function _nameprepTableC(codepoint) {
-      return !!matchMap(codepoint, Table_C_ranges);
-  }
-  function nameprep(value) {
-      // This allows platforms with incomplete normalize to bypass
-      // it for very basic names which the built-in toLowerCase
-      // will certainly handle correctly
-      if (value.match(/^[a-z0-9-]*$/i) && value.length <= 59) {
-          return value.toLowerCase();
-      }
-      // Get the code points (keeping the current normalization)
-      let codes = toUtf8CodePoints(value);
-      codes = flatten(codes.map((code) => {
-          // Substitute Table B.1 (Maps to Nothing)
-          if (Table_B_1_flags.indexOf(code) >= 0) {
-              return [];
-          }
-          if (code >= 0xfe00 && code <= 0xfe0f) {
-              return [];
-          }
-          // Substitute Table B.2 (Case Folding)
-          let codesTableB2 = _nameprepTableB2(code);
-          if (codesTableB2) {
-              return codesTableB2;
-          }
-          // No Substitution
-          return [code];
-      }));
-      // Normalize using form KC
-      codes = toUtf8CodePoints(_toUtf8String(codes), UnicodeNormalizationForm.NFKC);
-      // Prohibit Tables C.1.2, C.2.2, C.3, C.4, C.5, C.6, C.7, C.8, C.9
-      codes.forEach((code) => {
-          if (_nameprepTableC(code)) {
-              throw new Error("STRINGPREP_CONTAINS_PROHIBITED");
-          }
-      });
-      // Prohibit Unassigned Code Points (Table A.1)
-      codes.forEach((code) => {
-          if (_nameprepTableA1(code)) {
-              throw new Error("STRINGPREP_CONTAINS_UNASSIGNED");
-          }
-      });
-      // IDNA extras
-      let name = _toUtf8String(codes);
-      // IDNA: 4.2.3.1
-      if (name.substring(0, 1) === "-" || name.substring(2, 4) === "--" || name.substring(name.length - 1) === "-") {
-          throw new Error("invalid hyphen");
-      }
-      // IDNA: 4.2.4
-      if (name.length > 63) {
-          throw new Error("too long");
-      }
-      return name;
-  }
-
   function id(text) {
       return keccak256(toUtf8Bytes(text));
   }
 
-  const version$8 = "hash/5.6.1";
+  const version$8 = "hash/5.7.0";
+
+  /**
+   * MIT License
+   *
+   * Copyright (c) 2021 Andrew Raffensperger
+   *
+   * Permission is hereby granted, free of charge, to any person obtaining a copy
+   * of this software and associated documentation files (the "Software"), to deal
+   * in the Software without restriction, including without limitation the rights
+   * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   * copies of the Software, and to permit persons to whom the Software is
+   * furnished to do so, subject to the following conditions:
+   *
+   * The above copyright notice and this permission notice shall be included in all
+   * copies or substantial portions of the Software.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   * SOFTWARE.
+   *
+   * This is a near carbon-copy of the original source (link below) with the
+   * TypeScript typings added and a few tweaks to make it ES3-compatible.
+   *
+   * See: https://github.com/adraffy/ens-normalize.js
+   */
+  // https://github.com/behnammodi/polyfill/blob/master/array.polyfill.js
+  function flat(array, depth) {
+      if (depth == null) {
+          depth = 1;
+      }
+      const result = [];
+      const forEach = result.forEach;
+      const flatDeep = function (arr, depth) {
+          forEach.call(arr, function (val) {
+              if (depth > 0 && Array.isArray(val)) {
+                  flatDeep(val, depth - 1);
+              }
+              else {
+                  result.push(val);
+              }
+          });
+      };
+      flatDeep(array, depth);
+      return result;
+  }
+  function fromEntries(array) {
+      const result = {};
+      for (let i = 0; i < array.length; i++) {
+          const value = array[i];
+          result[value[0]] = value[1];
+      }
+      return result;
+  }
+  function decode_arithmetic(bytes) {
+      let pos = 0;
+      function u16() { return (bytes[pos++] << 8) | bytes[pos++]; }
+      // decode the frequency table
+      let symbol_count = u16();
+      let total = 1;
+      let acc = [0, 1]; // first symbol has frequency 1
+      for (let i = 1; i < symbol_count; i++) {
+          acc.push(total += u16());
+      }
+      // skip the sized-payload that the last 3 symbols index into
+      let skip = u16();
+      let pos_payload = pos;
+      pos += skip;
+      let read_width = 0;
+      let read_buffer = 0;
+      function read_bit() {
+          if (read_width == 0) {
+              // this will read beyond end of buffer
+              // but (undefined|0) => zero pad
+              read_buffer = (read_buffer << 8) | bytes[pos++];
+              read_width = 8;
+          }
+          return (read_buffer >> --read_width) & 1;
+      }
+      const N = 31;
+      const FULL = Math.pow(2, N);
+      const HALF = FULL >>> 1;
+      const QRTR = HALF >> 1;
+      const MASK = FULL - 1;
+      // fill register
+      let register = 0;
+      for (let i = 0; i < N; i++)
+          register = (register << 1) | read_bit();
+      let symbols = [];
+      let low = 0;
+      let range = FULL; // treat like a float
+      while (true) {
+          let value = Math.floor((((register - low + 1) * total) - 1) / range);
+          let start = 0;
+          let end = symbol_count;
+          while (end - start > 1) { // binary search
+              let mid = (start + end) >>> 1;
+              if (value < acc[mid]) {
+                  end = mid;
+              }
+              else {
+                  start = mid;
+              }
+          }
+          if (start == 0)
+              break; // first symbol is end mark
+          symbols.push(start);
+          let a = low + Math.floor(range * acc[start] / total);
+          let b = low + Math.floor(range * acc[start + 1] / total) - 1;
+          while (((a ^ b) & HALF) == 0) {
+              register = (register << 1) & MASK | read_bit();
+              a = (a << 1) & MASK;
+              b = (b << 1) & MASK | 1;
+          }
+          while (a & ~b & QRTR) {
+              register = (register & HALF) | ((register << 1) & (MASK >>> 1)) | read_bit();
+              a = (a << 1) ^ HALF;
+              b = ((b ^ HALF) << 1) | HALF | 1;
+          }
+          low = a;
+          range = 1 + b - a;
+      }
+      let offset = symbol_count - 4;
+      return symbols.map(x => {
+          switch (x - offset) {
+              case 3: return offset + 0x10100 + ((bytes[pos_payload++] << 16) | (bytes[pos_payload++] << 8) | bytes[pos_payload++]);
+              case 2: return offset + 0x100 + ((bytes[pos_payload++] << 8) | bytes[pos_payload++]);
+              case 1: return offset + bytes[pos_payload++];
+              default: return x - 1;
+          }
+      });
+  }
+  // returns an iterator which returns the next symbol
+  function read_payload(v) {
+      let pos = 0;
+      return () => v[pos++];
+  }
+  function read_compressed_payload(bytes) {
+      return read_payload(decode_arithmetic(bytes));
+  }
+  // eg. [0,1,2,3...] => [0,-1,1,-2,...]
+  function signed(i) {
+      return (i & 1) ? (~i >> 1) : (i >> 1);
+  }
+  function read_counts(n, next) {
+      let v = Array(n);
+      for (let i = 0; i < n; i++)
+          v[i] = 1 + next();
+      return v;
+  }
+  function read_ascending(n, next) {
+      let v = Array(n);
+      for (let i = 0, x = -1; i < n; i++)
+          v[i] = x += 1 + next();
+      return v;
+  }
+  function read_deltas(n, next) {
+      let v = Array(n);
+      for (let i = 0, x = 0; i < n; i++)
+          v[i] = x += signed(next());
+      return v;
+  }
+  function read_member_array(next, lookup) {
+      let v = read_ascending(next(), next);
+      let n = next();
+      let vX = read_ascending(n, next);
+      let vN = read_counts(n, next);
+      for (let i = 0; i < n; i++) {
+          for (let j = 0; j < vN[i]; j++) {
+              v.push(vX[i] + j);
+          }
+      }
+      return lookup ? v.map(x => lookup[x]) : v;
+  }
+  // returns array of 
+  // [x, ys] => single replacement rule
+  // [x, ys, n, dx, dx] => linear map
+  function read_mapped_map(next) {
+      let ret = [];
+      while (true) {
+          let w = next();
+          if (w == 0)
+              break;
+          ret.push(read_linear_table(w, next));
+      }
+      while (true) {
+          let w = next() - 1;
+          if (w < 0)
+              break;
+          ret.push(read_replacement_table(w, next));
+      }
+      return fromEntries(flat(ret));
+  }
+  function read_zero_terminated_array(next) {
+      let v = [];
+      while (true) {
+          let i = next();
+          if (i == 0)
+              break;
+          v.push(i);
+      }
+      return v;
+  }
+  function read_transposed(n, w, next) {
+      let m = Array(n).fill(undefined).map(() => []);
+      for (let i = 0; i < w; i++) {
+          read_deltas(n, next).forEach((x, j) => m[j].push(x));
+      }
+      return m;
+  }
+  function read_linear_table(w, next) {
+      let dx = 1 + next();
+      let dy = next();
+      let vN = read_zero_terminated_array(next);
+      let m = read_transposed(vN.length, 1 + w, next);
+      return flat(m.map((v, i) => {
+          const x = v[0], ys = v.slice(1);
+          //let [x, ...ys] = v;
+          //return Array(vN[i]).fill().map((_, j) => {
+          return Array(vN[i]).fill(undefined).map((_, j) => {
+              let j_dy = j * dy;
+              return [x + j * dx, ys.map(y => y + j_dy)];
+          });
+      }));
+  }
+  function read_replacement_table(w, next) {
+      let n = 1 + next();
+      let m = read_transposed(n, 1 + w, next);
+      return m.map(v => [v[0], v.slice(1)]);
+  }
+  function read_emoji_trie(next) {
+      let sorted = read_member_array(next).sort((a, b) => a - b);
+      return read();
+      function read() {
+          let branches = [];
+          while (true) {
+              let keys = read_member_array(next, sorted);
+              if (keys.length == 0)
+                  break;
+              branches.push({ set: new Set(keys), node: read() });
+          }
+          branches.sort((a, b) => b.set.size - a.set.size); // sort by likelihood
+          let temp = next();
+          let valid = temp % 3;
+          temp = (temp / 3) | 0;
+          let fe0f = !!(temp & 1);
+          temp >>= 1;
+          let save = temp == 1;
+          let check = temp == 2;
+          return { branches, valid, fe0f, save, check };
+      }
+  }
+
+  /**
+   * MIT License
+   *
+   * Copyright (c) 2021 Andrew Raffensperger
+   *
+   * Permission is hereby granted, free of charge, to any person obtaining a copy
+   * of this software and associated documentation files (the "Software"), to deal
+   * in the Software without restriction, including without limitation the rights
+   * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   * copies of the Software, and to permit persons to whom the Software is
+   * furnished to do so, subject to the following conditions:
+   *
+   * The above copyright notice and this permission notice shall be included in all
+   * copies or substantial portions of the Software.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   * SOFTWARE.
+   *
+   * This is a near carbon-copy of the original source (link below) with the
+   * TypeScript typings added and a few tweaks to make it ES3-compatible.
+   *
+   * See: https://github.com/adraffy/ens-normalize.js
+   */
+  function getData() {
+      return read_compressed_payload(decode$2('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'));
+  }
+
+  /**
+   * MIT License
+   *
+   * Copyright (c) 2021 Andrew Raffensperger
+   *
+   * Permission is hereby granted, free of charge, to any person obtaining a copy
+   * of this software and associated documentation files (the "Software"), to deal
+   * in the Software without restriction, including without limitation the rights
+   * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   * copies of the Software, and to permit persons to whom the Software is
+   * furnished to do so, subject to the following conditions:
+   *
+   * The above copyright notice and this permission notice shall be included in all
+   * copies or substantial portions of the Software.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   * SOFTWARE.
+   *
+   * This is a near carbon-copy of the original source (link below) with the
+   * TypeScript typings added and a few tweaks to make it ES3-compatible.
+   *
+   * See: https://github.com/adraffy/ens-normalize.js
+   */
+  const r$1 = getData();
+  // @TODO: This should be lazily loaded
+  const VALID = new Set(read_member_array(r$1));
+  const IGNORED = new Set(read_member_array(r$1));
+  const MAPPED = read_mapped_map(r$1);
+  const EMOJI_ROOT = read_emoji_trie(r$1);
+  //const NFC_CHECK = new Set(read_member_array(r, Array.from(VALID.values()).sort((a, b) => a - b)));
+  //const STOP = 0x2E;
+  const HYPHEN = 0x2D;
+  const UNDERSCORE = 0x5F;
+  function explode_cp(name) {
+      return toUtf8CodePoints(name);
+  }
+  function filter_fe0f(cps) {
+      return cps.filter(cp => cp != 0xFE0F);
+  }
+  function ens_normalize_post_check(name) {
+      for (let label of name.split('.')) {
+          let cps = explode_cp(label);
+          try {
+              for (let i = cps.lastIndexOf(UNDERSCORE) - 1; i >= 0; i--) {
+                  if (cps[i] !== UNDERSCORE) {
+                      throw new Error(`underscore only allowed at start`);
+                  }
+              }
+              if (cps.length >= 4 && cps.every(cp => cp < 0x80) && cps[2] === HYPHEN && cps[3] === HYPHEN) {
+                  throw new Error(`invalid label extension`);
+              }
+          }
+          catch (err) {
+              throw new Error(`Invalid label "${label}": ${err.message}`);
+          }
+      }
+      return name;
+  }
+  function ens_normalize(name) {
+      return ens_normalize_post_check(normalize(name, filter_fe0f));
+  }
+  function normalize(name, emoji_filter) {
+      let input = explode_cp(name).reverse(); // flip for pop
+      let output = [];
+      while (input.length) {
+          let emoji = consume_emoji_reversed(input);
+          if (emoji) {
+              output.push(...emoji_filter(emoji));
+              continue;
+          }
+          let cp = input.pop();
+          if (VALID.has(cp)) {
+              output.push(cp);
+              continue;
+          }
+          if (IGNORED.has(cp)) {
+              continue;
+          }
+          let cps = MAPPED[cp];
+          if (cps) {
+              output.push(...cps);
+              continue;
+          }
+          throw new Error(`Disallowed codepoint: 0x${cp.toString(16).toUpperCase()}`);
+      }
+      return ens_normalize_post_check(nfc(String.fromCodePoint(...output)));
+  }
+  function nfc(s) {
+      return s.normalize('NFC');
+  }
+  function consume_emoji_reversed(cps, eaten) {
+      var _a;
+      let node = EMOJI_ROOT;
+      let emoji;
+      let saved;
+      let stack = [];
+      let pos = cps.length;
+      if (eaten)
+          eaten.length = 0; // clear input buffer (if needed)
+      while (pos) {
+          let cp = cps[--pos];
+          node = (_a = node.branches.find(x => x.set.has(cp))) === null || _a === void 0 ? void 0 : _a.node;
+          if (!node)
+              break;
+          if (node.save) { // remember
+              saved = cp;
+          }
+          else if (node.check) { // check exclusion
+              if (cp === saved)
+                  break;
+          }
+          stack.push(cp);
+          if (node.fe0f) {
+              stack.push(0xFE0F);
+              if (pos > 0 && cps[pos - 1] == 0xFE0F)
+                  pos--; // consume optional FE0F
+          }
+          if (node.valid) { // this is a valid emoji (so far)
+              emoji = stack.slice(); // copy stack
+              if (node.valid == 2)
+                  emoji.splice(1, 1); // delete FE0F at position 1 (RGI ZWJ don't follow spec!)
+              if (eaten)
+                  eaten.push(...cps.slice(pos).reverse()); // copy input (if needed)
+              cps.length = pos; // truncate
+          }
+      }
+      return emoji;
+  }
 
   const logger$b = new Logger(version$8);
   const Zeros = new Uint8Array(32);
   Zeros.fill(0);
-  const Partition = new RegExp("^((.*)\\.)?([^.]+)$");
+  function checkComponent(comp) {
+      if (comp.length === 0) {
+          throw new Error("invalid ENS name; empty component");
+      }
+      return comp;
+  }
+  function ensNameSplit(name) {
+      const bytes = toUtf8Bytes(ens_normalize(name));
+      const comps = [];
+      if (name.length === 0) {
+          return comps;
+      }
+      let last = 0;
+      for (let i = 0; i < bytes.length; i++) {
+          const d = bytes[i];
+          // A separator (i.e. "."); copy this component
+          if (d === 0x2e) {
+              comps.push(checkComponent(bytes.slice(last, i)));
+              last = i + 1;
+          }
+      }
+      // There was a stray separator at the end of the name
+      if (last >= bytes.length) {
+          throw new Error("invalid ENS name; empty component");
+      }
+      comps.push(checkComponent(bytes.slice(last)));
+      return comps;
+  }
   function namehash(name) {
       /* istanbul ignore if */
       if (typeof (name) !== "string") {
           logger$b.throwArgumentError("invalid ENS name; not a string", "name", name);
       }
-      let current = name;
       let result = Zeros;
-      while (current.length) {
-          const partition = current.match(Partition);
-          if (partition == null || partition[2] === "") {
-              logger$b.throwArgumentError("invalid ENS address; missing component", "name", name);
-          }
-          const label = toUtf8Bytes(nameprep(partition[3]));
-          result = keccak256(concat([result, keccak256(label)]));
-          current = partition[2] || "";
+      const comps = ensNameSplit(name);
+      while (comps.length) {
+          result = keccak256(concat([result, keccak256(comps.pop())]));
       }
       return hexlify(result);
   }
   function dnsEncode(name) {
-      return hexlify(concat(name.split(".").map((comp) => {
-          // We jam in an _ prefix to fill in with the length later
-          // Note: Nameprep throws if the component is over 63 bytes
-          const bytes = toUtf8Bytes("_" + nameprep(comp));
+      return hexlify(concat(ensNameSplit(name).map((comp) => {
+          // DNS does not allow components over 63 bytes in length
+          if (comp.length > 63) {
+              throw new Error("invalid DNS encoded entry; length exceeds 63 bytes");
+          }
+          const bytes = new Uint8Array(comp.length + 1);
+          bytes.set(comp, 1);
           bytes[0] = bytes.length - 1;
           return bytes;
       }))) + "00";
   }
 
-  const version$7 = "rlp/5.6.1";
+  const version$7 = "rlp/5.7.0";
 
   const logger$a = new Logger(version$7);
   function arrayifyInteger(value) {
@@ -7292,7 +7567,7 @@
       return decoded.result;
   }
 
-  const version$6 = "address/5.6.1";
+  const version$6 = "address/5.7.0";
 
   const logger$9 = new Logger(version$6);
   function getChecksumAddress(address) {
@@ -9107,14 +9382,14 @@
 
   var hash = hash_1;
 
-  const version$5 = "sha2/5.6.1";
+  const version$5 = "sha2/5.7.0";
 
   new Logger(version$5);
   function sha256(data) {
       return "0x" + (hash.sha256().update(arrayify(data)).digest("hex"));
   }
 
-  const version$4 = "web/5.6.1";
+  const version$4 = "web/5.7.1";
 
   var __awaiter$4 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
       function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -9141,6 +9416,24 @@
               request.credentials = "same-origin"; // include, *same-origin, omit
               request.redirect = "follow"; // manual, *follow, error
               request.referrer = "client"; // no-referrer, *client
+          }
+          if (options.fetchOptions != null) {
+              const opts = options.fetchOptions;
+              if (opts.mode) {
+                  request.mode = (opts.mode);
+              }
+              if (opts.cache) {
+                  request.cache = (opts.cache);
+              }
+              if (opts.credentials) {
+                  request.credentials = (opts.credentials);
+              }
+              if (opts.redirect) {
+                  request.redirect = (opts.redirect);
+              }
+              if (opts.referrer) {
+                  request.referrer = opts.referrer;
+              }
           }
           const response = yield fetch(href, request);
           const body = yield response.arrayBuffer();
@@ -9197,6 +9490,11 @@
       }
       return value;
   }
+  function unpercent(value) {
+      return toUtf8Bytes(value.replace(/%([0-9a-f][0-9a-f])/gi, (all, code) => {
+          return String.fromCharCode(parseInt(code, 16));
+      }));
+  }
   // This API is still a work in progress; the future changes will likely be:
   // - ConnectionInfo => FetchDataRequest<T = any>
   // - FetchDataRequest.body? = string | Uint8Array | { contentType: string, data: string | Uint8Array }
@@ -9252,16 +9550,19 @@
           if (connection.skipFetchSetup != null) {
               options.skipFetchSetup = !!connection.skipFetchSetup;
           }
+          if (connection.fetchOptions != null) {
+              options.fetchOptions = shallowCopy(connection.fetchOptions);
+          }
       }
-      const reData = new RegExp("^data:([a-z0-9-]+/[a-z0-9-]+);base64,(.*)$", "i");
+      const reData = new RegExp("^data:([^;:]*)?(;base64)?,(.*)$", "i");
       const dataMatch = ((url) ? url.match(reData) : null);
       if (dataMatch) {
           try {
               const response = {
                   statusCode: 200,
                   statusMessage: "OK",
-                  headers: { "content-type": dataMatch[1] },
-                  body: decode$2(dataMatch[2])
+                  headers: { "content-type": (dataMatch[1] || "text/plain") },
+                  body: (dataMatch[2] ? decode$2(dataMatch[3]) : unpercent(dataMatch[3]))
               };
               let result = response.body;
               if (processFunc) {
@@ -9733,7 +10034,7 @@
     fromWords: fromWords
   };
 
-  const version$3 = "providers/5.6.8";
+  const version$3 = "providers/5.7.1";
 
   var bn = createCommonjsModule$1(function (module) {
   (function (module, exports) {
@@ -15512,7 +15813,7 @@
 
   var EC$1 = elliptic_1.ec;
 
-  const version$2 = "signing-key/5.6.2";
+  const version$2 = "signing-key/5.7.0";
 
   const logger$6 = new Logger(version$2);
   let _curve = null;
@@ -15590,7 +15891,7 @@
       return logger$6.throwArgumentError("invalid public or private key", "key", "[REDACTED]");
   }
 
-  const version$1 = "transactions/5.6.2";
+  const version$1 = "transactions/5.7.0";
 
   const logger$5 = new Logger(version$1);
   var TransactionTypes;
@@ -16057,8 +16358,13 @@
           if (blockTag === "earliest") {
               return "0x0";
           }
-          if (blockTag === "latest" || blockTag === "pending") {
-              return blockTag;
+          switch (blockTag) {
+              case "earliest": return "0x0";
+              case "latest":
+              case "pending":
+              case "safe":
+              case "finalized":
+                  return blockTag;
           }
           if (typeof (blockTag) === "number" || isHexString(blockTag)) {
               return hexValue(blockTag);
@@ -17143,16 +17449,26 @@
                           // We only allow a single getLogs to be in-flight at a time
                           if (!event._inflight) {
                               event._inflight = true;
-                              // Filter from the last known event; due to load-balancing
+                              // This is the first filter for this event, so we want to
+                              // restrict events to events that happened no earlier than now
+                              if (event._lastBlockNumber === -2) {
+                                  event._lastBlockNumber = blockNumber - 1;
+                              }
+                              // Filter from the last *known* event; due to load-balancing
                               // and some nodes returning updated block numbers before
                               // indexing events, a logs result with 0 entries cannot be
                               // trusted and we must retry a range which includes it again
                               const filter = event.filter;
                               filter.fromBlock = event._lastBlockNumber + 1;
                               filter.toBlock = blockNumber;
-                              // Prevent fitler ranges from growing too wild
-                              if (filter.toBlock - this._maxFilterBlockRange > filter.fromBlock) {
-                                  filter.fromBlock = filter.toBlock - this._maxFilterBlockRange;
+                              // Prevent fitler ranges from growing too wild, since it is quite
+                              // likely there just haven't been any events to move the lastBlockNumber.
+                              const minFromBlock = filter.toBlock - this._maxFilterBlockRange;
+                              if (minFromBlock > filter.fromBlock) {
+                                  filter.fromBlock = minFromBlock;
+                              }
+                              if (filter.fromBlock < 0) {
+                                  filter.fromBlock = 0;
                               }
                               const runner = this.getLogs(filter).then((logs) => {
                                   // Allow the next getLogs
@@ -18246,7 +18562,7 @@
       }
   }
 
-  const version = "abstract-signer/5.6.2";
+  const version = "abstract-signer/5.7.0";
 
   var __awaiter$1 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
       function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -18738,6 +19054,12 @@
               return this.provider.send("eth_sendTransaction", [hexTx]).then((hash) => {
                   return hash;
               }, (error) => {
+                  if (typeof (error.message) === "string" && error.message.match(/user denied/i)) {
+                      logger$1.throwError("user rejected transaction", Logger.errors.ACTION_REJECTED, {
+                          action: "sendTransaction",
+                          transaction: tx
+                      });
+                  }
                   return checkError("sendTransaction", error, hexTx);
               });
           });
@@ -18775,15 +19097,39 @@
           return __awaiter(this, void 0, void 0, function* () {
               const data = ((typeof (message) === "string") ? toUtf8Bytes(message) : message);
               const address = yield this.getAddress();
-              return yield this.provider.send("personal_sign", [hexlify(data), address.toLowerCase()]);
+              try {
+                  return yield this.provider.send("personal_sign", [hexlify(data), address.toLowerCase()]);
+              }
+              catch (error) {
+                  if (typeof (error.message) === "string" && error.message.match(/user denied/i)) {
+                      logger$1.throwError("user rejected signing", Logger.errors.ACTION_REJECTED, {
+                          action: "signMessage",
+                          from: address,
+                          messageData: message
+                      });
+                  }
+                  throw error;
+              }
           });
       }
       _legacySignMessage(message) {
           return __awaiter(this, void 0, void 0, function* () {
               const data = ((typeof (message) === "string") ? toUtf8Bytes(message) : message);
               const address = yield this.getAddress();
-              // https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign
-              return yield this.provider.send("eth_sign", [address.toLowerCase(), hexlify(data)]);
+              try {
+                  // https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign
+                  return yield this.provider.send("eth_sign", [address.toLowerCase(), hexlify(data)]);
+              }
+              catch (error) {
+                  if (typeof (error.message) === "string" && error.message.match(/user denied/i)) {
+                      logger$1.throwError("user rejected signing", Logger.errors.ACTION_REJECTED, {
+                          action: "_legacySignMessage",
+                          from: address,
+                          messageData: message
+                      });
+                  }
+                  throw error;
+              }
           });
       }
       _signTypedData(domain, types, value) {
@@ -18793,10 +19139,22 @@
                   return this.provider.resolveName(name);
               });
               const address = yield this.getAddress();
-              return yield this.provider.send("eth_signTypedData_v4", [
-                  address.toLowerCase(),
-                  JSON.stringify(TypedDataEncoder.getPayload(populated.domain, types, populated.value))
-              ]);
+              try {
+                  return yield this.provider.send("eth_signTypedData_v4", [
+                      address.toLowerCase(),
+                      JSON.stringify(TypedDataEncoder.getPayload(populated.domain, types, populated.value))
+                  ]);
+              }
+              catch (error) {
+                  if (typeof (error.message) === "string" && error.message.match(/user denied/i)) {
+                      logger$1.throwError("user rejected signing", Logger.errors.ACTION_REJECTED, {
+                          action: "_signTypedData",
+                          from: address,
+                          messageData: { domain: populated.domain, types, value: populated.value }
+                      });
+                  }
+                  throw error;
+              }
           });
       }
       unlock(password) {
@@ -19575,7 +19933,7 @@
   exports.getCurrentBlock = getCurrentBlock;
   exports.increaseBlock = increaseBlock;
   exports.mock = mock;
-  exports.normalize = normalize;
+  exports.normalize = normalize$1;
   exports.replace = replace_evm;
   exports.resetCurrentBlock = resetCurrentBlock;
   exports.resetMocks = resetMocks;
