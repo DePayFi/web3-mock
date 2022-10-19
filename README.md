@@ -220,6 +220,7 @@ This library supports the following blockchains:
 - [BNB Smart Chain](https://www.binance.org/smartChain)
 - [Polygon](https://polygon.technology)
 - [Solana](https://solana.com)
+- [Velas](https://velas.com)
 
 This library supports the all crypto wallets that inject window.ethereum or window.solana like:
 
