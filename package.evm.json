@@ -1,10 +1,10 @@
 {
   "name": "@depay/web3-mock-evm",
   "moduleName": "Web3Mock",
-  "version": "13.22.2",
+  "version": "13.22.3",
   "description": "JavaScript library to mock web3 responses either by emulating web3 wallets or web3 RPC requests.",
-  "main": "./dist/evm/umd/index.js",
-  "module": "./dist/evm/esm/index.js",
+  "main": "./dist/evm/umd/index.evm.js",
+  "module": "./dist/evm/esm/index.evm.js",
   "files": [
     "dist/evm"
   ],
