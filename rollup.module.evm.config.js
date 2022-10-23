@@ -13,13 +13,13 @@ export default {
     {
       format: 'es',
       globals: globals,
-      file: 'dist/esm/index.evm.js'
+      file: 'dist/evm/esm/index.evm.js'
     },
     {
       format: 'umd',
       name: pkg.moduleName,
       globals: globals,
-      file: 'dist/umd/index.evm.js'
+      file: 'dist/evm/umd/index.evm.js'
     },
   ],
   external: [
