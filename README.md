@@ -232,10 +232,10 @@ This library supports the all crypto wallets that inject window.ethereum or wind
 
 ## Platform specific packaging
 
-In case you want to use and package only specific platforms, use platform specific entrypoints:
+In case you want to use and package only specific platforms, use platform specific packages:
 
 ```javascript
-import { mock } from '@depay/web3-mock/dist/umd/index.evm'
+import { mock } from '@depay/web3-mock-evm'
 ```
 
 ## Functionalities
