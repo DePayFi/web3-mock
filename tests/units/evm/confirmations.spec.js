@@ -23,13 +23,13 @@ describe('mock evm transaction confirmations', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.providers.Web3Provider(global.ethereum)
 
-        let signer = provider.getSigner();
+        let signer = provider.getSigner()
 
-        let waitedFor1Confirmation;
-        let sentTransaction;
-        let transactionReceipt;
+        let waitedFor1Confirmation
+        let sentTransaction
+        let transactionReceipt
 
         await signer.sendTransaction({
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
@@ -52,7 +52,7 @@ describe('mock evm transaction confirmations', ()=> {
 
         increaseBlock(12)
 
-        let waitedFor12Confirmations;
+        let waitedFor12Confirmations
         await sentTransaction.wait(12).then(function(receipt){
           transactionReceipt = receipt
           waitedFor12Confirmations = true
@@ -72,13 +72,13 @@ describe('mock evm transaction confirmations', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.providers.Web3Provider(global.ethereum)
 
-        let signer = provider.getSigner();
+        let signer = provider.getSigner()
 
-        let waitedFor1Confirmation;
-        let sentTransaction;
-        let transactionReceipt;
+        let waitedFor1Confirmation
+        let sentTransaction
+        let transactionReceipt
 
         await signer.sendTransaction({
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
@@ -92,6 +92,35 @@ describe('mock evm transaction confirmations', ()=> {
         expect(await provider.getBlockNumber()).toEqual(blockBefore+1)
       })
 
+      it('increases transaction count for this address', async ()=> {
+        
+        let mockedTransaction = mock({
+          blockchain,
+          transaction: {
+            to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+            value: '1000000000000000000'
+          }
+        })
+
+        let provider = new ethers.providers.Web3Provider(global.ethereum)
+
+        let signer = provider.getSigner()
+
+        let sentTransaction
+
+        await signer.sendTransaction({
+          to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
+          value: ethers.utils.parseEther("1")
+        }).then(async function(transaction){
+          sentTransaction = transaction
+        })
+
+        let blockBefore = await provider.getBlockNumber()    
+        confirm(mockedTransaction)
+
+        let transactionCount = await provider.getTransactionCount(accounts[0])
+        expect(transactionCount).toEqual(1)
+      })
     })
   })
 })

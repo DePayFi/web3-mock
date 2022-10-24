@@ -14,6 +14,128 @@
     throw(msg)
   };
 
+  let normalize$1 = function (input) {
+    if (input instanceof Array) {
+      return input.map((element) => normalize$1(element))
+    } else if (typeof input === 'undefined') {
+      return input
+    } else if (typeof input === 'object' && input._isBigNumber) {
+      return input.toString()
+    } else {
+      if (typeof input === 'object') {
+        return JSON.stringify(input)
+      } else if (input.toString) {
+        return input.toString().toLowerCase()
+      } else if (typeof input === 'string' && input.match('0x')) {
+        return input.toLowerCase()
+      } else {
+        return input
+      }
+    }
+  };
+
+  let anything = '__ANYTHING__';
+
+  let fillMockParamsWithAnything = ({ contractArguments, mockParams }) => {
+    if (typeof mockParams === 'object' && !Array.isArray(mockParams) && !mockParams._isBigNumber) {
+      let filledMockParams = {};
+      Object.keys(mockParams).forEach((key) => {
+        filledMockParams[key] = fillMockParamsWithAnything({
+          contractArguments: contractArguments[key],
+          mockParams: mockParams[key],
+        });
+      });
+      return filledMockParams
+    } else if (Array.isArray(mockParams)) {
+      return mockParams.map((element, index) => {
+        return fillMockParamsWithAnything({
+          contractArguments: contractArguments[index],
+          mockParams: element,
+        })
+      })
+    } else {
+      if (mockParams === anything) {
+        return normalize$1(contractArguments)
+      } else {
+        return mockParams
+      }
+    }
+  };
+
+  let anythingDeepMatch = ({ contractArguments, mockParams }) => {
+    let filledMockParams = fillMockParamsWithAnything({ contractArguments, mockParams });
+    return Object.keys(filledMockParams).every((key) => {
+      return (
+        JSON.stringify(normalize$1(filledMockParams[key])) ==
+        JSON.stringify(normalize$1(contractArguments[key]))
+      )
+    })
+  };
+
+  let anythingMatch = ({ contractArguments, mockParams }) => {
+    if (
+      mockParams === anything &&
+      typeof contractArguments !== 'undefined' &&
+      contractArguments.length > 0
+    ) {
+      return true
+    } else if (!JSON.stringify(mockParams).match(anything)) {
+      return false
+    } else if (Array.isArray(mockParams) && anythingDeepMatch({ contractArguments, mockParams })) {
+      return true
+    }
+
+    return false
+  };
+
+  function _optionalChain$f(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  let getContract = ({ address, api, provider }) => {
+    return new ethers.ethers.Contract(address, api, provider)
+  };
+
+  let getContractFunction = ({ data, address, api, provider }) => {
+    let contract = getContract({ address, api, provider });
+    let methodSelector = data.substring(0, 10);
+    try {
+      return contract.interface.getFunction(methodSelector)
+    } catch (error) {
+      if (error.reason == 'no matching function') {
+        raise('Web3Mock: method not found in mocked api!');
+      } else {
+        raise(error);
+      }
+    }
+  };
+
+  let getContractArguments = ({ params, api, provider }) => {
+    let data = params.data;
+    let address = params.to;
+    let contract = getContract({ address, api, provider });
+    let contractFunction = getContractFunction({ data, address, api, provider });
+    return contract.interface.decodeFunctionData(contractFunction, data)
+  };
+
+  let encode$3 = ({ result, params, api, provider }) => {
+    let address = params.to;
+    let data = params.data;
+    let contract = getContract({ address, api, provider });
+    let contractFunction = getContractFunction({ data, address, api, provider });
+    let encodedResult;
+    if(_optionalChain$f([contractFunction, 'optionalAccess', _ => _.outputs]) && contractFunction.outputs.length == 1) {
+      encodedResult = [result];
+    } else {
+      encodedResult = result;
+    }
+    return contract.interface.encodeFunctionResult(contractFunction.name, encodedResult)
+  };
+
+  function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let getWindow = (configuration) => {
+    if (_optionalChain$e([configuration, 'optionalAccess', _ => _.window])) return configuration.window
+    if (typeof global == 'object') return global
+    if (typeof cy == 'object') return cy.window().specWindow.window
+    if (typeof window == 'object') return window
+  };
+
   let currentBlock;
 
   let blockData = {};
@@ -40,18 +162,6 @@
 
   let resetBlockData = ()=> {
     blockData = {};
-  };
-
-  let confirm = (transaction) => {
-    transaction._confirmedAtBlock = getCurrentBlock();
-    return transaction
-  };
-
-  function _optionalChain$f(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let getWindow = (configuration) => {
-    if (_optionalChain$f([configuration, 'optionalAccess', _ => _.window])) return configuration.window
-    if (typeof global == 'object') return global
-    if (typeof cy == 'object') return cy.window().specWindow.window
-    if (typeof window == 'object') return window
   };
 
   let required = [];
@@ -110,13 +220,214 @@
 
   resetMocks();
 
+  function _optionalChain$d(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  let mockIsNotAnObject = (mock) => {
+    return typeof mock !== 'object'
+  };
+
+  let mockHasWrongType = (mock, type) => {
+    return mock[type] == undefined
+  };
+
+  let mockHasWrongBlockchain = (mock, blockchain) => {
+    if(blockchain == undefined) { return false }
+    return mock.blockchain != blockchain
+  };
+
+  let mockHasWrongProvider = (mock, provider) => {
+    if(mock.provider == undefined) { return false }
+    return mock.provider != provider
+  };
+
+  let mockHasWrongTransactionData = (mock, type, params) => {
+    return (
+      (mock[type].to && normalize$1(params.to) !== normalize$1(mock[type].to)) ||
+      (mock[type].from && normalize$1(params.from) !== normalize$1(mock[type].from)) ||
+      (mock[type].value &&
+        ethers.ethers.BigNumber.from(params.value).toString() !== normalize$1(mock[type].value))
+    )
+  };
+
+  let mockHasWrongBalanceData = (mock, type, params) => {
+    return mock[type].for && normalize$1(params.address) !== normalize$1(mock[type].for)
+  };
+
+  let mockHasWrongToAddress = (mock, type, params) => {
+    return normalize$1(mock[type].to) !== normalize$1(_optionalChain$d([params, 'optionalAccess', _ => _.to]))
+  };
+
+  let mockHasWrongForAddress = (mock, type, params) =>{
+    if(mock[type].for == null) { return false }
+    return normalize$1(mock[type].for) !== normalize$1(_optionalChain$d([params, 'optionalAccess', _2 => _2.address]))
+  };
+
+  let mockDataDoesNotMatchSingleArgument = (mock, type, contractArguments) => {
+    return (
+      Array.isArray(mock[type].params) == false &&
+      contractArguments.length == 1 &&
+      (
+        normalize$1(mock[type].params) != normalize$1(contractArguments[0]) && 
+        normalize$1(Object.values(mock[type].params)[0]) != normalize$1(contractArguments[0])
+      ) &&
+      !anythingMatch({ contractArguments, mockParams: mock[type].params })
+    )
+  };
+
+  let mockDataDoesNotMatchArrayArgument = (mock, type, contractArguments) => {
+    return (
+      Array.isArray(mock[type].params) &&
+      JSON.stringify(contractArguments.map((argument) => normalize$1(argument))) !==
+        JSON.stringify(mock[type].params.map((argument) => normalize$1(argument))) &&
+      !anythingMatch({ contractArguments, mockParams: mock[type].params })
+    )
+  };
+
+  let mockedArgumentsDoMatch = (mock, type, contractArguments) => {
+    if (mock[type].params == undefined) {
+      return true
+    }
+    if (mock[type].params == anything) {
+      return true
+    }
+
+    let isDeepAnythingMatch = anythingDeepMatch({ contractArguments, mockParams: mock[type].params });
+
+    return Object.keys(mock[type].params).every((key) => {
+      if (mock[type].params && mock[type].params[key]) {
+        return (
+          JSON.stringify(normalize$1(mock[type].params[key])) ==
+            JSON.stringify(normalize$1(contractArguments[key])) || isDeepAnythingMatch
+        )
+      } else {
+        return true
+      }
+    })
+  };
+
+  let mockDataDoesNotMatchObjectArugment = (mock, type, contractArguments) => {
+    return (
+      Array.isArray(mock[type].params) == false &&
+      normalize$1(mock[type].params) != normalize$1(contractArguments[0]) &&
+      !mockedArgumentsDoMatch(mock, type, contractArguments) &&
+      !anythingMatch({ contractArguments, mockParams: mock[type].params })
+    )
+  };
+
+  let mockHasWrongBlock = (mock, block) => {
+    if((typeof block == 'undefined' || block == 'latest') && typeof mock.block == 'undefined'){ return false }
+    if(typeof mock.block == 'undefined') { return true }
+    return ethers.ethers.utils.hexValue(mock.block) != block
+  };
+
+  let mockHasWrongData = (mock, type, params, provider) => {
+    if (_optionalChain$d([mock, 'access', _3 => _3[type], 'optionalAccess', _4 => _4.api]) == undefined) {
+      return
+    }
+
+    let api = mock[type].api;
+    let contractFunction = getContractFunction({
+      data: params.data,
+      address: params.to,
+      api,
+      provider,
+    });
+
+    if (mock[type].method !== contractFunction.name) {
+      return true
+    }
+
+    let contractArguments = getContractArguments({ params, api, provider });
+
+    if (mockDataDoesNotMatchSingleArgument(mock, type, contractArguments)) {
+      return true
+    }
+    if (mockDataDoesNotMatchArrayArgument(mock, type, contractArguments)) {
+      return true
+    }
+    if (mockDataDoesNotMatchObjectArugment(mock, type, contractArguments)) {
+      return true
+    }
+  };
+
+  let mockHasWrongNetworkAction = (mock, type, params) => {
+    if(type != 'network') { return false }
+    return Object.keys(mock.network)[0] != Object.keys(params)[0]
+  };
+
+  let findMock = ({ type, blockchain, params, block, provider }) => {
+    return mocks.find((mock) => {
+      if (mockIsNotAnObject(mock)) {
+        return
+      }
+      if (mockHasWrongBlockchain(mock, blockchain)) {
+        return
+      }
+      if (mockHasWrongProvider(mock, provider)) {
+        return
+      }
+      if (mockHasWrongType(mock, type)) {
+        return
+      }
+      if (mockHasWrongTransactionData(mock, type, params)) {
+        return
+      }
+      if (mockHasWrongBalanceData(mock, type, params)) {
+        return
+      }
+      if (mockHasWrongToAddress(mock, type, params)) {
+        return
+      }
+      if (mockHasWrongForAddress(mock, type, params)) {
+        return
+      }
+      if (mockHasWrongData(mock, type, params, provider)) {
+        return
+      }
+      if (mockHasWrongBlock(mock, block)) {
+        return
+      }
+      if (mockHasWrongNetworkAction(mock, type, params)) {
+        return
+      }
+
+      return mock
+    })
+  };
+
+  let findAnyMockForThisAddress = ({ type, params }) => {
+    return mocks.find((mock) => {
+      if (mock[type] === undefined) {
+        return
+      }
+      if (normalize$1(_optionalChain$d([mock, 'access', _5 => _5[type], 'optionalAccess', _6 => _6.to])) !== normalize$1(params.to)) {
+        return
+      }
+      return mock
+    })
+  };
+
+  let findMockByTransactionHash = (hash) => {
+    return mocks.find((mock) => {
+      return _optionalChain$d([mock, 'optionalAccess', _7 => _7.transaction, 'optionalAccess', _8 => _8._id]) == hash && (
+        _optionalChain$d([mock, 'optionalAccess', _9 => _9.transaction, 'optionalAccess', _10 => _10._confirmed]) || _optionalChain$d([mock, 'optionalAccess', _11 => _11.transaction, 'optionalAccess', _12 => _12._failed])
+      )
+    })
+  };
+
+  let confirm = (transaction) => {
+    let mock = findMockByTransactionHash(transaction._id);
+    transaction._confirmedAtBlock = getCurrentBlock();
+    if(mock && mock._from) { increaseTransactionCount(mock._from); }
+    return transaction
+  };
+
   let supported = ['ethereum', 'bsc', 'polygon', 'velas'];
   supported.evm = ['ethereum', 'bsc', 'polygon', 'velas'];
   supported.solana = [];
 
-  function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   var confirm_evm = (mock) => {
-    if (_optionalChain$e([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
+    if (_optionalChain$c([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
       mock.transaction._confirmed = true;
       if(supported.evm.includes(mock.blockchain)) {
         confirm(mock.transaction);
@@ -206,9 +517,9 @@
     return transaction
   };
 
-  function _optionalChain$d(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+  function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   var fail_evm = (mock, reason) => {
-    if (_optionalChain$d([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
+    if (_optionalChain$b([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
       mock.transaction._failed = true;
       mock.transaction._confirmed = false;
       if(supported.evm.includes(mock.blockchain)) {
@@ -245,315 +556,6 @@
         events$2[eventName].splice(index, 1);
       }
     }
-  };
-
-  let normalize$1 = function (input) {
-    if (input instanceof Array) {
-      return input.map((element) => normalize$1(element))
-    } else if (typeof input === 'undefined') {
-      return input
-    } else if (typeof input === 'object' && input._isBigNumber) {
-      return input.toString()
-    } else {
-      if (typeof input === 'object') {
-        return JSON.stringify(input)
-      } else if (input.toString) {
-        return input.toString().toLowerCase()
-      } else if (typeof input === 'string' && input.match('0x')) {
-        return input.toLowerCase()
-      } else {
-        return input
-      }
-    }
-  };
-
-  let anything = '__ANYTHING__';
-
-  let fillMockParamsWithAnything = ({ contractArguments, mockParams }) => {
-    if (typeof mockParams === 'object' && !Array.isArray(mockParams) && !mockParams._isBigNumber) {
-      let filledMockParams = {};
-      Object.keys(mockParams).forEach((key) => {
-        filledMockParams[key] = fillMockParamsWithAnything({
-          contractArguments: contractArguments[key],
-          mockParams: mockParams[key],
-        });
-      });
-      return filledMockParams
-    } else if (Array.isArray(mockParams)) {
-      return mockParams.map((element, index) => {
-        return fillMockParamsWithAnything({
-          contractArguments: contractArguments[index],
-          mockParams: element,
-        })
-      })
-    } else {
-      if (mockParams === anything) {
-        return normalize$1(contractArguments)
-      } else {
-        return mockParams
-      }
-    }
-  };
-
-  let anythingDeepMatch = ({ contractArguments, mockParams }) => {
-    let filledMockParams = fillMockParamsWithAnything({ contractArguments, mockParams });
-    return Object.keys(filledMockParams).every((key) => {
-      return (
-        JSON.stringify(normalize$1(filledMockParams[key])) ==
-        JSON.stringify(normalize$1(contractArguments[key]))
-      )
-    })
-  };
-
-  let anythingMatch = ({ contractArguments, mockParams }) => {
-    if (
-      mockParams === anything &&
-      typeof contractArguments !== 'undefined' &&
-      contractArguments.length > 0
-    ) {
-      return true
-    } else if (!JSON.stringify(mockParams).match(anything)) {
-      return false
-    } else if (Array.isArray(mockParams) && anythingDeepMatch({ contractArguments, mockParams })) {
-      return true
-    }
-
-    return false
-  };
-
-  function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-  let getContract = ({ address, api, provider }) => {
-    return new ethers.ethers.Contract(address, api, provider)
-  };
-
-  let getContractFunction = ({ data, address, api, provider }) => {
-    let contract = getContract({ address, api, provider });
-    let methodSelector = data.substring(0, 10);
-    try {
-      return contract.interface.getFunction(methodSelector)
-    } catch (error) {
-      if (error.reason == 'no matching function') {
-        raise('Web3Mock: method not found in mocked api!');
-      } else {
-        raise(error);
-      }
-    }
-  };
-
-  let getContractArguments = ({ params, api, provider }) => {
-    let data = params.data;
-    let address = params.to;
-    let contract = getContract({ address, api, provider });
-    let contractFunction = getContractFunction({ data, address, api, provider });
-    return contract.interface.decodeFunctionData(contractFunction, data)
-  };
-
-  let encode$3 = ({ result, params, api, provider }) => {
-    let address = params.to;
-    let data = params.data;
-    let contract = getContract({ address, api, provider });
-    let contractFunction = getContractFunction({ data, address, api, provider });
-    let encodedResult;
-    if(_optionalChain$c([contractFunction, 'optionalAccess', _ => _.outputs]) && contractFunction.outputs.length == 1) {
-      encodedResult = [result];
-    } else {
-      encodedResult = result;
-    }
-    return contract.interface.encodeFunctionResult(contractFunction.name, encodedResult)
-  };
-
-  function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-  let mockIsNotAnObject = (mock) => {
-    return typeof mock !== 'object'
-  };
-
-  let mockHasWrongType = (mock, type) => {
-    return mock[type] == undefined
-  };
-
-  let mockHasWrongBlockchain = (mock, blockchain) => {
-    if(blockchain == undefined) { return false }
-    return mock.blockchain != blockchain
-  };
-
-  let mockHasWrongProvider = (mock, provider) => {
-    if(mock.provider == undefined) { return false }
-    return mock.provider != provider
-  };
-
-  let mockHasWrongTransactionData = (mock, type, params) => {
-    return (
-      (mock[type].to && normalize$1(params.to) !== normalize$1(mock[type].to)) ||
-      (mock[type].from && normalize$1(params.from) !== normalize$1(mock[type].from)) ||
-      (mock[type].value &&
-        ethers.ethers.BigNumber.from(params.value).toString() !== normalize$1(mock[type].value))
-    )
-  };
-
-  let mockHasWrongBalanceData = (mock, type, params) => {
-    return mock[type].for && normalize$1(params.address) !== normalize$1(mock[type].for)
-  };
-
-  let mockHasWrongToAddress = (mock, type, params) => {
-    return normalize$1(mock[type].to) !== normalize$1(_optionalChain$b([params, 'optionalAccess', _ => _.to]))
-  };
-
-  let mockHasWrongForAddress = (mock, type, params) =>{
-    if(mock[type].for == null) { return false }
-    return normalize$1(mock[type].for) !== normalize$1(_optionalChain$b([params, 'optionalAccess', _2 => _2.address]))
-  };
-
-  let mockDataDoesNotMatchSingleArgument = (mock, type, contractArguments) => {
-    return (
-      Array.isArray(mock[type].params) == false &&
-      contractArguments.length == 1 &&
-      (
-        normalize$1(mock[type].params) != normalize$1(contractArguments[0]) && 
-        normalize$1(Object.values(mock[type].params)[0]) != normalize$1(contractArguments[0])
-      ) &&
-      !anythingMatch({ contractArguments, mockParams: mock[type].params })
-    )
-  };
-
-  let mockDataDoesNotMatchArrayArgument = (mock, type, contractArguments) => {
-    return (
-      Array.isArray(mock[type].params) &&
-      JSON.stringify(contractArguments.map((argument) => normalize$1(argument))) !==
-        JSON.stringify(mock[type].params.map((argument) => normalize$1(argument))) &&
-      !anythingMatch({ contractArguments, mockParams: mock[type].params })
-    )
-  };
-
-  let mockedArgumentsDoMatch = (mock, type, contractArguments) => {
-    if (mock[type].params == undefined) {
-      return true
-    }
-    if (mock[type].params == anything) {
-      return true
-    }
-
-    let isDeepAnythingMatch = anythingDeepMatch({ contractArguments, mockParams: mock[type].params });
-
-    return Object.keys(mock[type].params).every((key) => {
-      if (mock[type].params && mock[type].params[key]) {
-        return (
-          JSON.stringify(normalize$1(mock[type].params[key])) ==
-            JSON.stringify(normalize$1(contractArguments[key])) || isDeepAnythingMatch
-        )
-      } else {
-        return true
-      }
-    })
-  };
-
-  let mockDataDoesNotMatchObjectArugment = (mock, type, contractArguments) => {
-    return (
-      Array.isArray(mock[type].params) == false &&
-      normalize$1(mock[type].params) != normalize$1(contractArguments[0]) &&
-      !mockedArgumentsDoMatch(mock, type, contractArguments) &&
-      !anythingMatch({ contractArguments, mockParams: mock[type].params })
-    )
-  };
-
-  let mockHasWrongBlock = (mock, block) => {
-    if((typeof block == 'undefined' || block == 'latest') && typeof mock.block == 'undefined'){ return false }
-    if(typeof mock.block == 'undefined') { return true }
-    return ethers.ethers.utils.hexValue(mock.block) != block
-  };
-
-  let mockHasWrongData = (mock, type, params, provider) => {
-    if (_optionalChain$b([mock, 'access', _3 => _3[type], 'optionalAccess', _4 => _4.api]) == undefined) {
-      return
-    }
-
-    let api = mock[type].api;
-    let contractFunction = getContractFunction({
-      data: params.data,
-      address: params.to,
-      api,
-      provider,
-    });
-
-    if (mock[type].method !== contractFunction.name) {
-      return true
-    }
-
-    let contractArguments = getContractArguments({ params, api, provider });
-
-    if (mockDataDoesNotMatchSingleArgument(mock, type, contractArguments)) {
-      return true
-    }
-    if (mockDataDoesNotMatchArrayArgument(mock, type, contractArguments)) {
-      return true
-    }
-    if (mockDataDoesNotMatchObjectArugment(mock, type, contractArguments)) {
-      return true
-    }
-  };
-
-  let mockHasWrongNetworkAction = (mock, type, params) => {
-    if(type != 'network') { return false }
-    return Object.keys(mock.network)[0] != Object.keys(params)[0]
-  };
-
-  let findMock = ({ type, blockchain, params, block, provider }) => {
-    return mocks.find((mock) => {
-      if (mockIsNotAnObject(mock)) {
-        return
-      }
-      if (mockHasWrongBlockchain(mock, blockchain)) {
-        return
-      }
-      if (mockHasWrongProvider(mock, provider)) {
-        return
-      }
-      if (mockHasWrongType(mock, type)) {
-        return
-      }
-      if (mockHasWrongTransactionData(mock, type, params)) {
-        return
-      }
-      if (mockHasWrongBalanceData(mock, type, params)) {
-        return
-      }
-      if (mockHasWrongToAddress(mock, type, params)) {
-        return
-      }
-      if (mockHasWrongForAddress(mock, type, params)) {
-        return
-      }
-      if (mockHasWrongData(mock, type, params, provider)) {
-        return
-      }
-      if (mockHasWrongBlock(mock, block)) {
-        return
-      }
-      if (mockHasWrongNetworkAction(mock, type, params)) {
-        return
-      }
-
-      return mock
-    })
-  };
-
-  let findAnyMockForThisAddress = ({ type, params }) => {
-    return mocks.find((mock) => {
-      if (mock[type] === undefined) {
-        return
-      }
-      if (normalize$1(_optionalChain$b([mock, 'access', _5 => _5[type], 'optionalAccess', _6 => _6.to])) !== normalize$1(params.to)) {
-        return
-      }
-      return mock
-    })
-  };
-
-  let findMockByTransactionHash = (hash) => {
-    return mocks.find((mock) => {
-      return _optionalChain$b([mock, 'optionalAccess', _7 => _7.transaction, 'optionalAccess', _8 => _8._id]) == hash && (
-        _optionalChain$b([mock, 'optionalAccess', _9 => _9.transaction, 'optionalAccess', _10 => _10._confirmed]) || _optionalChain$b([mock, 'optionalAccess', _11 => _11.transaction, 'optionalAccess', _12 => _12._failed])
-      )
-    })
   };
 
   var getTransactionByHash = (hash) => {
@@ -970,6 +972,7 @@
     let mock = findMock({ type: 'transaction', params, provider });
     if (mock) {
       mock.calls.add(params);
+      if(params && params.from) { mock._from = params.from; }
 
       if(mock.transaction.delay) {
         return new Promise((resolve, reject)=>{

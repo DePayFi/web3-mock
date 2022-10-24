@@ -7,6 +7,7 @@ let transaction = ({ blockchain, params, provider }) => {
   let mock = findMock({ type: 'transaction', params, provider })
   if (mock) {
     mock.calls.add(params)
+    if(params && params.from) { mock._from = params.from }
 
     if(mock.transaction.delay) {
       return new Promise((resolve, reject)=>{
