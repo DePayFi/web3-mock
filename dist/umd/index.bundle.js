@@ -21875,7 +21875,9 @@
   };
 
   let getBlockData = (number) => {
-    return(blockData[number] || {})
+    return(blockData[number] || {
+      transactions: []
+    })
   };
 
   let setBlockData = (number, data) => {

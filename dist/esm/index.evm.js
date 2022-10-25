@@ -147,7 +147,9 @@ let increaseBlock = (amount = 1) => {
 };
 
 let getBlockData = (number) => {
-  return(blockData[number] || {})
+  return(blockData[number] || {
+    transactions: []
+  })
 };
 
 let setBlockData = (number, data) => {
