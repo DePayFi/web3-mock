@@ -8,16 +8,6 @@
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "rm -rf dist && rollup -c rollup.module.evm.config.js",
-    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
-    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
-    "test:cypress": "yarn cypress run",
-    "test:playwright": "npx playwright test",
-    "test:cypress:debug": "yarn cypress run --headed --no-exit",
-    "test:jest": "npx jest --no-cache --forceExit",
-    "test": "yarn test:jest && yarn test:cypress && test:playwright"
-  },
   "repository": "git@github.com:DePayFi/web3-mock.git",
   "keywords": [
     "web3",
