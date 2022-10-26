@@ -1,7 +1,7 @@
 import { on, removeListener } from './events'
 import { request } from './request'
 import { setCurrentNetwork } from '../../network'
-import { Web3Provider } from '@ethersproject/providers'
+import { ethers } from 'ethers'
 
 let mock = ({ blockchain, configuration, window, provider }) => {
 
@@ -30,7 +30,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
     request: (payload) => {
       return request({
         request: payload,
-        provider: new Web3Provider(window._ethereum),
+        provider: new ethers.providers.Web3Provider(window._ethereum),
       })
     },
   }
