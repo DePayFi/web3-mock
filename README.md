@@ -1535,6 +1535,16 @@ In your jest test environment `global` is the `window` available to your code.
 
 Hence `web3-mock` instrumentalizes Jest's `global` automatically when using `web3-mock` in a jest test environment.
 
+Make sure you add the following to your jest setup (tests/setup.js).
+
+```javascript
+// web3-mock polyfills:
+global.XMLHttpRequest = require('xhr2')
+global.location = { host: undefined }
+```
+
+Install xhr2 as a dev dependency if it is not already installed.
+
 #### Cypress
 
 In your cypress test environment `cy.window().specWindow.window` is the `window` available to your code.
