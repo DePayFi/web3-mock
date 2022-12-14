@@ -93,7 +93,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getTransactionCount':
-      params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined
+      params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params.address) : undefined
       return Promise.resolve(getTransactionCount(params))
       break
 

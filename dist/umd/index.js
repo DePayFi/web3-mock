@@ -1146,7 +1146,7 @@
         return getTransactionReceipt((request.params instanceof Array) ? request.params[0] : request.params.transactionHash)
 
       case 'eth_getTransactionCount':
-        params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined;
+        params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params.address) : undefined;
         return Promise.resolve(getTransactionCount(params))
 
       case 'eth_subscribe':
