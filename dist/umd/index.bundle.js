@@ -23017,6 +23017,7 @@
 
   function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   let request$3 = ({ blockchain, request, provider }) => {
+    let params;
 
     // Web3js request fix (nested request)
     if(Object.keys(request.method).includes('method')) {
@@ -23044,7 +23045,7 @@
         return getAccounts({ blockchain, provider })
 
       case 'eth_estimateGas':
-        let params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined;
+        params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined;
         return estimate({ blockchain, params, provider })
 
       case 'eth_blockNumber':
@@ -23082,7 +23083,8 @@
         return getTransactionReceipt((request.params instanceof Array) ? request.params[0] : request.params.transactionHash)
 
       case 'eth_getTransactionCount':
-        return Promise.resolve(getTransactionCount(request.params[0]))
+        params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined;
+        return Promise.resolve(getTransactionCount(params))
 
       case 'eth_subscribe':
         return Promise.resolve()

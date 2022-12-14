@@ -16,6 +16,7 @@ import { switchNetwork, addNetwork } from './network'
 import { transaction } from './transaction'
 
 let request = ({ blockchain, request, provider }) => {
+  let params
 
   // Web3js request fix (nested request)
   if(Object.keys(request.method).includes('method')) {
@@ -47,7 +48,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_estimateGas':
-      let params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined
+      params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined
       return estimate({ blockchain, params, provider })
       break
 
@@ -92,7 +93,8 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getTransactionCount':
-      return Promise.resolve(getTransactionCount(request.params[0]))
+      params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined
+      return Promise.resolve(getTransactionCount(params))
       break
 
     case 'eth_subscribe':
