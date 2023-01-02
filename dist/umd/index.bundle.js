@@ -21902,7 +21902,7 @@
     count[address] += 1;
   };
 
-  let getTransactionCount$1 = (address) => {
+  let getTransactionCount = (address) => {
     address = address.toLowerCase();
     if(count[address] == undefined) { count[address] = 0; }
     return BigNumber.from(count[address].toString())._hex
@@ -22256,7 +22256,7 @@
           "input": "0x8803dbee0000000000000000000000000000000000000000001782b76fd64557b6b780000000000000000000000000000000000000000000000000032a27fd31187d551000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000008817d887960737a604cf712d3e5da8673dddb7f00000000000000000000000000000000000000000000000000000000061f2ca440000000000000000000000000000000000000000000000000000000000000002000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000090185f2135308bad17527004364ebcc2d37e5f6",
           "maxFeePerGas": "0x2e87159fb3",
           "maxPriorityFeePerGas": "0x0",
-          "nonce": getTransactionCount$1(transactionMock.transaction.from),
+          "nonce": getTransactionCount(transactionMock.transaction.from),
           "r": "0x81d4fe714af2e1725ad1746fc240a6ac3b0f795d207ac207f36abaf8db6c72b2",
           "s": "0x3c4f61eef2ecb98a50bf3940bc90e7dcacbc7f233a57d5eb44c0ae07fdec4ced",
           "to": "0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f",
@@ -23088,7 +23088,7 @@
 
       case 'eth_getTransactionCount':
         params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params.address) : undefined;
-        return Promise.resolve(getTransactionCount$1(params))
+        return Promise.resolve(getTransactionCount(params))
 
       case 'eth_subscribe':
         return Promise.resolve()
