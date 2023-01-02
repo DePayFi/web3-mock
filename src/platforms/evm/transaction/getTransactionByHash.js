@@ -1,7 +1,8 @@
-import { getRandomTransactionHash } from '../../../transaction.js'
 import { ethers } from 'ethers'
 import { findMockByTransactionHash } from '../findMock'
 import { getCurrentBlock } from '../../../block'
+import { getRandomTransactionHash } from '../../../transaction.js'
+import { getTransactionCount } from './count'
 import { mocks } from '../../../mocks'
 
 export default (hash) => {
