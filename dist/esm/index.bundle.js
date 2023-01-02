@@ -22264,9 +22264,11 @@ var replace = (transactionMock, replacingTransactionMock, confirmed = true) => {
 };
 
 let fail$2 = (transaction, reason) => {
+  let mock = findMockByTransactionHash$1(transaction._id);
   transaction._confirmedAtBlock = getCurrentBlock();
   transaction._failed = true;
   transaction._failedReason = reason;
+  if(mock && mock._from) { increaseTransactionCount(mock._from); }
   return transaction
 };
 
