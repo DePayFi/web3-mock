@@ -1,5 +1,5 @@
-let supported = ['ethereum', 'bsc', 'polygon', 'velas']
-supported.evm = ['ethereum', 'bsc', 'polygon', 'velas']
+let supported = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas']
+supported.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas']
 supported.solana = []
 
 export { supported }
