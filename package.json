@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-mock",
   "moduleName": "Web3Mock",
-  "version": "13.23.0",
+  "version": "13.24.0",
   "description": "JavaScript library to mock web3 responses either by emulating web3 wallets or web3 RPC requests.",
   "main": "./dist/umd/index.js",
   "module": "./dist/esm/index.js",
@@ -9,7 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist && rollup -c rollup.module.config.js && rollup -c rollup.module.evm.config.js && npx rollup --config rollup.bundle.config.js",
+    "build": "rm -rf dist && rollup -c rollup.module.config.js && rollup -c rollup.module.evm.config.js && rollup -c rollup.module.solana.config.js && npx rollup --config rollup.bundle.config.js",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "test:cypress": "yarn cypress run",
@@ -72,6 +72,7 @@
     "jest-environment-jsdom": "^28.1.2",
     "regenerator-runtime": "^0.13.9",
     "rollup": "^2.34.2",
+    "rollup-plugin-jscc": "^2.0.0",
     "rollup-plugin-polyfill-node": "^0.8.0",
     "web3": "^1.6.1",
     "web3-eth-contract": "^1.6.1",

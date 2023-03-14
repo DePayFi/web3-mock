@@ -1,8 +1,21 @@
+/*#if _EVM
+
+import { mock as mockEvm } from './platforms/evm/mock'
+
+/*#elif _SOLANA
+
+import { mock as mockSolana } from './platforms/solana/mock'
+
+//#else */
+
+import { mock as mockEvm } from './platforms/evm/mock'
+import { mock as mockSolana } from './platforms/solana/mock'
+
+//#endif
+
 import { getRandomTransactionHash } from './transaction.js'
 import raise from './raise'
 import { getWindow } from './window'
-import { mock as mockEvm } from './platforms/evm/mock'
-import { mock as mockSolana } from './platforms/solana/mock'
 import { mock as mockWalletConnect } from './wallets/walletConnect/mock'
 import { mock as mockWalletLink } from './wallets/walletLink/mock'
 import { mocks } from './mocks'
@@ -147,9 +160,33 @@ let mockWallet = ({ blockchain, configuration, window }) => {
 
 let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
   if(supported.evm.includes(blockchain)) {
+
+    /*#if _EVM
+
     return mockEvm({ blockchain, configuration, window, provider })
+    
+    /*#elif _SOLANA
+
+    /*#else */
+    
+    return mockEvm({ blockchain, configuration, window, provider })
+    
+    //#endif
+
   } else if(supported.solana.includes(blockchain)) {
+
+    /*#if _EVM
+
+    /*#elif _SOLANA
+
     return mockSolana({ blockchain, configuration, window, provider })
+
+    /*#else */
+    
+    return mockSolana({ blockchain, configuration, window, provider })
+    
+    //#endif
+    
   } else {
     raise('Web3Mock: Unknown blockchain!')
   }

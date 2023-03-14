@@ -1,7 +1,7 @@
 import Contract from 'web3-eth-contract'
 import Web3 from 'web3'
-import { mock, confirm, resetMocks } from 'src/index.evm'
-import { supported } from "src/blockchains.evm"
+import { mock, confirm, resetMocks } from 'dist/esm/index.evm'
+import { supported } from "src/blockchains"
 
 describe('evm mock and trigger web3-js contract interactions (evm)', ()=> {
 

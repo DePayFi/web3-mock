@@ -1,6 +1,6 @@
 import { Blockchain } from '@depay/web3-blockchains'
-import { mock, resetMocks } from 'src/index.evm'
-import { supported } from "src/blockchains.evm"
+import { mock, resetMocks } from 'dist/esm/index.evm'
+import { supported } from "src/blockchains"
 
 describe('mocks evm basics (evm)', ()=> {
 

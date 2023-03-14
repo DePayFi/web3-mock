@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks, trigger } from 'src/index.evm'
-import { supported } from "src/blockchains.evm"
+import { mock, resetMocks, trigger } from 'dist/esm/index.evm'
+import { supported } from "src/blockchains"
 
 describe('mock evm events (evm)', ()=> {
 

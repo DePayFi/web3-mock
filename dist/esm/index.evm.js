@@ -1,11 +1,6 @@
 import { ethers } from 'ethers';
 import { Blockchain } from '@depay/web3-blockchains';
 
-var raise = (msg)=>{
-  console.log(msg);
-  throw(msg)
-};
-
 let normalize = function (input) {
   if (input instanceof Array) {
     return input.map((element) => normalize(element))
@@ -78,6 +73,11 @@ let anythingMatch = ({ contractArguments, mockParams }) => {
   }
 
   return false
+};
+
+var raise = (msg)=>{
+  console.log(msg);
+  throw(msg)
 };
 
 function _optionalChain$f(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
@@ -406,7 +406,7 @@ let findMockByTransactionHash = (hash) => {
   })
 };
 
-let confirm = (transaction) => {
+let confirm$1 = (transaction) => {
   let mock = findMockByTransactionHash(transaction._id);
   transaction._confirmedAtBlock = getCurrentBlock();
   if(mock && mock._from) { increaseTransactionCount(mock._from); }
@@ -418,18 +418,50 @@ supported.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas'];
 supported.solana = [];
 
 function _optionalChain$c(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-var confirm_evm = (mock) => {
+
+var confirm = (mock) => {
   if (_optionalChain$c([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
     mock.transaction._confirmed = true;
     if(supported.evm.includes(mock.blockchain)) {
-      confirm(mock.transaction);
-    } else {
+
+
+      confirm$1(mock.transaction);
+      
+
+    } else if(supported.solana.includes(mock.blockchain)) ; else {
       raise('Web3Mock: Unknown blockchain!');
     }
     increaseBlock();
   } else {
     raise('Web3Mock: Given mock is not a sent transaction: ' + JSON.stringify(mock));
   }
+};
+
+var to_b58 = function(
+    B,            //Uint8Array raw byte input
+    A             //Base58 characters (i.e. "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
+) {
+    var d = [],   //the array for storing the stream of base58 digits
+        s = "",   //the result string variable that will be returned
+        i,        //the iterator variable for the byte input
+        j,        //the iterator variable for the base58 digit array (d)
+        c,        //the carry amount variable that is used to overflow from the current base58 digit to the next base58 digit
+        n;        //a temporary placeholder variable for the current base58 digit
+    for(i in B) { //loop through each byte in the input stream
+        j = 0,                           //reset the base58 digit iterator
+        c = B[i];                        //set the initial carry amount equal to the current byte amount
+        s += c || s.length ^ i ? "" : 1; //prepend the result string with a "1" (0 in base58) if the byte stream is zero and non-zero bytes haven't been seen yet (to ensure correct decode length)
+        while(j in d || c) {             //start looping through the digits until there are no more digits and no carry amount
+            n = d[j];                    //set the placeholder for the current base58 digit
+            n = n ? n * 256 + c : c;     //shift the current base58 one byte and add the carry amount (or just add the carry amount if this is a new digit)
+            c = n / 58 | 0;              //find the new carry amount (floored integer of current digit divided by 58)
+            d[j] = n % 58;               //reset the current base58 digit to the remainder (the carry amount will pass on the overflow)
+            j++;                          //iterate to the next base58 digit
+        }
+    }
+    while(j--)        //since the base58 digits are backwards, loop through them in reverse order
+        s += A[d[j]]; //lookup the character associated with each base58 digit
+    return s          //return the final base58 string
 };
 
 const getRandomTransactionHash = (blockchain) => {
@@ -441,10 +473,17 @@ const getRandomTransactionHash = (blockchain) => {
           .map(() => Math.random().toString()[4])
           .join(''),
     )._hex
+  } else if (supported.solana.includes(blockchain)) {
+    return to_b58(
+      Array(32)
+        .fill()
+        .map(() => parseInt(Math.random().toString()[4]), 10),
+      "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    )
   }
 };
 
-var replace_evm = (transactionMock, replacingTransactionMock, confirmed = true) => {
+var replace = (transactionMock, replacingTransactionMock, confirmed = true) => {
   if(transactionMock == undefined || replacingTransactionMock == undefined) { raise('replace requires (transactionMock, replacingTransactionMock)'); }
   if(transactionMock.transaction.from == undefined) { raise('transactionMock to be replaced requires at least a "from"'); }
 
@@ -502,7 +541,7 @@ var replace_evm = (transactionMock, replacingTransactionMock, confirmed = true) 
   increaseTransactionCount(transactionMock.transaction.from);
 };
 
-let fail = (transaction, reason) => {
+let fail$1 = (transaction, reason) => {
   let mock = findMockByTransactionHash(transaction._id);
   transaction._confirmedAtBlock = getCurrentBlock();
   transaction._failed = true;
@@ -512,13 +551,18 @@ let fail = (transaction, reason) => {
 };
 
 function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
-var fail_evm = (mock, reason) => {
+
+var fail = (mock, reason) => {
   if (_optionalChain$b([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
     mock.transaction._failed = true;
     mock.transaction._confirmed = false;
     if(supported.evm.includes(mock.blockchain)) {
-      fail(mock.transaction, reason);
-    } else {
+
+
+      fail$1(mock.transaction, reason);
+      
+
+    } else if(supported.solana.includes(mock.blockchain)) ; else {
       raise('Web3Mock: Unknown blockchain!');
     }
     increaseBlock();
@@ -1281,6 +1325,7 @@ let mock$1 = ({ configuration, window }) => {
 };
 
 function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+
 let getBlockchain = (configuration) => {
   if (typeof configuration === 'string') {
     return configuration
@@ -1300,6 +1345,14 @@ let apiIsMissing = (type, configuration) => {
       return false
     }
     return configuration[type] && _optionalChain([configuration, 'access', _ => _[type], 'optionalAccess', _2 => _2.api]) === undefined
+  } else if (supported.solana.includes(configuration.blockchain)) {
+    if(type == 'transaction') {
+      return _optionalChain([configuration, 'access', _3 => _3.transaction, 'optionalAccess', _4 => _4.instructions, 'optionalAccess', _5 => _5.every, 'call', _6 => _6((instruction)=>!instruction.api)])
+    } else if(type == 'simulate') {
+      return _optionalChain([configuration, 'access', _7 => _7.simulate, 'optionalAccess', _8 => _8.instructions, 'optionalAccess', _9 => _9.every, 'call', _10 => _10((instruction)=>!instruction.api)])
+    } else {
+      return false
+    }
   }
 };
 
@@ -1312,6 +1365,13 @@ let apiMissingErrorText = (type, configuration) => {
     suggestedConfiguration = Object.assign(configurationDuplicate, {
       [type]: Object.assign(configurationDuplicate[type], { api: ['PLACE API HERE'] }),
     });
+  } else if (supported.solana.includes(configuration.blockchain)) {
+    suggestedConfiguration = configurationDuplicate;
+    if(type == 'transaction') {
+      suggestedConfiguration.transaction.instructions = suggestedConfiguration.transaction.instructions.map((instruction)=>Object.assign(instruction, { api: 'PLACE API HERE' }));
+    } else if(type == 'simulate'){
+      suggestedConfiguration.simulate.instructions = suggestedConfiguration.simulate.instructions.map((instruction)=>Object.assign(instruction, { api: 'PLACE API HERE' }));
+    }
   }
   return (
     'Web3Mock: Please provide the api for the ' +
@@ -1383,6 +1443,10 @@ let mockWallet = ({ blockchain, configuration, window }) => {
       window.ethereum.isCoinbaseWallet = true;
       window.ethereum.isWalletLink = true;
       break
+    case 'phantom':
+      window.solana = window._solana;
+      window.solana.isPhantom = true;
+      break
     case 'walletconnect':
       mock$2({ configuration, window });
       break
@@ -1392,14 +1456,20 @@ let mockWallet = ({ blockchain, configuration, window }) => {
     default:
       if(supported.evm.includes(blockchain)) {
         window.ethereum = window._ethereum;
+      } else if(supported.solana.includes(blockchain)) {
+        window.solana = window._solana;
       }
   }
 };
 
 let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
   if(supported.evm.includes(blockchain)) {
+
+
     return mock$3({ blockchain, configuration, window, provider })
-  } else {
+    
+
+  } else if(supported.solana.includes(blockchain)) ; else {
     raise('Web3Mock: Unknown blockchain!');
   }
 };
@@ -1426,10 +1496,14 @@ let mock = (configuration, call) => {
   return spy(mock)
 };
 
-var trigger_evm = (eventName, value) => {
+var trigger = (eventName, value) => {
+  
+
   triggerEvent$2(eventName, value);
+
+
   triggerEvent$1(eventName, value);
   triggerEvent(eventName, value);
 };
 
-export { anything, confirm_evm as confirm, setCurrentNetwork as connect, fail_evm as fail, getCurrentBlock, increaseBlock, mock, normalize, replace_evm as replace, resetCurrentBlock, resetMocks, trigger_evm as trigger };
+export { anything, confirm, setCurrentNetwork as connect, fail, getCurrentBlock, increaseBlock, mock, normalize, replace, resetCurrentBlock, resetMocks, trigger };

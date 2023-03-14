@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks, connect } from 'src/index.evm'
+import { mock, resetMocks, connect } from 'dist/esm/index.evm'
 
 describe('evm mock for multiple providers across multiple chains (evm)', ()=> {
 

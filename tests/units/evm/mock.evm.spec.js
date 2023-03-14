@@ -1,5 +1,5 @@
-import { mock } from 'src/index.evm'
-import { supported } from "src/blockchains.evm"
+import { mock } from 'dist/esm/index.evm'
+import { supported } from "src/blockchains"
 
 describe('evm mock (evm)', () => {
 

@@ -1,11 +1,6 @@
 import require$$0$8 from 'buffer';
 import require$$0$9 from 'util';
 
-var raise = (msg)=>{
-  console.log(msg);
-  throw(msg)
-};
-
 let normalize$2 = function (input) {
   if (input instanceof Array) {
     return input.map((element) => normalize$2(element))
@@ -21800,6 +21795,11 @@ class Web3Provider extends JsonRpcProvider {
     }
 }
 
+var raise = (msg)=>{
+  console.log(msg);
+  throw(msg)
+};
+
 function _optionalChain$i(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 let getContract = ({ address, api, provider }) => {
   return new Contract(address, api, provider)
@@ -22138,18 +22138,65 @@ let confirm$1 = (transaction) => {
   return transaction
 };
 
+/*#if _EVM
+
+let supported = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas']
+supported.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas']
+supported.solana = []
+
+/*#elif _SOLANA
+
+let supported = ['solana']
+supported.evm = []
+supported.solana = ['solana']
+
+//#else */
+
 let supported = ['ethereum', 'bsc', 'polygon', 'solana', 'fantom', 'velas'];
 supported.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'velas'];
 supported.solana = ['solana'];
 
-function _optionalChain$f(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$f(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }/*#if _EVM
+
+import { confirm as confirmEvm } from './platforms/evm/confirm'
+
+/*#elif _SOLANA
+
+import { confirm as confirmSolana } from './platforms/solana/confirm'
+
+//#else */
+
 var confirm = (mock) => {
   if (_optionalChain$f([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
     mock.transaction._confirmed = true;
     if(supported.evm.includes(mock.blockchain)) {
+
+      /*#if _EVM
+
+      confirmEvm(mock.transaction)
+      
+      /*#elif _SOLANA
+
+      /*#else */
+      
       confirm$2(mock.transaction);
+      
+      //#endif
+
     } else if(supported.solana.includes(mock.blockchain)) {
+
+      /*#if _EVM
+
+      /*#elif _SOLANA
+
+      confirmSolana(mock.transaction)
+
+      /*#else */
+      
       confirm$1(mock.transaction);
+      
+      //#endif
+
     } else {
       raise('Web3Mock: Unknown blockchain!');
     }
@@ -22279,15 +22326,48 @@ let fail$1 = (transaction, reason) => {
   return transaction
 };
 
-function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$e(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }/*#if _EVM
+
+import { fail as failEvm } from './platforms/evm/fail'
+
+/*#elif _SOLANA
+
+import { fail as failSolana } from './platforms/solana/fail'
+
+//#else */
+
 var fail = (mock, reason) => {
   if (_optionalChain$e([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
     mock.transaction._failed = true;
     mock.transaction._confirmed = false;
     if(supported.evm.includes(mock.blockchain)) {
+
+      /*#if _EVM
+
+      failEvm(mock.transaction, reason)
+      
+      /*#elif _SOLANA
+
+      /*#else */
+      
       fail$2(mock.transaction, reason);
+      
+      //#endif
+
     } else if(supported.solana.includes(mock.blockchain)) {
+
+      /*#if _EVM
+
+      /*#elif _SOLANA
+
+      failSolana(mock.transaction, reason)
+
+      /*#else */
+      
       fail$1(mock.transaction, reason);
+      
+      //#endif
+
     } else {
       raise('Web3Mock: Unknown blockchain!');
     }
@@ -82905,7 +82985,16 @@ let mock$1 = ({ configuration, window }) => {
   instance.removeListener = removeListener;
 };
 
-function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }/*#if _EVM
+
+import { mock as mockEvm } from './platforms/evm/mock'
+
+/*#elif _SOLANA
+
+import { mock as mockSolana } from './platforms/solana/mock'
+
+//#else */
+
 let getBlockchain = (configuration) => {
   if (typeof configuration === 'string') {
     return configuration
@@ -83044,9 +83133,33 @@ let mockWallet = ({ blockchain, configuration, window }) => {
 
 let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
   if(supported.evm.includes(blockchain)) {
+
+    /*#if _EVM
+
+    return mockEvm({ blockchain, configuration, window, provider })
+    
+    /*#elif _SOLANA
+
+    /*#else */
+    
     return mock$4({ blockchain, configuration, window, provider })
+    
+    //#endif
+
   } else if(supported.solana.includes(blockchain)) {
+
+    /*#if _EVM
+
+    /*#elif _SOLANA
+
+    return mockSolana({ blockchain, configuration, window, provider })
+
+    /*#else */
+    
     return mock$3({ blockchain, configuration, window, provider })
+    
+    //#endif
+    
   } else {
     raise('Web3Mock: Unknown blockchain!');
   }
@@ -83074,9 +83187,33 @@ let mock = (configuration, call) => {
   return spy(mock)
 };
 
+/*#if _EVM
+
+import { triggerEvent as triggerEVMEvent } from './platforms/evm/events'
+
+/*#elif _SOLANA
+
+import { triggerEvent as triggerSolanaEvent } from './platforms/solana/events'
+
+//#else */
+
 var trigger = (eventName, value) => {
+  
+  /*#if _EVM
+
+  triggerEVMEvent(eventName, value)
+
+  /*#elif _SOLANA
+
+  triggerSolanaEvent(eventName, value)
+
+  //#else */
+  
   triggerEvent$3(eventName, value);
   triggerEvent$2(eventName, value);
+
+  //#endif
+
   triggerEvent$1(eventName, value);
   triggerEvent(eventName, value);
 };

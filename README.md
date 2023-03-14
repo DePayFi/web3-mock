@@ -36,8 +36,9 @@ describe('something', ()=> {
 
 #### Solana: Basics
 
+Requires explicit provider mocking (see [Providers](#Providers))
+
 ```javascript
-// requires explicit provider mocking (see #Providers)
 
 let connection = new Connection('https://api.mainnet-beta.solana.com')
 mock({ blockchain: 'solana', provider: connection })
@@ -235,8 +236,16 @@ This library supports the all crypto wallets that inject window.ethereum or wind
 
 In case you want to use and package only specific platforms, use platform specific packages:
 
+### EVM platform specific package
+
 ```javascript
 import { mock } from '@depay/web3-mock-evm'
+```
+
+### Solana platform specific package
+
+```javascript
+import { mock } from '@depay/web3-mock-solana'
 ```
 
 ## Functionalities

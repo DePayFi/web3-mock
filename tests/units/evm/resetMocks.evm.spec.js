@@ -1,5 +1,5 @@
-import { mock, resetMocks, increaseBlock, getCurrentBlock } from 'src/index.evm'
-import { supported } from "src/blockchains.evm"
+import { mock, resetMocks, increaseBlock, getCurrentBlock } from 'dist/esm/index.evm'
+import { supported } from "src/blockchains"
 
 describe('evm resetMocks (evm)', ()=> {
 
