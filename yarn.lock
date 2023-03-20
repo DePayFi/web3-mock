@@ -986,10 +986,10 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@depay/solana-web3.js@^1.20.11":
-  version "1.20.11"
-  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.20.11.tgz#5a3bb127d0d3f8f514bc303e405ba592a2cd722d"
-  integrity sha512-yQCxehhyCAiBUo4lwyeO8JxAPALcmIjYEuuYbSwFFeddAZUyjsu3yDkl6DeAn+7LaE3ahwBadsAhzee/kEU6zw==
+"@depay/solana-web3.js@^1.20.12":
+  version "1.20.12"
+  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.20.12.tgz#446a72ad6de6d91fa0c5a4ceb00b0224a127b27b"
+  integrity sha512-F8n29Tk2brbBL+u3XX67LjL8oOynecF3wNJ6+xCBrzYnyCYiBXgrYzTE5nzcPwV7pfXlIprlCLUlhmb0A73gJg==
   dependencies:
     cross-fetch "^3.1.5"
 
