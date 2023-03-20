@@ -7,6 +7,8 @@ const { devices } = require('@playwright/test');
  */
 // require('dotenv').config();
 
+global.fetch = require('node-fetch')
+
 /**
  * @see https://playwright.dev/docs/test-configuration
  * @type {import('@playwright/test').PlaywrightTestConfig}
