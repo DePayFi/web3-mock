@@ -3,6 +3,7 @@ import pkg from './package.json'
 import replace from '@rollup/plugin-replace'
 import rollup from './rollup.module.config.js'
 
+
 export default Object.assign({}, rollup, {
   external: [], // no externals, bundle everything!
   output: [
@@ -16,7 +17,7 @@ export default Object.assign({}, rollup, {
       file: 'dist/umd/index.bundle.js'
     }
   ],
-  plugins: [...rollup.plugins,
+  plugins: [...rollup.plugins.filter(p => p.name != 'jscc'),
     nodePolyfills()
   ]
 })
