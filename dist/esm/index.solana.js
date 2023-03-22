@@ -1,7 +1,6 @@
 import { ethers } from 'ethers';
 import { PublicKey, Buffer, BN } from '@depay/solana-web3.js';
-import { CONSTANTS } from '@depay/web3-constants';
-import { Blockchain } from '@depay/web3-blockchains';
+import Blockchains from '@depay/web3-blockchains';
 
 let currentBlock;
 
@@ -518,10 +517,12 @@ let balance = function ({ blockchain, params, provider }) {
   }
 };
 
+const NATIVE = Blockchains.findByName('solana').currency.address;
+
 let marshalValue = (value, blockchain)=>{
   if(typeof value == 'number') {
     return value
-  } else if (typeof value == 'string' && value == CONSTANTS[blockchain].NATIVE) {
+  } else if (typeof value == 'string' && value == NATIVE) {
     return new PublicKey(value)
   } else if (typeof value == 'string' && value.match(/\D/)) {
     try {
@@ -536,12 +537,12 @@ let marshalValue = (value, blockchain)=>{
   } else if (value instanceof Buffer) {
     return value
   } else if (value instanceof Array) {
-    return value.map((value)=>marshalValue(value, blockchain))
+    return value.map((value)=>marshalValue(value))
   } else if (value instanceof Object) {
     let valueObject = {};
     Object.keys(value).forEach((key)=>{
       let singleValue = value[key];
-      valueObject[key] = marshalValue(singleValue, blockchain);
+      valueObject[key] = marshalValue(singleValue);
     });
     return valueObject
   } else if (value === null) {
@@ -561,7 +562,7 @@ let callMock = ({ blockchain, mock, params, provider, raw })=> {
   } else if(!mock.request.return) {
     return Promise.resolve(mock.request.return)
   } else {
-    let response = marshalValue(mock.request.return, blockchain);
+    let response = marshalValue(mock.request.return);
 
     if(mock.request.api) {
       let buffer = Buffer.alloc(mock.request.api.span < 0 ? 1000 : mock.request.api.span);
@@ -998,7 +999,7 @@ let mock$1 = ({ configuration, window }) => {
   };
 
   instance.getChainId = async function() {
-    const blockchain = Blockchain.findById(await window._ethereum.request({ method: 'eth_chainId' }));
+    const blockchain = Blockchains.findById(await window._ethereum.request({ method: 'eth_chainId' }));
     return blockchain.networkId
   };
 

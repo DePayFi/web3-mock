@@ -1,5 +1,5 @@
 import { mock, resetMocks } from 'src'
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { supported } from "src/blockchains"
 
 describe('mocks walletConnect requests', ()=> {
@@ -19,7 +19,7 @@ describe('mocks walletConnect requests', ()=> {
 
       it('mocks requests through walletlink', async ()=>{
         expect(await WalletLinkStub.instance.request({ method: 'eth_chainId' })).toEqual(
-          Blockchain.findByName(blockchain).id
+          Blockchains.findByName(blockchain).id
         )
       })
     })

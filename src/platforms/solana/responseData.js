@@ -1,12 +1,14 @@
+import Blockchains from '@depay/web3-blockchains'
 import raise from '../../raise'
-import { CONSTANTS } from '@depay/web3-constants'
 import { findMock, findAnyMockForThisAddress } from './findMock'
 import { PublicKey, Buffer, BN } from '@depay/solana-web3.js'
+
+const NATIVE = Blockchains.findByName('solana').currency.address
 
 let marshalValue = (value, blockchain)=>{
   if(typeof value == 'number') {
     return value
-  } else if (typeof value == 'string' && value == CONSTANTS[blockchain].NATIVE) {
+  } else if (typeof value == 'string' && value == NATIVE) {
     return new PublicKey(value)
   } else if (typeof value == 'string' && value.match(/\D/)) {
     try {

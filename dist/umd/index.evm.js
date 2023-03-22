@@ -2,7 +2,11 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('ethers'), require('@depay/web3-blockchains')) :
   typeof define === 'function' && define.amd ? define(['exports', 'ethers', '@depay/web3-blockchains'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Mock = {}, global.ethers, global.Web3Blockchains));
-}(this, (function (exports, ethers, web3Blockchains) { 'use strict';
+}(this, (function (exports, ethers, Blockchains) { 'use strict';
+
+  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+  var Blockchains__default = /*#__PURE__*/_interopDefaultLegacy(Blockchains);
 
   let normalize = function (input) {
     if (input instanceof Array) {
@@ -960,7 +964,7 @@
 
   function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
   let switchNetwork = function ({ blockchain, id, provider }) {
-    let toBlockchain = web3Blockchains.Blockchain.findById(id);
+    let toBlockchain = Blockchains__default['default'].findById(id);
     if(toBlockchain == undefined) { throw `No blockchain found for id ${id}` }
     let params = { switchTo: toBlockchain.name };
 
@@ -1093,13 +1097,13 @@
 
     switch (request.method) {
       case 'eth_chainId':
-        return Promise.resolve(web3Blockchains.Blockchain.findByName(blockchain).id)
+        return Promise.resolve(Blockchains__default['default'].findByName(blockchain).id)
 
       case 'eth_getBalance':
         return balance({ blockchain, params: (request.params instanceof Array) ? request.params[0] : request.params, provider })
 
       case 'net_version':
-        return Promise.resolve(web3Blockchains.Blockchain.findByName(blockchain).networkId)
+        return Promise.resolve(Blockchains__default['default'].findByName(blockchain).networkId)
 
       case 'eth_requestAccounts':
       case 'eth_accounts':
@@ -1317,7 +1321,7 @@
     };
 
     instance.getChainId = async function() {
-      const blockchain = web3Blockchains.Blockchain.findById(await window._ethereum.request({ method: 'eth_chainId' }));
+      const blockchain = Blockchains__default['default'].findById(await window._ethereum.request({ method: 'eth_chainId' }));
       return blockchain.networkId
     };
 

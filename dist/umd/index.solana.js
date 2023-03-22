@@ -1,8 +1,12 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('ethers'), require('@depay/solana-web3.js'), require('@depay/web3-constants'), require('@depay/web3-blockchains')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'ethers', '@depay/solana-web3.js', '@depay/web3-constants', '@depay/web3-blockchains'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Mock = {}, global.ethers, global.SolanaWeb3js, global.Web3Constants, global.Web3Blockchains));
-}(this, (function (exports, ethers, solanaWeb3_js, web3Constants, web3Blockchains) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('ethers'), require('@depay/solana-web3.js'), require('@depay/web3-blockchains')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'ethers', '@depay/solana-web3.js', '@depay/web3-blockchains'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Web3Mock = {}, global.ethers, global.SolanaWeb3js, global.Web3Blockchains));
+}(this, (function (exports, ethers, solanaWeb3_js, Blockchains) { 'use strict';
+
+  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+  var Blockchains__default = /*#__PURE__*/_interopDefaultLegacy(Blockchains);
 
   let currentBlock;
 
@@ -519,10 +523,12 @@
     }
   };
 
+  const NATIVE = Blockchains__default['default'].findByName('solana').currency.address;
+
   let marshalValue = (value, blockchain)=>{
     if(typeof value == 'number') {
       return value
-    } else if (typeof value == 'string' && value == web3Constants.CONSTANTS[blockchain].NATIVE) {
+    } else if (typeof value == 'string' && value == NATIVE) {
       return new solanaWeb3_js.PublicKey(value)
     } else if (typeof value == 'string' && value.match(/\D/)) {
       try {
@@ -537,12 +543,12 @@
     } else if (value instanceof solanaWeb3_js.Buffer) {
       return value
     } else if (value instanceof Array) {
-      return value.map((value)=>marshalValue(value, blockchain))
+      return value.map((value)=>marshalValue(value))
     } else if (value instanceof Object) {
       let valueObject = {};
       Object.keys(value).forEach((key)=>{
         let singleValue = value[key];
-        valueObject[key] = marshalValue(singleValue, blockchain);
+        valueObject[key] = marshalValue(singleValue);
       });
       return valueObject
     } else if (value === null) {
@@ -562,7 +568,7 @@
     } else if(!mock.request.return) {
       return Promise.resolve(mock.request.return)
     } else {
-      let response = marshalValue(mock.request.return, blockchain);
+      let response = marshalValue(mock.request.return);
 
       if(mock.request.api) {
         let buffer = solanaWeb3_js.Buffer.alloc(mock.request.api.span < 0 ? 1000 : mock.request.api.span);
@@ -999,7 +1005,7 @@
     };
 
     instance.getChainId = async function() {
-      const blockchain = web3Blockchains.Blockchain.findById(await window._ethereum.request({ method: 'eth_chainId' }));
+      const blockchain = Blockchains__default['default'].findById(await window._ethereum.request({ method: 'eth_chainId' }));
       return blockchain.networkId
     };
 

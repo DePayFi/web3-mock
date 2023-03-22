@@ -1,10 +1,10 @@
 import raise from '../../raise'
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { findMock } from './findMock'
 import { setCurrentNetwork } from '../../network'
 
 let switchNetwork = function ({ blockchain, id, provider }) {
-  let toBlockchain = Blockchain.findById(id)
+  let toBlockchain = Blockchains.findById(id)
   if(toBlockchain == undefined) { throw `No blockchain found for id ${id}` }
   let params = { switchTo: toBlockchain.name }
 

@@ -1,4 +1,4 @@
-import { Blockchain } from "@depay/web3-blockchains"
+import Blockchains from '@depay/web3-blockchains'
 import { on, removeListener } from "./events"
 import { setWalletLinkClass } from "../../mocks"
 
@@ -22,7 +22,7 @@ let mock = ({ configuration, window }) => {
   }
 
   instance.getChainId = async function() {
-    const blockchain = Blockchain.findById(await window._ethereum.request({ method: 'eth_chainId' }))
+    const blockchain = Blockchains.findById(await window._ethereum.request({ method: 'eth_chainId' }))
     return blockchain.networkId
   }
 

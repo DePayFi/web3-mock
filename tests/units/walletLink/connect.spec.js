@@ -1,4 +1,4 @@
-import { Blockchain } from "@depay/web3-blockchains"
+import Blockchains from '@depay/web3-blockchains'
 import { mock, resetMocks, trigger } from 'src'
 import { supported } from "src/blockchains"
 
@@ -27,7 +27,7 @@ describe('mocks walletLink connect', ()=> {
         let relay = await WalletLinkStub.instance._relayProvider()
 
         expect(accounts).toEqual([account])
-        expect(chainId).toEqual(Blockchain.findByName(blockchain).networkId)
+        expect(chainId).toEqual(Blockchains.findByName(blockchain).networkId)
         expect(typeof relay.setConnectDisabled).toEqual('function')
       })
     })

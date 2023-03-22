@@ -1,4 +1,4 @@
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { mock, resetMocks } from 'src'
 import { supported } from "src/blockchains"
 
@@ -22,12 +22,12 @@ describe('mocks evm basics', ()=> {
       
       it('mocks default request for eth_chainId', async ()=> {
         let chainId = await global.ethereum.request({ method: 'eth_chainId' })
-        expect(chainId).toEqual(Blockchain.findByName(blockchain).id);
+        expect(chainId).toEqual(Blockchains.findByName(blockchain).id);
       });
 
       it('mocks default request for net_version', async ()=>{
         let networkVersion = await global.ethereum.request({ method: 'net_version' })
-        expect(networkVersion).toEqual(Blockchain.findByName(blockchain).networkId);
+        expect(networkVersion).toEqual(Blockchains.findByName(blockchain).networkId);
       })
 
       it('mocks default request for eth_getTransactionCount', async ()=>{

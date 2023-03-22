@@ -1,4 +1,3 @@
-import { Blockchain } from '@depay/web3-blockchains'
 import { mock, resetMocks } from 'src'
 import { supported } from "src/blockchains"
 

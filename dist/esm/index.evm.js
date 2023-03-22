@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { Blockchain } from '@depay/web3-blockchains';
+import Blockchains from '@depay/web3-blockchains';
 
 let normalize = function (input) {
   if (input instanceof Array) {
@@ -957,7 +957,7 @@ let sign = function ({ blockchain, params, provider }) {
 
 function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 let switchNetwork = function ({ blockchain, id, provider }) {
-  let toBlockchain = Blockchain.findById(id);
+  let toBlockchain = Blockchains.findById(id);
   if(toBlockchain == undefined) { throw `No blockchain found for id ${id}` }
   let params = { switchTo: toBlockchain.name };
 
@@ -1090,13 +1090,13 @@ let request = ({ blockchain, request, provider }) => {
 
   switch (request.method) {
     case 'eth_chainId':
-      return Promise.resolve(Blockchain.findByName(blockchain).id)
+      return Promise.resolve(Blockchains.findByName(blockchain).id)
 
     case 'eth_getBalance':
       return balance({ blockchain, params: (request.params instanceof Array) ? request.params[0] : request.params, provider })
 
     case 'net_version':
-      return Promise.resolve(Blockchain.findByName(blockchain).networkId)
+      return Promise.resolve(Blockchains.findByName(blockchain).networkId)
 
     case 'eth_requestAccounts':
     case 'eth_accounts':
@@ -1314,7 +1314,7 @@ let mock$1 = ({ configuration, window }) => {
   };
 
   instance.getChainId = async function() {
-    const blockchain = Blockchain.findById(await window._ethereum.request({ method: 'eth_chainId' }));
+    const blockchain = Blockchains.findById(await window._ethereum.request({ method: 'eth_chainId' }));
     return blockchain.networkId
   };
 

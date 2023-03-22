@@ -1,4 +1,4 @@
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { ethers } from 'ethers'
 import { mock, resetMocks } from 'dist/esm/index.evm'
 
@@ -16,7 +16,7 @@ describe('evm network (evm)', ()=> {
     })
 
     let provider = new ethers.providers.Web3Provider(global.ethereum)
-    let blockchain = Blockchain.findByName('bsc')
+    let blockchain = Blockchains.findByName('bsc')
 
     await global.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: blockchain.id }] })
 
@@ -49,7 +49,7 @@ describe('evm network (evm)', ()=> {
       },
     })
 
-    let blockchain = Blockchain.findByName('bsc')
+    let blockchain = Blockchains.findByName('bsc')
 
     await expect(()=>
       global.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: blockchain.id }] })
@@ -64,7 +64,7 @@ describe('evm network (evm)', ()=> {
   it('suggests to mock a network switch', async ()=>{
 
     mock('ethereum')
-    let blockchain = Blockchain.findByName('bsc')
+    let blockchain = Blockchains.findByName('bsc')
 
     await expect(()=>
       global.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: blockchain.id }] })
@@ -74,7 +74,7 @@ describe('evm network (evm)', ()=> {
   })
 
   it('mocks adding an additional network', async ()=>{
-    let blockchain = Blockchain.findByName('bsc')
+    let blockchain = Blockchains.findByName('bsc')
 
     let addMock = mock({
       blockchain: 'ethereum',
@@ -116,7 +116,7 @@ describe('evm network (evm)', ()=> {
   it('suggests to mock a network addition', async ()=>{
 
     mock('ethereum')
-    let blockchain = Blockchain.findByName('bsc')
+    let blockchain = Blockchains.findByName('bsc')
     let addition = {
       chainId: blockchain.id,
       chainName: blockchain.fullName,
@@ -152,7 +152,7 @@ describe('evm network (evm)', ()=> {
       }
     })
 
-    let blockchain = Blockchain.findByName('bsc')
+    let blockchain = Blockchains.findByName('bsc')
 
     await global.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: blockchain.id }] })    
 

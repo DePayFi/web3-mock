@@ -3,7 +3,7 @@ import getTransactionReceipt from './transaction/getTransactionReceipt'
 import { getTransactionCount } from './transaction/count'
 import raise from '../../raise'
 import { balance } from './balance'
-import { Blockchain } from '@depay/web3-blockchains'
+import Blockchains from '@depay/web3-blockchains'
 import { call } from './call'
 import { code } from './code'
 import { estimate } from './estimate'
@@ -31,7 +31,7 @@ let request = ({ blockchain, request, provider }) => {
 
   switch (request.method) {
     case 'eth_chainId':
-      return Promise.resolve(Blockchain.findByName(blockchain).id)
+      return Promise.resolve(Blockchains.findByName(blockchain).id)
       break
 
     case 'eth_getBalance':
@@ -39,7 +39,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'net_version':
-      return Promise.resolve(Blockchain.findByName(blockchain).networkId)
+      return Promise.resolve(Blockchains.findByName(blockchain).networkId)
       break
 
     case 'eth_requestAccounts':

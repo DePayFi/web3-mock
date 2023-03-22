@@ -1,5 +1,5 @@
+import Blockchains from "@depay/web3-blockchains"
 import WalletConnect from "@walletconnect/client"
-import { Blockchain } from "@depay/web3-blockchains"
 import { mock, resetMocks, trigger } from 'src'
 import { supported } from "src/blockchains"
 
@@ -27,7 +27,7 @@ describe('mocks walletConnect connect', ()=> {
         let { accounts, chainId } = await WalletConnectStub.instance.connect()
 
         expect(accounts).toEqual(mockedAccounts)
-        expect(chainId).toEqual(Blockchain.findByName(blockchain).networkId)
+        expect(chainId).toEqual(Blockchains.findByName(blockchain).networkId)
       })
     })
   })
