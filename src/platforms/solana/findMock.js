@@ -26,18 +26,21 @@ let mockHasWrongProvider = (mock, provider) => {
   return mock.provider != provider
 }
 
-let mockHasWrongTransactionData = (mock, type, params) => {
+let mockHasWrongTransactionData = (mock, type, transaction) => {
+  let requiredFrom = transaction?.message?.staticAccountKeys?.length ? transaction.message.staticAccountKeys[0].toString() : undefined
+
   return (
-    (mock[type].from && normalize(params?.feePayer?.toString()) !== normalize(mock[type].from))
+    (mock[type].from && normalize(requiredFrom) !== normalize(mock[type].from))
   )
 }
 
-let mockHasWrongTransactionInstructions = (mock, type, params) => {
+let mockHasWrongTransactionInstructions = (mock, type, transaction) => {
   return (
     (mock[type]?.instructions && mock[type].instructions.some((mockedInstruction)=>{
       if(mockedInstruction?.params == anything) { return false }
-      return !params?.instructions.some((instruction)=>{
-        if(normalize(instruction?.programId?.toString()) != normalize(mockedInstruction.to)) { return false }
+      return !(transaction?.message?.compiledInstructions).some((instruction)=>{
+        let instructionProgramId = transaction.message.staticAccountKeys[instruction.programIdIndex].toString()
+        if(normalize(instructionProgramId) != normalize(mockedInstruction.to)) { return false }
         let decodedInstructionData
         try { decodedInstructionData = mockedInstruction.api.decode(instruction.data) } catch {}
         if(!decodedInstructionData) { return false }

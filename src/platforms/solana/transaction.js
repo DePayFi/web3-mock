@@ -1,4 +1,5 @@
 import raise from '../../raise'
+import { VersionedTransaction, Transaction } from '@depay/solana-web3.js'
 import { findMock, findMockByTransactionHash } from './findMock'
 import { getCurrentBlock } from '../../block'
 
@@ -8,6 +9,8 @@ let signAndSendTransaction = ({ blockchain, params, provider }) => {
   if(mock) {
     mock.calls.add(params)
 
+    const publicKey = params.message.staticAccountKeys[0].toString()
+
     if(mock.transaction.delay) {
       return new Promise((resolve, reject)=>{
         setTimeout(()=>{
@@ -15,7 +18,7 @@ let signAndSendTransaction = ({ blockchain, params, provider }) => {
             reject(mock.transaction.return)
           } else {
             resolve({
-              publicKey: params.feePayer.toString(),
+              publicKey,
               signature: mock.transaction._id
             })
           }
@@ -26,7 +29,7 @@ let signAndSendTransaction = ({ blockchain, params, provider }) => {
         return Promise.reject(mock.transaction.return)
       } else {
         return Promise.resolve({
-          publicKey: params.feePayer.toString(),
+          publicKey,
           signature: mock.transaction._id
         })
       }
@@ -42,13 +45,13 @@ let signAndSendTransaction = ({ blockchain, params, provider }) => {
   }
 }
 
-let getTransactionToBeMocked = (params) =>{
+let getTransactionToBeMocked = (transaction) =>{
 
   return {
-    from: params?.feePayer?.toString(),
-    instructions: params.instructions.map((instruction)=>{
+    from: transaction.message.staticAccountKeys[0].toString(),
+    instructions: (transaction?.message?.compiledInstructions || []).map((instruction)=>{
       return {
-        to: instruction?.programId?.toString(),
+        to: transaction.message.staticAccountKeys[instruction.programIdIndex].toString(),
         api: ["API HERE"],
         params: { value: "HERE" }
       }

@@ -1263,18 +1263,21 @@
     return mock.provider != provider
   };
 
-  let mockHasWrongTransactionData = (mock, type, params) => {
+  let mockHasWrongTransactionData = (mock, type, transaction) => {
+    let requiredFrom = _optionalChain$5([transaction, 'optionalAccess', _ => _.message, 'optionalAccess', _2 => _2.staticAccountKeys, 'optionalAccess', _3 => _3.length]) ? transaction.message.staticAccountKeys[0].toString() : undefined;
+
     return (
-      (mock[type].from && normalize(_optionalChain$5([params, 'optionalAccess', _ => _.feePayer, 'optionalAccess', _2 => _2.toString, 'call', _3 => _3()])) !== normalize(mock[type].from))
+      (mock[type].from && normalize(requiredFrom) !== normalize(mock[type].from))
     )
   };
 
-  let mockHasWrongTransactionInstructions = (mock, type, params) => {
+  let mockHasWrongTransactionInstructions = (mock, type, transaction) => {
     return (
       (_optionalChain$5([mock, 'access', _4 => _4[type], 'optionalAccess', _5 => _5.instructions]) && mock[type].instructions.some((mockedInstruction)=>{
         if(_optionalChain$5([mockedInstruction, 'optionalAccess', _6 => _6.params]) == anything) { return false }
-        return !_optionalChain$5([params, 'optionalAccess', _7 => _7.instructions, 'access', _8 => _8.some, 'call', _9 => _9((instruction)=>{
-          if(normalize(_optionalChain$5([instruction, 'optionalAccess', _10 => _10.programId, 'optionalAccess', _11 => _11.toString, 'call', _12 => _12()])) != normalize(mockedInstruction.to)) { return false }
+        return !(_optionalChain$5([transaction, 'optionalAccess', _7 => _7.message, 'optionalAccess', _8 => _8.compiledInstructions])).some((instruction)=>{
+          let instructionProgramId = transaction.message.staticAccountKeys[instruction.programIdIndex].toString();
+          if(normalize(instructionProgramId) != normalize(mockedInstruction.to)) { return false }
           let decodedInstructionData;
           try { decodedInstructionData = mockedInstruction.api.decode(instruction.data); } catch (e) {}
           if(!decodedInstructionData) { return false }
@@ -1285,7 +1288,7 @@
           })) { return false }
 
           return true
-        })])
+        })
       }))
     )
   };
@@ -1369,7 +1372,7 @@
 
   let findAnyMockForThisAddress = ({ type, params }) => {
     return mocks.find((mock) => {
-      if (normalize(_optionalChain$5([mock, 'access', _13 => _13[type], 'optionalAccess', _14 => _14.to])) !== normalize(params[0])) {
+      if (normalize(_optionalChain$5([mock, 'access', _9 => _9[type], 'optionalAccess', _10 => _10.to])) !== normalize(params[0])) {
         return
       }
       return mock
@@ -1378,8 +1381,8 @@
 
   let findMockByTransactionHash = (hash) => {
     return mocks.find((mock) => {
-      return _optionalChain$5([mock, 'optionalAccess', _15 => _15.transaction, 'optionalAccess', _16 => _16._id]) == hash && (
-        _optionalChain$5([mock, 'optionalAccess', _17 => _17.transaction, 'optionalAccess', _18 => _18._confirmed]) || _optionalChain$5([mock, 'optionalAccess', _19 => _19.transaction, 'optionalAccess', _20 => _20._failed])
+      return _optionalChain$5([mock, 'optionalAccess', _11 => _11.transaction, 'optionalAccess', _12 => _12._id]) == hash && (
+        _optionalChain$5([mock, 'optionalAccess', _13 => _13.transaction, 'optionalAccess', _14 => _14._confirmed]) || _optionalChain$5([mock, 'optionalAccess', _15 => _15.transaction, 'optionalAccess', _16 => _16._failed])
       )
     })
   };
@@ -1695,6 +1698,8 @@
     if(mock) {
       mock.calls.add(params);
 
+      const publicKey = params.message.staticAccountKeys[0].toString();
+
       if(mock.transaction.delay) {
         return new Promise((resolve, reject)=>{
           setTimeout(()=>{
@@ -1702,7 +1707,7 @@
               reject(mock.transaction.return);
             } else {
               resolve({
-                publicKey: params.feePayer.toString(),
+                publicKey,
                 signature: mock.transaction._id
               });
             }
@@ -1713,7 +1718,7 @@
           return Promise.reject(mock.transaction.return)
         } else {
           return Promise.resolve({
-            publicKey: params.feePayer.toString(),
+            publicKey,
             signature: mock.transaction._id
           })
         }
@@ -1729,13 +1734,13 @@
     }
   };
 
-  let getTransactionToBeMocked = (params) =>{
+  let getTransactionToBeMocked = (transaction) =>{
 
     return {
-      from: _optionalChain$3([params, 'optionalAccess', _ => _.feePayer, 'optionalAccess', _2 => _2.toString, 'call', _3 => _3()]),
-      instructions: params.instructions.map((instruction)=>{
+      from: transaction.message.staticAccountKeys[0].toString(),
+      instructions: (_optionalChain$3([transaction, 'optionalAccess', _ => _.message, 'optionalAccess', _2 => _2.compiledInstructions]) || []).map((instruction)=>{
         return {
-          to: _optionalChain$3([instruction, 'optionalAccess', _4 => _4.programId, 'optionalAccess', _5 => _5.toString, 'call', _6 => _6()]),
+          to: transaction.message.staticAccountKeys[instruction.programIdIndex].toString(),
           api: ["API HERE"],
           params: { value: "HERE" }
         }
