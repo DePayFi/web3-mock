@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { Transaction, SystemProgram, PublicKey, struct, u8, u32, u64, BN, TransactionInstruction } from '@depay/solana-web3.js'
+import { TransactionInstruction, TransactionMessage, VersionedTransaction, SystemProgram, PublicKey, struct, u8, u32, u64, BN } from '@depay/solana-web3.js'
 import { mock, resetMocks, confirm, anything, replace } from 'dist/esm/index.solana'
 import { supported } from "src/blockchains"
 
@@ -17,21 +17,22 @@ describe('solana mock transactions', ()=> {
         let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
         let toPubkey = new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa')
 
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
-
-        transaction.add(
+        const instructions = [
           SystemProgram.transfer({
             fromPubkey,
             toPubkey,
             lamports: 1000000000
           })
-        )
-        
+        ]
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
+
         await expect(
-          window.solana.signAndSendTransaction(transaction)
+          window.solana.signAndSendTransaction(transactionV0)
         ).rejects.toEqual(
           'Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"params\":{\"value\":\"HERE\"}}]}}'
         )
@@ -56,20 +57,20 @@ describe('solana mock transactions', ()=> {
         let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
         let toPubkey = new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa')
 
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
-
-        transaction.add(
+        const instructions = [
           SystemProgram.transfer({
             fromPubkey,
             toPubkey,
             lamports: 1000000000
           })
-        )
-        
-        let signedTransaction = await window.solana.signAndSendTransaction(transaction)
+        ]
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
+        let signedTransaction = await window.solana.signAndSendTransaction(transactionV0)
 
         expect(signedTransaction).toBeDefined()
         expect(signedTransaction.publicKey).toEqual('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
@@ -117,16 +118,16 @@ describe('solana mock transactions', ()=> {
           amount: new BN(amount)
         }, data)
         
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
-
-        transaction.add(
+        const instructions = [
           new TransactionInstruction({ keys, programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), data })
-        )
-        
-        let signedTransaction = await window.solana.signAndSendTransaction(transaction)
+        ]
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
+        let signedTransaction = await window.solana.signAndSendTransaction(transactionV0)
 
         expect(signedTransaction).toBeDefined()
         expect(signedTransaction.publicKey).toEqual('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
@@ -165,11 +166,6 @@ describe('solana mock transactions', ()=> {
           }
         })
 
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: new PublicKey(from)
-        })
-
         let LAYOUT, data
 
         LAYOUT = struct([u8("instruction"), u64("maxAmountIn"), u64("amountOut")])
@@ -182,13 +178,15 @@ describe('solana mock transactions', ()=> {
           },
           data,
         )
-        transaction.add(
-          new TransactionInstruction({
+        const instructions = []
+        instructions.push(new TransactionInstruction({
             programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
             data,
             keys: [],
           })
         )
+
+        let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
 
         LAYOUT = struct([u8("instruction"), u64("amountIn"), u64("minAmountOut")])
         data = Buffer.alloc(LAYOUT.span)
@@ -200,16 +198,22 @@ describe('solana mock transactions', ()=> {
           },
           data,
         )
-        transaction.add(
+        instructions.push(
           new TransactionInstruction({
             programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
             data,
             keys: [],
           })
         )
-        
-        let signedTransaction = await window.solana.signAndSendTransaction(transaction)
 
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
+        let signedTransaction = await window.solana.signAndSendTransaction(transactionV0)
+        
         expect(signedTransaction).toBeDefined()
         expect(signedTransaction.publicKey).toEqual('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
         expect(signedTransaction.signature).toEqual(mockedTransaction.transaction._id)
@@ -244,17 +248,20 @@ describe('solana mock transactions', ()=> {
           amount: new BN(amount)
         }, data)
         
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
-
-        transaction.add(
+        const instructions = []
+        instructions.push(
           new TransactionInstruction({ keys, programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), data })
         )
+
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
         
         await expect(
-          window.solana.signAndSendTransaction(transaction)
+          window.solana.signAndSendTransaction(transactionV0)
         ).rejects.toEqual(
           "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\"api\":[\"API HERE\"],\"params\":{\"value\":\"HERE\"}}]}}"
         )
@@ -294,21 +301,23 @@ describe('solana mock transactions', ()=> {
         let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
         let toPubkey = new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa')
 
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
-
-        transaction.add(
+        const instructions = []
+        instructions.push(
           SystemProgram.transfer({
             fromPubkey,
             toPubkey,
             lamports: 1000000000
           })
         )
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
         
         await expect(
-          window.solana.signAndSendTransaction(transaction)
+          window.solana.signAndSendTransaction(transactionV0)
         ).rejects.toEqual(
           "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"params\":{\"value\":\"HERE\"}}]}}"
         )
@@ -333,21 +342,25 @@ describe('solana mock transactions', ()=> {
         let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
         let toPubkey = new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa')
 
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
+        const instructions = []
 
-        transaction.add(
+        instructions.push(
           SystemProgram.transfer({
             fromPubkey,
             toPubkey,
             lamports: 1000000000
           })
         )
+
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
         
         await expect(
-          window.solana.signAndSendTransaction(transaction)
+          window.solana.signAndSendTransaction(transactionV0)
         ).rejects.toEqual(
           "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"params\":{\"value\":\"HERE\"}}]}}"
         )
@@ -376,21 +389,25 @@ describe('solana mock transactions', ()=> {
         let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
         let toPubkey = new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa')
 
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
+        const instructions = []
 
-        transaction.add(
+        instructions.push(
           SystemProgram.transfer({
             fromPubkey,
             toPubkey,
             lamports: 1000000000
           })
         )
+
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
         
         await expect(
-          window.solana.signAndSendTransaction(transaction)
+          window.solana.signAndSendTransaction(transactionV0)
         ).rejects.toEqual(
           "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"11111111111111111111111111111111\",\"api\":[\"API HERE\"],\"params\":{\"value\":\"HERE\"}}]}}"
         )
@@ -436,16 +453,19 @@ describe('solana mock transactions', ()=> {
           amount: new BN(amount)
         }, data)
         
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
-
-        transaction.add(
+        const instructions = []
+        instructions.push(
           new TransactionInstruction({ keys, programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), data })
         )
+
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
         
-        let signedTransaction = await window.solana.signAndSendTransaction(transaction)
+        let signedTransaction = await window.solana.signAndSendTransaction(transactionV0)
 
         expect(signedTransaction).toBeDefined()
         expect(signedTransaction.publicKey).toEqual('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
@@ -497,17 +517,21 @@ describe('solana mock transactions', ()=> {
           amount: new BN(amount)
         }, data)
         
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
+        const instructions = []
 
-        transaction.add(
+        instructions.push(
           new TransactionInstruction({ keys, programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), data })
         )
-        
-        let signedTransaction = await window.solana.signAndSendTransaction(transaction)
 
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
+        
+        let signedTransaction = await window.solana.signAndSendTransaction(transactionV0)
+        
         expect(signedTransaction).toBeDefined()
         expect(signedTransaction.publicKey).toEqual('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
         expect(signedTransaction.signature).toEqual(mockedTransaction.transaction._id)
@@ -555,17 +579,21 @@ describe('solana mock transactions', ()=> {
           amount: new BN(amount)
         }, data)
         
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
+        const instructions = []
 
-        transaction.add(
+        instructions.push(
           new TransactionInstruction({ keys, programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), data })
         )
+
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
         
         await expect(
-          window.solana.signAndSendTransaction(transaction)
+          window.solana.signAndSendTransaction(transactionV0)
         ).rejects.toEqual(new Error('Some issue'))
 
         expect(mockedTransaction).toHaveBeenCalled()
@@ -611,17 +639,21 @@ describe('solana mock transactions', ()=> {
           amount: new BN(amount)
         }, data)
         
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
+        const instructions = []
 
-        transaction.add(
+        instructions.push(
           new TransactionInstruction({ keys, programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), data })
         )
+
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
         
         let now = new Date().getTime()
-        await window.solana.signAndSendTransaction(transaction)
+        await window.solana.signAndSendTransaction(transactionV0)
         expect((new Date().getTime() - now) > 1000).toEqual(true)
         
         expect(mockedTransaction).toHaveBeenCalled()
@@ -670,16 +702,20 @@ describe('solana mock transactions', ()=> {
           amount: new BN(amount)
         }, data)
         
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
+        const instructions = []
 
-        transaction.add(
+        instructions.push(
           new TransactionInstruction({ keys, programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), data })
         )
+
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
         
-        let signedTransaction = await window.solana.signAndSendTransaction(transaction)
+        let signedTransaction = await window.solana.signAndSendTransaction(transactionV0)
 
         expect(signedTransaction).toBeDefined()
         expect(signedTransaction.publicKey).toEqual('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')

@@ -47,11 +47,16 @@ let signAndSendTransaction = ({ blockchain, params, provider }) => {
 
 let getTransactionToBeMocked = (transaction) =>{
 
+  let from = transaction?.message?.staticAccountKeys?.length ? transaction.message.staticAccountKeys[0].toString() : 'FROM'
+
   return {
-    from: transaction.message.staticAccountKeys[0].toString(),
+    from,
     instructions: (transaction?.message?.compiledInstructions || []).map((instruction)=>{
+
+      let to = transaction?.message?.staticAccountKeys?.length ? transaction.message.staticAccountKeys[instruction.programIdIndex].toString() : 'TO'
+
       return {
-        to: transaction.message.staticAccountKeys[instruction.programIdIndex].toString(),
+        to,
         api: ["API HERE"],
         params: { value: "HERE" }
       }

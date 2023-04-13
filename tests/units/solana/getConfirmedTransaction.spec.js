@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { mock, resetMocks, fail } from 'src'
 import { supported } from "src/blockchains"
-import { Connection, Transaction, SystemProgram, PublicKey, struct, u32, u64, } from '@depay/solana-web3.js'
+import { Connection, TransactionInstruction, TransactionMessage, VersionedTransaction, SystemProgram, PublicKey, struct, u32, u64, } from '@depay/solana-web3.js'
 
 describe('mock solana getConfirmedTransaction', ()=> {
 
@@ -32,20 +32,24 @@ describe('mock solana getConfirmedTransaction', ()=> {
         let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
         let toPubkey = new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa')
 
-        let transaction = new Transaction({
-          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
-          feePayer: fromPubkey
-        })
+        const instructions = []
 
-        transaction.add(
+        instructions.push(
           SystemProgram.transfer({
             fromPubkey,
             toPubkey,
             lamports: 1000000000
           })
         )
+
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
         
-        let signedTransaction = await window.solana.signAndSendTransaction(transaction)
+        let signedTransaction = await window.solana.signAndSendTransaction(transactionV0)
 
         fail(mockedTransaction, 'THIS IS THE REASON IT FAILED')
 

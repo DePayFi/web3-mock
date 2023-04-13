@@ -1,4 +1,4 @@
-import { Connection, struct, u8, PublicKey, Transaction, TransactionInstruction } from '@depay/solana-web3.js'
+import { Connection, struct, u8, PublicKey, TransactionInstruction, TransactionMessage, VersionedTransaction } from '@depay/solana-web3.js'
 import { mock, resetMocks, anything } from 'dist/esm/index.solana'
 import { supported } from "src/blockchains"
 
@@ -58,12 +58,19 @@ describe('mocks solana simulations', ()=> {
           data,
         })
 
+        const instructions = []
+        instructions.push(instruction)
+
         const feePayer = new PublicKey("RaydiumSimuLateTransaction11111111111111111")
 
-        let transaction = new Transaction({ feePayer })
-        transaction.add(instruction)
+        const messageV0 = new TransactionMessage({
+          payerKey: feePayer,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
 
-        let result = await connection.simulateTransaction(transaction)
+        let result = await connection.simulateTransaction(transactionV0)
         expect(result.value.logs).toEqual(logs)
       })
 
@@ -94,11 +101,18 @@ describe('mocks solana simulations', ()=> {
 
         const feePayer = new PublicKey("RaydiumSimuLateTransaction11111111111111111")
 
-        let transaction = new Transaction({ feePayer })
-        transaction.add(instruction)
+        const instructions = []
+        instructions.push(instruction)
+
+        const messageV0 = new TransactionMessage({
+          payerKey: feePayer,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
 
         await expect(
-          connection.simulateTransaction(transaction)
+          connection.simulateTransaction(transactionV0)
         ).rejects.toEqual(
           'Web3Mock: Please mock the simulation: {"blockchain":"solana","simulate":{"from":"RaydiumSimuLateTransaction11111111111111111","instructions":[{"to":"675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8","api":"API HERE"}],"return":"YOUR RETURN HERE"}}'
         )
@@ -148,11 +162,18 @@ describe('mocks solana simulations', ()=> {
 
         const feePayer = new PublicKey("RaydiumSimuLateTransaction11111111111111111")
 
-        let transaction = new Transaction({ feePayer })
-        transaction.add(instruction)
+        const instructions = []
+        instructions.push(instruction)
+
+        const messageV0 = new TransactionMessage({
+          payerKey: feePayer,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
 
         await expect(
-          connection.simulateTransaction(transaction)
+          connection.simulateTransaction(transactionV0)
         ).rejects.toEqual(
           'Web3Mock: Please mock the simulation: {"blockchain":"solana","simulate":{"from":"RaydiumSimuLateTransaction11111111111111111","instructions":[{"to":"675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8","api":"API HERE"}],"return":"YOUR RETURN HERE"}}'
         )
