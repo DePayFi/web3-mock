@@ -1489,13 +1489,13 @@
       return value
     } else if (typeof value == 'string' && value == NATIVE) {
       return new solanaWeb3_js.PublicKey(value)
-    } else if (typeof value == 'string' && value.match(/\D/)) {
+    } else if (typeof value == 'string' && value.match(/[^0-9-]/)) {
       try {
         return new solanaWeb3_js.PublicKey(value)
       } catch(e) { // normal string
         return solanaWeb3_js.Buffer.from(value, 'utf-8')
       }
-    } else if (typeof value == 'string' && !value.match(/\D/)) {
+    } else if (typeof value == 'string' && !value.match(/[^0-9-]/)) {
       return new solanaWeb3_js.BN(value, 10)
     } else if (typeof value == 'boolean') {
       return value

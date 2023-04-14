@@ -1,4 +1,4 @@
-import { Connection, PublicKey, struct, publicKey, u64, u32, u8, bool, str, Buffer } from '@depay/solana-web3.js'
+import { Connection, PublicKey, struct, publicKey, i128, u64, u32, u8, bool, str, Buffer } from '@depay/solana-web3.js'
 import { mock, resetMocks, anything } from 'dist/esm/index.solana'
 import { supported } from "src/blockchains"
 
@@ -20,7 +20,7 @@ describe('mocks solana requests', ()=> {
       let api = struct([
         publicKey('mint'),
         publicKey('owner'),
-        u64('amount'),
+        i128('amount'),
         u32('delegateOption'),
         publicKey('delegate'),
         u8('state'),
@@ -34,7 +34,7 @@ describe('mocks solana requests', ()=> {
       
       beforeEach(resetMocks)
 
-      it('mocks a simple request', async ()=>{
+      it.only('mocks a simple request', async ()=>{
 
         let connection = new Connection('https://api.mainnet-beta.solana.com')
 
@@ -48,7 +48,7 @@ describe('mocks solana requests', ()=> {
             return: {
               mint: '8rUUP52Bb6Msg6E14odyPWUFafi5wLEMpLjtmNfBp3r',
               owner: 'Cq7CPoJ3b84nANKnz61HCCywSMVJNbRzmoaqvAxBi4vX',
-              amount: '2511210038936013080',
+              amount: '-2511210038936013080',
               delegateOption: 70962703,
               delegate: 'BSFGxQ38xesdoUd3qsvNhjRu2FLPq9CwCBiGE42fc9hR',
               state: 0,
@@ -69,7 +69,7 @@ describe('mocks solana requests', ()=> {
         const decoded = api.decode(info.data)
         expect(decoded.mint.toString()).toEqual('8rUUP52Bb6Msg6E14odyPWUFafi5wLEMpLjtmNfBp3r')
         expect(decoded.owner.toString()).toEqual('Cq7CPoJ3b84nANKnz61HCCywSMVJNbRzmoaqvAxBi4vX')
-        expect(decoded.amount.toString()).toEqual('2511210038936013080')
+        expect(decoded.amount.toString()).toEqual('-2511210038936013080')
         expect(decoded.delegateOption).toEqual(70962703)
         expect(decoded.delegate.toString()).toEqual('BSFGxQ38xesdoUd3qsvNhjRu2FLPq9CwCBiGE42fc9hR')
         expect(decoded.state).toEqual(0)

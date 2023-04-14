@@ -527,13 +527,13 @@ let marshalValue = (value, blockchain)=>{
     return value
   } else if (typeof value == 'string' && value == NATIVE) {
     return new PublicKey(value)
-  } else if (typeof value == 'string' && value.match(/\D/)) {
+  } else if (typeof value == 'string' && value.match(/[^0-9-]/)) {
     try {
       return new PublicKey(value)
     } catch(e) { // normal string
       return Buffer.from(value, 'utf-8')
     }
-  } else if (typeof value == 'string' && !value.match(/\D/)) {
+  } else if (typeof value == 'string' && !value.match(/[^0-9-]/)) {
     return new BN(value, 10)
   } else if (typeof value == 'boolean') {
     return value
