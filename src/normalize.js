@@ -6,10 +6,10 @@ let normalize = function (input) {
   } else if (typeof input === 'object' && input._isBigNumber) {
     return input.toString()
   } else {
-    if (typeof input === 'object') {
-      return JSON.stringify(input)
-    } else if (input.toString) {
+    if (input?.toString) {
       return input.toString().toLowerCase()
+    } else if (typeof input === 'object') {
+      return JSON.stringify(input)
     } else if (typeof input === 'string' && input.match('0x')) {
       return input.toLowerCase()
     } else {

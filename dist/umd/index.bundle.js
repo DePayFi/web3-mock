@@ -9,7 +9,7 @@
   var require$$0__default = /*#__PURE__*/_interopDefaultLegacy(require$$0$2);
   var require$$0__default$1 = /*#__PURE__*/_interopDefaultLegacy(require$$0$3);
 
-  let normalize$1 = function (input) {
+  function _optionalChain$k(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let normalize$1 = function (input) {
     if (input instanceof Array) {
       return input.map((element) => normalize$1(element))
     } else if (typeof input === 'undefined') {
@@ -17,10 +17,10 @@
     } else if (typeof input === 'object' && input._isBigNumber) {
       return input.toString()
     } else {
-      if (typeof input === 'object') {
-        return JSON.stringify(input)
-      } else if (input.toString) {
+      if (_optionalChain$k([input, 'optionalAccess', _ => _.toString])) {
         return input.toString().toLowerCase()
+      } else if (typeof input === 'object') {
+        return JSON.stringify(input)
       } else if (typeof input === 'string' && input.match('0x')) {
         return input.toLowerCase()
       } else {
@@ -23367,13 +23367,11 @@
           let decodedInstructionData;
           try { decodedInstructionData = mockedInstruction.api.decode(instruction.data); } catch (e) {}
           if(!decodedInstructionData) { return false }
-          if(Object.keys(decodedInstructionData).some((key)=>{
-            if(!mockedInstruction.params) { return false }
-            if(mockedInstruction.params[key] == anything) { return false }
-            return mockedInstruction.params[key] != decodedInstructionData[key]
-          })) { return false }
-
-          return true
+          
+          return Object.keys(mockedInstruction.params).every((key)=>{
+            if(mockedInstruction.params[key] == anything) { return true }
+            return normalize$1(mockedInstruction.params[key]) == normalize$1(decodedInstructionData[key])
+          })
         })
       }))
     )

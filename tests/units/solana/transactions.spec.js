@@ -380,8 +380,8 @@ describe('solana mock transactions', ()=> {
                 u64('lamports')
               ]),
               params: {
-                instruction: 3, // transfer
-                amount: 2000000000
+                instruction: 2,
+                lamports: 2000000000,
               }
             }]
           }

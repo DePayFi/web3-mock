@@ -177,7 +177,11 @@ describe('something', ()=> {
           api: struct([
             u32('instruction'),
             u64('lamports')
-          ])
+          ]),
+          params: {
+            instruction: 2,
+            lamports: 1000000000,
+          }
         }]
       }
     })

@@ -45,13 +45,11 @@ let mockHasWrongTransactionInstructions = (mock, type, transaction) => {
         let decodedInstructionData
         try { decodedInstructionData = mockedInstruction.api.decode(instruction.data) } catch {}
         if(!decodedInstructionData) { return false }
-        if(Object.keys(decodedInstructionData).some((key)=>{
-          if(!mockedInstruction.params) { return false }
-          if(mockedInstruction.params[key] == anything) { return false }
-          return mockedInstruction.params[key] != decodedInstructionData[key]
-        })) { return false }
-
-        return true
+        
+        return Object.keys(mockedInstruction.params).every((key)=>{
+          if(mockedInstruction.params[key] == anything) { return true }
+          return normalize(mockedInstruction.params[key]) == normalize(decodedInstructionData[key])
+        })
       })
     }))
   )

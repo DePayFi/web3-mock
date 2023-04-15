@@ -36,8 +36,8 @@ var raise = (msg)=>{
   throw(msg)
 };
 
-function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let getWindow = (configuration) => {
-  if (_optionalChain$9([configuration, 'optionalAccess', _ => _.window])) return configuration.window
+function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let getWindow = (configuration) => {
+  if (_optionalChain$a([configuration, 'optionalAccess', _ => _.window])) return configuration.window
   if (typeof global == 'object') return global
   if (typeof cy == 'object') return cy.window().specWindow.window
   if (typeof window == 'object') return window
@@ -103,10 +103,10 @@ let supported = ['solana'];
 supported.evm = [];
 supported.solana = ['solana'];
 
-function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
 var confirm = (mock) => {
-  if (_optionalChain$8([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
+  if (_optionalChain$9([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
     mock.transaction._confirmed = true;
     if(supported.evm.includes(mock.blockchain)) ; else if(supported.solana.includes(mock.blockchain)) {
 
@@ -234,10 +234,10 @@ let fail$1 = (transaction, reason) => {
   return transaction
 };
 
-function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
 var fail = (mock, reason) => {
-  if (_optionalChain$7([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
+  if (_optionalChain$8([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
     mock.transaction._failed = true;
     mock.transaction._confirmed = false;
     if(supported.evm.includes(mock.blockchain)) ; else if(supported.solana.includes(mock.blockchain)) {
@@ -255,7 +255,7 @@ var fail = (mock, reason) => {
   }
 };
 
-let normalize = function (input) {
+function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let normalize = function (input) {
   if (input instanceof Array) {
     return input.map((element) => normalize(element))
   } else if (typeof input === 'undefined') {
@@ -263,10 +263,10 @@ let normalize = function (input) {
   } else if (typeof input === 'object' && input._isBigNumber) {
     return input.toString()
   } else {
-    if (typeof input === 'object') {
-      return JSON.stringify(input)
-    } else if (input.toString) {
+    if (_optionalChain$7([input, 'optionalAccess', _ => _.toString])) {
       return input.toString().toLowerCase()
+    } else if (typeof input === 'object') {
+      return JSON.stringify(input)
     } else if (typeof input === 'string' && input.match('0x')) {
       return input.toLowerCase()
     } else {
@@ -320,13 +320,11 @@ let mockHasWrongTransactionInstructions = (mock, type, transaction) => {
         let decodedInstructionData;
         try { decodedInstructionData = mockedInstruction.api.decode(instruction.data); } catch (e) {}
         if(!decodedInstructionData) { return false }
-        if(Object.keys(decodedInstructionData).some((key)=>{
-          if(!mockedInstruction.params) { return false }
-          if(mockedInstruction.params[key] == anything) { return false }
-          return mockedInstruction.params[key] != decodedInstructionData[key]
-        })) { return false }
-
-        return true
+        
+        return Object.keys(mockedInstruction.params).every((key)=>{
+          if(mockedInstruction.params[key] == anything) { return true }
+          return normalize(mockedInstruction.params[key]) == normalize(decodedInstructionData[key])
+        })
       })
     }))
   )
