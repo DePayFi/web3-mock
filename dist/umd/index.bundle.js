@@ -23363,6 +23363,7 @@
         return !(_optionalChain$6([transaction, 'optionalAccess', _7 => _7.message, 'optionalAccess', _8 => _8.compiledInstructions])).some((instruction)=>{
           let instructionProgramId = transaction.message.staticAccountKeys[instruction.programIdIndex].toString();
           if(normalize$1(instructionProgramId) != normalize$1(mockedInstruction.to)) { return false }
+          if(!mockedInstruction.params) { return true }
           let decodedInstructionData;
           try { decodedInstructionData = mockedInstruction.api.decode(instruction.data); } catch (e) {}
           if(!decodedInstructionData) { return false }

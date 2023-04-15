@@ -996,6 +996,16 @@
   resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-7.1.0.tgz#101c4d36e263f5d703e1604899b3b17fdd084bbb"
   integrity sha512-/ZhT+c5Z58SCpo9aU7Z2mDGQxMc2Ia2BM8RKt/V337I9fYNp7zRdiYX8U+hnN4BvB9S0yu3l8vRgKwEAU1fhuA==
 
+"@depay/web3-client@^10.7.0":
+  version "10.7.1"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.7.1.tgz#1b50f747e72b8d8cfaf5c67dcfcf72fb3c0e7e49"
+  integrity sha512-whDS23DH2GeDODOzG5EEpoQFXTQPInyBS9YEtL91U8QiZ6tfzMcXZ/K/EQt8HKH/H0ey96SqFSJS3/eySJVqWA==
+
+"@depay/web3-tokens@^9.17.0":
+  version "9.17.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-9.17.0.tgz#d22cb1d1ee33c30239428271e5d5c498f3f92039"
+  integrity sha512-4pNODncPZu46sZvODb535ceY+wgAF8kA98glEk2q3eHgUagQ7igNkji1w1iRwkb8nq4/NuKn3WdW5OtCVXjMxw==
+
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
   resolved "https://registry.npmjs.org/@eslint/eslintrc/-/eslintrc-0.4.3.tgz"

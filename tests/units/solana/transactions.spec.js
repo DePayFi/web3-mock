@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 import { TransactionInstruction, TransactionMessage, VersionedTransaction, SystemProgram, PublicKey, struct, u8, u32, u64, BN } from '@depay/solana-web3.js'
 import { mock, resetMocks, confirm, anything, replace } from 'src'
+import { Token } from '@depay/web3-tokens'
 import { supported } from "src/blockchains"
 
 describe('solana mock transactions', ()=> {
@@ -596,6 +597,40 @@ describe('solana mock transactions', ()=> {
           window.solana.signAndSendTransaction(transactionV0)
         ).rejects.toEqual(new Error('Some issue'))
 
+        expect(mockedTransaction).toHaveBeenCalled()
+      })
+
+      it('mocks transaction instructions without data', async ()=>{
+
+        let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
+
+        let mockedTransaction = mock({
+          blockchain,
+          transaction: {
+            from: "2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1",
+            instructions:[{
+              to: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
+              api: struct([])
+            }]
+          }
+        })
+
+        const instructions = []
+
+        instructions.push(await Token.solana.createAssociatedTokenAccountInstruction({
+          token: new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
+          owner: fromPubkey,
+          payer: fromPubkey,
+        }))
+
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
+        
+        await window.solana.signAndSendTransaction(transactionV0)
         expect(mockedTransaction).toHaveBeenCalled()
       })
 

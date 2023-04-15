@@ -41,6 +41,7 @@ let mockHasWrongTransactionInstructions = (mock, type, transaction) => {
       return !(transaction?.message?.compiledInstructions).some((instruction)=>{
         let instructionProgramId = transaction.message.staticAccountKeys[instruction.programIdIndex].toString()
         if(normalize(instructionProgramId) != normalize(mockedInstruction.to)) { return false }
+        if(!mockedInstruction.params) { return true }
         let decodedInstructionData
         try { decodedInstructionData = mockedInstruction.api.decode(instruction.data) } catch {}
         if(!decodedInstructionData) { return false }
