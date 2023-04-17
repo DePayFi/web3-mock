@@ -475,6 +475,70 @@ describe('solana mock transactions', ()=> {
         expect(mockedTransaction).toHaveBeenCalled()
       })
 
+      it('does not mock a complex contract call transaction by if keys do not match', async ()=> {
+
+        let fromPubkey = new PublicKey('2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1')
+        let toPubkey = new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa')
+
+        let fromTokenAccount = new PublicKey('F7e4iBrxoSmHhEzhuBcXXs1KAknYvEoZWieiocPvrCD9')
+        let toTokenAccount = new PublicKey('9vNeT1wshV1hgicUYJj7E68CXwU4oZRgtfDf5a2mMn7y')
+
+        let mockedTransaction = mock({
+          blockchain,
+          transaction: {
+            from: "2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1",
+            instructions:[{
+              to: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+              api: struct([
+                u8('instruction'),
+                u64('amount')
+              ]),
+              params: anything,
+              keys: [
+                { pubkey: new PublicKey(toTokenAccount), isSigner: false, isWritable: true },
+                { pubkey: new PublicKey(toTokenAccount), isSigner: false, isWritable: true },
+                { pubkey: fromPubkey, isSigner: true, isWritable: false }
+              ]
+            }]
+          }
+        })
+
+        const keys = [
+          { pubkey: new PublicKey(fromTokenAccount), isSigner: false, isWritable: true },
+          { pubkey: new PublicKey(toTokenAccount), isSigner: false, isWritable: true },
+          { pubkey: fromPubkey, isSigner: true, isWritable: false }
+        ]
+
+        let TRANSFER_LAYOUT = struct([
+          u8('instruction'),
+          u64('amount')
+        ])
+        const amount = 1000000000
+        const data = Buffer.alloc(TRANSFER_LAYOUT.span)
+        TRANSFER_LAYOUT.encode({
+          instruction: 3, // TRANSFER
+          amount: new BN(amount)
+        }, data)
+        
+        const instructions = []
+        instructions.push(
+          new TransactionInstruction({ keys, programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), data })
+        )
+
+        const messageV0 = new TransactionMessage({
+          payerKey: fromPubkey,
+          recentBlockhash: 'H1HsQ5AjWGAnW7f6ZAwohwa4JzNeYViGiG22NbfvUKBE',
+          instructions,
+        }).compileToV0Message()
+        const transactionV0 = new VersionedTransaction(messageV0)
+        
+        await expect(
+          window.solana.signAndSendTransaction(transactionV0)
+        ).rejects.toEqual(
+          "Web3Mock: Please mock the following transaction: {\"blockchain\":\"solana\",\"transaction\":{\"from\":\"2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1\",\"instructions\":[{\"to\":\"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\"api\":[\"API HERE\"],\"params\":{\"value\":\"HERE\"}}]}}"
+        )
+      })
+
       it('mocks a complex contract call transaction by partialy mocking params array value with anything', async ()=> {
 
         let mockedTransaction = mock({

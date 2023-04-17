@@ -34,22 +34,38 @@ let mockHasWrongTransactionData = (mock, type, transaction) => {
   )
 }
 
+let mockInstructionsMatch = (mockedInstruction, instruction)=>{
+  if(mockedInstruction?.params == anything) { return true }
+  if(!mockedInstruction.params) { return true }
+  let decodedInstructionData
+  try { decodedInstructionData = mockedInstruction.api.decode(instruction.data) } catch {}
+  if(!decodedInstructionData) { return false }
+  
+  return Object.keys(mockedInstruction.params).every((key)=>{
+    if(mockedInstruction.params[key] == anything) { return true }
+    return normalize(mockedInstruction.params[key]) == normalize(decodedInstructionData[key])
+  })
+}
+
+let mockKeysMatch = (mockedInstruction, instruction, transaction)=>{
+  if(mockedInstruction?.keys == anything) { return true }
+  if(!mockedInstruction.keys || mockedInstruction.keys.length === 0) { return true }
+  return mockedInstruction.keys.every((mockedKey, index)=>{
+    if(mockedKey === anything) { return true }
+    return(
+      mockedKey.pubkey.toString() === transaction.message.staticAccountKeys[instruction.accountKeyIndexes[index]].toString()
+    )
+  }) 
+}
+
 let mockHasWrongTransactionInstructions = (mock, type, transaction) => {
   return (
     (mock[type]?.instructions && mock[type].instructions.some((mockedInstruction)=>{
-      if(mockedInstruction?.params == anything) { return false }
       return !(transaction?.message?.compiledInstructions).some((instruction)=>{
         let instructionProgramId = transaction.message.staticAccountKeys[instruction.programIdIndex].toString()
         if(normalize(instructionProgramId) != normalize(mockedInstruction.to)) { return false }
-        if(!mockedInstruction.params) { return true }
-        let decodedInstructionData
-        try { decodedInstructionData = mockedInstruction.api.decode(instruction.data) } catch {}
-        if(!decodedInstructionData) { return false }
-        
-        return Object.keys(mockedInstruction.params).every((key)=>{
-          if(mockedInstruction.params[key] == anything) { return true }
-          return normalize(mockedInstruction.params[key]) == normalize(decodedInstructionData[key])
-        })
+        if(!mockedInstruction.params && !mockedInstruction.keys) { return true }
+        return mockInstructionsMatch(mockedInstruction, instruction) && mockKeysMatch(mockedInstruction, instruction, transaction)
       })
     }))
   )

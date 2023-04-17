@@ -34,7 +34,7 @@ describe('mocks solana requests', ()=> {
       
       beforeEach(resetMocks)
 
-      it.only('mocks a simple request', async ()=>{
+      it('mocks a simple request', async ()=>{
 
         let connection = new Connection('https://api.mainnet-beta.solana.com')
 

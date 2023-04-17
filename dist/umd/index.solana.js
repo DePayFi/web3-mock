@@ -315,22 +315,38 @@
     )
   };
 
+  let mockInstructionsMatch = (mockedInstruction, instruction)=>{
+    if(_optionalChain$6([mockedInstruction, 'optionalAccess', _4 => _4.params]) == anything) { return true }
+    if(!mockedInstruction.params) { return true }
+    let decodedInstructionData;
+    try { decodedInstructionData = mockedInstruction.api.decode(instruction.data); } catch (e) {}
+    if(!decodedInstructionData) { return false }
+    
+    return Object.keys(mockedInstruction.params).every((key)=>{
+      if(mockedInstruction.params[key] == anything) { return true }
+      return normalize(mockedInstruction.params[key]) == normalize(decodedInstructionData[key])
+    })
+  };
+
+  let mockKeysMatch = (mockedInstruction, instruction, transaction)=>{
+    if(_optionalChain$6([mockedInstruction, 'optionalAccess', _5 => _5.keys]) == anything) { return true }
+    if(!mockedInstruction.keys || mockedInstruction.keys.length === 0) { return true }
+    return mockedInstruction.keys.every((mockedKey, index)=>{
+      if(mockedKey === anything) { return true }
+      return(
+        mockedKey.pubkey.toString() === transaction.message.staticAccountKeys[instruction.accountKeyIndexes[index]].toString()
+      )
+    }) 
+  };
+
   let mockHasWrongTransactionInstructions = (mock, type, transaction) => {
     return (
-      (_optionalChain$6([mock, 'access', _4 => _4[type], 'optionalAccess', _5 => _5.instructions]) && mock[type].instructions.some((mockedInstruction)=>{
-        if(_optionalChain$6([mockedInstruction, 'optionalAccess', _6 => _6.params]) == anything) { return false }
-        return !(_optionalChain$6([transaction, 'optionalAccess', _7 => _7.message, 'optionalAccess', _8 => _8.compiledInstructions])).some((instruction)=>{
+      (_optionalChain$6([mock, 'access', _6 => _6[type], 'optionalAccess', _7 => _7.instructions]) && mock[type].instructions.some((mockedInstruction)=>{
+        return !(_optionalChain$6([transaction, 'optionalAccess', _8 => _8.message, 'optionalAccess', _9 => _9.compiledInstructions])).some((instruction)=>{
           let instructionProgramId = transaction.message.staticAccountKeys[instruction.programIdIndex].toString();
           if(normalize(instructionProgramId) != normalize(mockedInstruction.to)) { return false }
-          if(!mockedInstruction.params) { return true }
-          let decodedInstructionData;
-          try { decodedInstructionData = mockedInstruction.api.decode(instruction.data); } catch (e) {}
-          if(!decodedInstructionData) { return false }
-          
-          return Object.keys(mockedInstruction.params).every((key)=>{
-            if(mockedInstruction.params[key] == anything) { return true }
-            return normalize(mockedInstruction.params[key]) == normalize(decodedInstructionData[key])
-          })
+          if(!mockedInstruction.params && !mockedInstruction.keys) { return true }
+          return mockInstructionsMatch(mockedInstruction, instruction) && mockKeysMatch(mockedInstruction, instruction, transaction)
         })
       }))
     )
@@ -415,7 +431,7 @@
 
   let findAnyMockForThisAddress = ({ type, params }) => {
     return mocks.find((mock) => {
-      if (normalize(_optionalChain$6([mock, 'access', _9 => _9[type], 'optionalAccess', _10 => _10.to])) !== normalize(params[0])) {
+      if (normalize(_optionalChain$6([mock, 'access', _10 => _10[type], 'optionalAccess', _11 => _11.to])) !== normalize(params[0])) {
         return
       }
       return mock
@@ -424,8 +440,8 @@
 
   let findMockByTransactionHash = (hash) => {
     return mocks.find((mock) => {
-      return _optionalChain$6([mock, 'optionalAccess', _11 => _11.transaction, 'optionalAccess', _12 => _12._id]) == hash && (
-        _optionalChain$6([mock, 'optionalAccess', _13 => _13.transaction, 'optionalAccess', _14 => _14._confirmed]) || _optionalChain$6([mock, 'optionalAccess', _15 => _15.transaction, 'optionalAccess', _16 => _16._failed])
+      return _optionalChain$6([mock, 'optionalAccess', _12 => _12.transaction, 'optionalAccess', _13 => _13._id]) == hash && (
+        _optionalChain$6([mock, 'optionalAccess', _14 => _14.transaction, 'optionalAccess', _15 => _15._confirmed]) || _optionalChain$6([mock, 'optionalAccess', _16 => _16.transaction, 'optionalAccess', _17 => _17._failed])
       )
     })
   };
