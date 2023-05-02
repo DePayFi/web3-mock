@@ -991,20 +991,20 @@
   resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.21.2.tgz#65b2b60b66ad8b42f717ee22bc753ca538f2f56e"
   integrity sha512-9UON+nXRrFnCYqg2vcGceP+4Ly+zzAJ88RthuvVhHtIfPeEqDyjj9S77iwZT/4/lmYDnUPoC9pl4otfmX7B+9w==
 
-"@depay/web3-blockchains@^7.1.0":
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-7.1.0.tgz#101c4d36e263f5d703e1604899b3b17fdd084bbb"
-  integrity sha512-/ZhT+c5Z58SCpo9aU7Z2mDGQxMc2Ia2BM8RKt/V337I9fYNp7zRdiYX8U+hnN4BvB9S0yu3l8vRgKwEAU1fhuA==
+"@depay/web3-blockchains@^8.0.1":
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-8.0.1.tgz#c61f2308c23ea577bbcea1091bd61e5a9a37b60a"
+  integrity sha512-Y63aVTDfsFgoptAoh2XFbPi08kVITEaDwiM/d8BDoMU3yWgCBJhGpIlyvL4rQcatZPqa8LYNrLVKeE2ETBviow==
 
-"@depay/web3-client@^10.7.0":
-  version "10.7.1"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.7.1.tgz#1b50f747e72b8d8cfaf5c67dcfcf72fb3c0e7e49"
-  integrity sha512-whDS23DH2GeDODOzG5EEpoQFXTQPInyBS9YEtL91U8QiZ6tfzMcXZ/K/EQt8HKH/H0ey96SqFSJS3/eySJVqWA==
+"@depay/web3-client@^10.11.0":
+  version "10.11.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.11.0.tgz#94cf8f26f5d473b0ac5ed7e93d25ea32829eb145"
+  integrity sha512-VQ0XcA3xkxVg9JRqa0YscjPPteMhEbVl2qUma0c+E4cn9BOvgnZwvqFGq6UdtE5V6whaZhr2k61tfLEH2TBe4g==
 
-"@depay/web3-tokens@^9.17.0":
-  version "9.17.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-9.17.0.tgz#d22cb1d1ee33c30239428271e5d5c498f3f92039"
-  integrity sha512-4pNODncPZu46sZvODb535ceY+wgAF8kA98glEk2q3eHgUagQ7igNkji1w1iRwkb8nq4/NuKn3WdW5OtCVXjMxw==
+"@depay/web3-tokens@^9.18.0":
+  version "9.18.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-9.18.0.tgz#225ce35090ba2058a499293bb0b73f6422d3b059"
+  integrity sha512-cKh6SbJqqJCvDtAouJ02N+QRQtUqUWosmF72YwHtM0F/f37ElMA637VTLZXVPXWi71rBOkrnWcWAuZITTReT2Q==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"

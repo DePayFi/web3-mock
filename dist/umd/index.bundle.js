@@ -22520,7 +22520,11 @@
       if(token) { return `https://bscscan.com/token/${token}` }
       if(address) { return `https://bscscan.com/address/${address}` }
     },
-    rpc: 'https://bsc-dataseed1.binance.org',
+    endpoints: [ // make sure provider supports batch size of 99 batch requests!
+      'https://bsc-dataseed.binance.org',
+      'https://bsc-dataseed1.ninicoin.io',
+      'https://bsc-dataseed3.defibit.io'
+    ],
     tokens: [ // only major tokens
       {"address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", "symbol": "BNB", "name": "Binance Coin", "decimals": 18, "logo": logo$5, "type": "NATIVE"},
       {"address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", "symbol": "WBNB", "name": "Wrapped BNB", "decimals": 18, "logo": "https://assets.trustwalletapp.com/blockchains/smartchain/assets/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/logo.png", "type": "20"},
@@ -22564,7 +22568,11 @@
       if(token) { return `https://etherscan.io/token/${token}` }
       if(address) { return `https://etherscan.io/address/${address}` }
     },
-    rpc: ['https://mainnet.infura.io/v3/9aa3d95b3bc4', '40fa88ea12eaa4456161'].join(''),
+    endpoints: [ // make sure provider supports batch size of 99 batch requests!
+      'https://rpc.ankr.com/eth',
+      'https://eth.llamarpc.com',
+      'https://ethereum.publicnode.com'
+    ],
     tokens: [ // only major tokens
       {"address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", "symbol": "ETH", "name": "Ether", "decimals": 18, "logo": logo$4, "type": "NATIVE"},
       {"address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", "symbol": "WETH", "name": "Wrapped Ether", "decimals": 18, "logo": "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png", "type": "20"},
@@ -22609,7 +22617,11 @@
       if(token) { return `https://ftmscan.com/token/${token}` }
       if(address) { return `https://ftmscan.com/address/${address}` }
     },
-    rpc: 'https://endpoints.omniatech.io/v1/fantom/mainnet/public',
+    endpoints: [ // make sure provider supports batch size of 99 batch requests!
+      'https://rpc.ftm.tools',
+      'https://fantom.publicnode.com',
+      'https://rpc2.fantom.network'
+    ],
     tokens: [ // only major tokens
       {"address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", "symbol": "FTM", "name": "Fantom", "decimals": 18, "logo": logo$3, "type": "NATIVE"},
       {"address": "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", "symbol": "WFTM", "name": "Wrapped Fantom", "decimals": 18, "logo": logo$3, "type": "20"},
@@ -22651,7 +22663,11 @@
       if(token) { return `https://polygonscan.com/token/${token}` }
       if(address) { return `https://polygonscan.com/address/${address}` }
     },
-    rpc: 'https://rpc-mainnet.matic.network',
+    endpoints: [ // make sure provider supports batch size of 99 batch requests!
+      'https://polygon-rpc.com',
+      'https://poly-rpc.gateway.pokt.network',
+      'https://polygon.llamarpc.com'
+    ],
     tokens: [ // only major tokens
       {"address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", "symbol": "MATIC", "name": "Polygon", "decimals": 18, "logo": logo$2, "type": "NATIVE"},
       {"address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", "symbol": "WMATIC", "name": "Wrapped Matic", "decimals": 18, "logo": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0/logo.png", "type": "20"},
@@ -22693,12 +22709,19 @@
       if(token) { return `https://solscan.io/token/${token}` }
       if(address) { return `https://solscan.io/address/${address}` }
     },
+    endpoints: [
+      'https://solana-mainnet.phantom.app/YBPpkkN4g91xDiAnTE9r0RcMkjg0sKUIWvAfoFVJ',
+      'https://mainnet-beta.solflare.network',
+      'https://solana-mainnet.rpc.extrnode.com'
+    ],
     rpc: 'https://api.mainnet-beta.solana.com',
     tokens: [ // only major tokens
       {"address": "11111111111111111111111111111111", "symbol": "SOL", "name": "Solana", "decimals": 9, "logo": logo$1, "type": "NATIVE"},
-      {"address": "So11111111111111111111111111111111111111112", "symbol": "WSOL", "name": "Wrapped SOL", "decimals": 9, "logo": "https://img.raydium.io/icon/So11111111111111111111111111111111111111112.png", "type": "SPL"},
       {"address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "symbol": "USDC", "name": "USD Coin", "decimals": 6, "logo": "https://img.raydium.io/icon/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v.png", "type": "SPL"},
-      {"address": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "symbol": "USDT", "name": "USDT", "decimals": 6, "logo": "https://img.raydium.io/icon/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB.png", "type": "SPL"}
+      {"address": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "symbol": "USDT", "name": "USDT", "decimals": 6, "logo": "https://img.raydium.io/icon/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB.png", "type": "SPL"},
+      {"address": "7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj", "symbol": "stSOL", "name": "Lido Staked SOL", "decimals": 9, "logo": "https://img.raydium.io/icon/7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj.png", "type": "SPL"},
+      {"address": "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E", "symbol": "wBTC", "name": "Wrapped Bitcoin (Sollet)", "decimals": 6, "logo": "https://img.raydium.io/icon/9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E.png", "type": "SPL"},
+      {"address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263", "symbol": "BONK", "name": "BONK", "decimals": 5, "logo": "https://img.raydium.io/icon/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263.png", "type": "SPL"},
     ],
     zero: '0',
     maxInt: '340282366920938463463374607431768211455',
@@ -22732,7 +22755,11 @@
       if(token) { return `https://evmexplorer.velas.com/token/${token}` }
       if(address) { return `https://evmexplorer.velas.com/address/${address}` }
     },
-    rpc: 'https://evmexplorer.velas.com/rpc',
+    endpoints: [ // make sure provider supports batch size of 99 batch requests!
+      'https://mainnet.velas.com/rpc',
+      'https://evmexplorer.velas.com/rpc',
+      'https://explorer.velas.com/rpc'
+    ],
     tokens: [ // only major tokens
       {"address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", "symbol": "VLX", "name": "Velas", "decimals": 18, "logo": logo, "type": "NATIVE"},
       {"address": "0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126", "symbol": "WVLX", "name": "Wrapped Velas", "decimals": 18, "logo": "https://github.com/wagyuswapapp/assets/blob/master/blockchains/velas/assets/0xc579d1f3cf86749e05cd06f7ade17856c2ce3126/logo.png?raw=true", "type": "20"},
@@ -64964,19 +64991,21 @@
 
     let window = getWindow(configuration);
     let blockchain = getBlockchain(configuration);
-    let provider = configuration.provider;
     let mock;
 
     if (configuration.transaction) {
       configuration.transaction._id = getRandomTransactionHash(blockchain);
     }
     
-    mock = mockBlockchain({ blockchain, configuration, window, provider });
+    (configuration.providers || [configuration.provider]).forEach((provider)=>{
+      if(provider) { provider._blockchain = blockchain; }
+      mock = mockBlockchain({ blockchain, configuration, window, provider });
+      mocks.unshift(mock);
+    });
+    
     mockWallet({ blockchain, configuration, window });
-    mocks.unshift(mock);
 
     if (configuration.require) { requireMock(configuration.require); }
-    if (provider) { provider._blockchain = blockchain; }
 
     return spy(mock)
   };

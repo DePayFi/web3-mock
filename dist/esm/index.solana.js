@@ -1196,19 +1196,21 @@ let mock = (configuration, call) => {
 
   let window = getWindow(configuration);
   let blockchain = getBlockchain(configuration);
-  let provider = configuration.provider;
   let mock;
 
   if (configuration.transaction) {
     configuration.transaction._id = getRandomTransactionHash(blockchain);
   }
   
-  mock = mockBlockchain({ blockchain, configuration, window, provider });
+  (configuration.providers || [configuration.provider]).forEach((provider)=>{
+    if(provider) { provider._blockchain = blockchain; }
+    mock = mockBlockchain({ blockchain, configuration, window, provider });
+    mocks.unshift(mock);
+  });
+  
   mockWallet({ blockchain, configuration, window });
-  mocks.unshift(mock);
 
   if (configuration.require) { requireMock(configuration.require); }
-  if (provider) { provider._blockchain = blockchain; }
 
   return spy(mock)
 };

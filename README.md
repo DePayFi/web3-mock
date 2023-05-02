@@ -1495,6 +1495,19 @@ mock({
 // and allows to trigger walletlink events with "trigger"
 ```
 
+### Providers (mocking multiple providers)
+
+If you are working with multiple providers, you can pass `providers` instead of `provider` and have Web3Mock iterate of the list of providers internaly:
+
+```javascript
+const providers = await getProviders('ethereum')
+
+mock({
+  providers,
+  //...
+})
+```
+
 ### Test Helpers
 
 #### normalize
