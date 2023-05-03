@@ -56,13 +56,29 @@ describe('evm mock transactions (evm)', ()=> {
       })
 
       it('mocks a transaction receipt', async ()=> {
+
+        let logs = [{
+          blockNumber: 16797899,
+          blockHash: '0x5948d965ab5805ace0bc7556672c8f475515ac853c4477f17cc49287f402430e',
+          transactionIndex: 65,
+          address: '0x6A12C2Cc8AF31f125484EB685F7c0bfcE280B919',
+          data: '0x000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+          topics: [
+            '0x83f5257fc3f5f94fa653d44d66c91bba315ce36d9c3c00b14278da4d3b635647',
+            '0x0000000000000000000000008f0a62ff2ae1fa08b25070b8b5138fb45630456f',
+            '0x000000000000000000000000fcd9c98aae3229a5984a27dee7e6c3b77f1622b5',
+          ],
+          transactionHash: '0x1f6e88067388a82924535eaa2c4af83143652dba3ec518fbc1ee24d7522efa02',
+          logIndex: 226
+        }]
         
         let mockedTransaction = mock({
           blockchain,
           transaction: {
             to: '0x5Af489c8786A018EC4814194dC8048be1007e390',
             from: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
-            value: "2000000000000000000"
+            value: "2000000000000000000",
+            logs
           }
         })
 
@@ -74,6 +90,7 @@ describe('evm mock transactions (evm)', ()=> {
         let receipt = await provider.getTransactionReceipt(mockedTransaction.transaction._id);
         expect(receipt.from).toEqual('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')
         expect(receipt.to).toEqual('0x5Af489c8786A018EC4814194dC8048be1007e390')
+        expect(receipt.logs).toEqual(logs)
       })
 
       it('mocks a transaction', async ()=> {

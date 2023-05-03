@@ -22789,9 +22789,9 @@
           blockHash: getRandomTransactionHash(mock.blockchain),
           cumulativeGasUsed: '0x33bc',
           gasUsed: '0x4dc',
-          logs: [],
+          logs: _optionalChain$f([mock, 'optionalAccess', _5 => _5.transaction, 'optionalAccess', _6 => _6.logs]) || [],
           logsBloom: '0x0000000000000000000000000000000000000000',
-          status: _optionalChain$f([mock, 'access', _5 => _5.transaction, 'optionalAccess', _6 => _6._failed]) ? '0x0' : '0x1',
+          status: _optionalChain$f([mock, 'access', _7 => _7.transaction, 'optionalAccess', _8 => _8._failed]) ? '0x0' : '0x1',
         })
     } else {
       return Promise.resolve(null)
