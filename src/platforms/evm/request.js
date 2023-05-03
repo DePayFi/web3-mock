@@ -14,6 +14,7 @@ import { getLogs } from './logs'
 import { getTransactionCount } from './transaction/count'
 import { sign } from './sign'
 import { switchNetwork, addNetwork } from './network'
+import { traceTransaction } from './trace'
 import { transaction } from './transaction'
 
 let request = ({ blockchain, request, provider }) => {
@@ -130,6 +131,9 @@ let request = ({ blockchain, request, provider }) => {
     case 'eth_getLogs':
       params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined
       return getLogs({ blockchain, params, provider })
+    
+    case 'debug_traceTransaction':
+      return traceTransaction({ blockchain, params: request.params, provider })
 
     default:
       raise('Web3Mock request: Unknown request method ' + request.method + '!')
