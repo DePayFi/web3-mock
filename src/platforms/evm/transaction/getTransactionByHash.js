@@ -10,6 +10,7 @@ export default (hash) => {
   let lastTransactionMock = mocks.find((mock)=>mock.transaction)
 
   let from = (lastTransactionMock && lastTransactionMock.transaction.from) ? lastTransactionMock.transaction.from : '0xb7576e9d314df41ec5506494293afb1bd5d3f65d'
+  let to = (lastTransactionMock && lastTransactionMock.transaction.to) ? lastTransactionMock.transaction.to : '0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92'
 
   let transaction = {
     from,
@@ -21,7 +22,7 @@ export default (hash) => {
     nonce: ethers.utils.hexlify(getTransactionCount(from)),
     r: '0xcfb56087c168a48bc69bd2634172fd9defd77bd172387e2137643906ff3606f6',
     s: '0x3474eb47999927f2bed4d4ec27d7e8bb4ad17c61d76761e40fdbd859d84c3bd5',
-    to: null,
+    to,
     transactionIndex: '0x1',
     type: '0x0',
     v: '0x1c',
