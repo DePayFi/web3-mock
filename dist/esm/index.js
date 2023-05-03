@@ -1225,7 +1225,7 @@ let request$2 = ({ blockchain, request, provider }) => {
       return Promise.resolve(ethers.utils.hexlify(13370000000))
 
     case 'eth_getLogs':
-      params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params.address) : undefined;
+      params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined;
       return getLogs({ blockchain, params, provider })
 
     default:
