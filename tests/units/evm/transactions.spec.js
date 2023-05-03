@@ -55,6 +55,27 @@ describe('evm mock transactions', ()=> {
         expect(mockedTransaction).toHaveBeenCalled()
       })
 
+      it('mocks a transaction receipt', async ()=> {
+        
+        let mockedTransaction = mock({
+          blockchain,
+          transaction: {
+            to: '0x5Af489c8786A018EC4814194dC8048be1007e390',
+            from: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+            value: "2000000000000000000"
+          }
+        })
+
+        expect(mockedTransaction.transaction._id).toBeDefined()
+        confirm(mockedTransaction)
+
+        let provider = new ethers.providers.Web3Provider(global.ethereum);
+
+        let receipt = await provider.getTransactionReceipt(mockedTransaction.transaction._id);
+        expect(receipt.from).toEqual('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')
+        expect(receipt.to).toEqual('0x5Af489c8786A018EC4814194dC8048be1007e390')
+      })
+
       it('mocks a complex contract transaction', async ()=> {
 
         let api = [{"inputs":[{"internalType":"address","name":"_configuration","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"configuration","outputs":[{"internalType":"contract DePayRouterV1Configuration","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"pluginAddress","type":"address"}],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"address[]","name":"addresses","type":"address[]"},{"internalType":"address[]","name":"plugins","type":"address[]"},{"internalType":"string[]","name":"data","type":"string[]"}],"name":"route","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];

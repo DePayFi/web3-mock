@@ -8,6 +8,8 @@ export default (hash) => {
 
   if (mock) {
     return Promise.resolve({
+        from: mock?.transaction?.from,
+        to: mock?.transaction?.to,
         transactionHash: hash,
         transactionIndex: '0x1',
         blockNumber: ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())

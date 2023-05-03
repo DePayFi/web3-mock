@@ -667,6 +667,8 @@
 
     if (mock) {
       return Promise.resolve({
+          from: _optionalChain$e([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2.from]),
+          to: _optionalChain$e([mock, 'optionalAccess', _3 => _3.transaction, 'optionalAccess', _4 => _4.to]),
           transactionHash: hash,
           transactionIndex: '0x1',
           blockNumber: ethers.ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
@@ -676,7 +678,7 @@
           gasUsed: '0x4dc',
           logs: [],
           logsBloom: '0x0000000000000000000000000000000000000000',
-          status: _optionalChain$e([mock, 'access', _ => _.transaction, 'optionalAccess', _2 => _2._failed]) ? '0x0' : '0x1',
+          status: _optionalChain$e([mock, 'access', _5 => _5.transaction, 'optionalAccess', _6 => _6._failed]) ? '0x0' : '0x1',
         })
     } else {
       return Promise.resolve(null)
