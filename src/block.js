@@ -2,7 +2,9 @@ let currentBlock
 
 let blockData = {}
 
-let getCurrentBlock = () => currentBlock
+let getCurrentBlock = () => {
+  return currentBlock
+}
 
 let resetCurrentBlock = ()=>{
   currentBlock = 1

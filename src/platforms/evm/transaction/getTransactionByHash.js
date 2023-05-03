@@ -26,7 +26,7 @@ export default (hash) => {
     transactionIndex: '0x1',
     type: '0x0',
     v: '0x1c',
-    value: '0x0',
+    value: ethers.BigNumber.from(mock?.transaction?.value || 0)._hex,
   }
 
   if (mock) {

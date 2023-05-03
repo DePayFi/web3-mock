@@ -112,6 +112,7 @@ describe('evm mock transactions', ()=> {
         let transaction = await provider.getTransaction(mockedTransaction.transaction._id);
         expect(transaction.from).toEqual('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')
         expect(transaction.to).toEqual('0x5Af489c8786A018EC4814194dC8048be1007e390')
+        expect(transaction.value.toString()).toEqual('2000000000000000000')
       })
 
       it('mocks a complex contract transaction', async ()=> {

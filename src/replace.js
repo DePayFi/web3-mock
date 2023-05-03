@@ -7,6 +7,7 @@ export default (transactionMock, replacingTransactionMock, confirmed = true) => 
   if(transactionMock == undefined || replacingTransactionMock == undefined) { raise('replace requires (transactionMock, replacingTransactionMock)') }
   if(transactionMock.transaction.from == undefined) { raise('transactionMock to be replaced requires at least a "from"') }
 
+
   replacingTransactionMock.transaction._id = getRandomTransactionHash(replacingTransactionMock.blockchain)
   if(confirmed){
     replacingTransactionMock.transaction._confirmed = true
@@ -40,16 +41,16 @@ export default (transactionMock, replacingTransactionMock, confirmed = true) => 
         "accessList": [],
         "blockHash": "0x8110e001148adad4d749559998e82061aa7d11bfdab65b840608327f98550fbc",
         "blockNumber": "0xd6fa38",
-        "from": transactionMock.transaction.from,
+        "from": replacingTransactionMock.transaction.from,
         "gas": "0x55730",
         "gasPrice": "0x2d79336308",
         "input": "0x8803dbee0000000000000000000000000000000000000000001782b76fd64557b6b780000000000000000000000000000000000000000000000000032a27fd31187d551000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000008817d887960737a604cf712d3e5da8673dddb7f00000000000000000000000000000000000000000000000000000000061f2ca440000000000000000000000000000000000000000000000000000000000000002000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000090185f2135308bad17527004364ebcc2d37e5f6",
         "maxFeePerGas": "0x2e87159fb3",
         "maxPriorityFeePerGas": "0x0",
-        "nonce": getTransactionCount(transactionMock.transaction.from),
+        "nonce": getTransactionCount(replacingTransactionMock.transaction.from),
         "r": "0x81d4fe714af2e1725ad1746fc240a6ac3b0f795d207ac207f36abaf8db6c72b2",
         "s": "0x3c4f61eef2ecb98a50bf3940bc90e7dcacbc7f233a57d5eb44c0ae07fdec4ced",
-        "to": "0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f",
+        "to": replacingTransactionMock.transaction.to,
         "transactionIndex": "0x0",
         "type": "0x2",
         "v": "0x0",
