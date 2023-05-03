@@ -1,9 +1,8 @@
+import Blockchains from '@depay/web3-blockchains'
 import getTransactionByHash from './transaction/getTransactionByHash'
 import getTransactionReceipt from './transaction/getTransactionReceipt'
-import { getTransactionCount } from './transaction/count'
 import raise from '../../raise'
 import { balance } from './balance'
-import Blockchains from '@depay/web3-blockchains'
 import { call } from './call'
 import { code } from './code'
 import { estimate } from './estimate'
@@ -11,6 +10,8 @@ import { ethers } from 'ethers'
 import { getAccounts } from './accounts'
 import { getCurrentBlock, getBlockData } from '../../block'
 import { getCurrentNetwork } from '../../network'
+import { getLogs } from './logs'
+import { getTransactionCount } from './transaction/count'
 import { sign } from './sign'
 import { switchNetwork, addNetwork } from './network'
 import { transaction } from './transaction'
@@ -125,6 +126,10 @@ let request = ({ blockchain, request, provider }) => {
 
     case 'eth_getGasPrice':
       return Promise.resolve(ethers.utils.hexlify(13370000000))
+
+    case 'eth_getLogs':
+      params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params.address) : undefined
+      return getLogs({ blockchain, params, provider })
 
     default:
       raise('Web3Mock request: Unknown request method ' + request.method + '!')
