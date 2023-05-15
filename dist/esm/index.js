@@ -1390,10 +1390,15 @@ let mockHasWrongParams = (mock, type, params, provider) => {
   if(mock.request == undefined) { return false }
   if(mock.request.params == undefined) { return false }
 
-  if(params == undefined || params[1] == undefined) { return true }
+  if(params == undefined) { return true }
 
-  let requestParams = JSON.parse(JSON.stringify(params[1]));
-  delete requestParams.encoding;
+  let requestParams;
+  if(params && params[1]) {
+    requestParams = JSON.parse(JSON.stringify(params[1]));
+    delete requestParams.encoding;  
+  } else {
+    requestParams = params;
+  }
 
   if(JSON.stringify(requestParams) != JSON.stringify(mock.request.params)) {
     return true

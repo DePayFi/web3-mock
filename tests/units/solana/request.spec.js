@@ -349,6 +349,7 @@ describe('mocks solana requests', ()=> {
           blockchain,
           request: {
             method: 'getMinimumBalanceForRentExemption',
+            params: [1],
             return: 2039280
           }
         })
