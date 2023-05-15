@@ -13,6 +13,25 @@ describe('mocks solana wallet balances', ()=> {
       afterEach(resetMocks)
       beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
 
+      it('allows to mock a balance with 0', async ()=>{
+
+        let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+        let balanceMock = mock({
+          provider: connection,
+          blockchain,
+          balance: {
+            for: '5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa',
+            return: 0
+          }
+        })
+
+        let balance = await connection.getBalance(new PublicKey('5AcFMJZkXo14r3Hj99iYd1HScPiM4hAcLZf552DfZkxa'))
+
+        expect(balance).toEqual(0)
+        expect(balanceMock).toHaveBeenCalled()
+      })
+
       it('mocks a balance', async ()=>{
 
         let connection = new Connection('https://api.mainnet-beta.solana.com')

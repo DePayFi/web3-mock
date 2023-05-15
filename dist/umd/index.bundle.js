@@ -64349,7 +64349,7 @@
   let balance = function ({ blockchain, params, provider }) {
     let mock = findMock({ blockchain, type: 'balance', params, provider });
 
-    if (mock && _optionalChain$5([mock, 'access', _ => _.balance, 'optionalAccess', _2 => _2.return])) {
+    if (mock && _optionalChain$5([mock, 'access', _ => _.balance, 'optionalAccess', _2 => _2.return]) != undefined) {
       mock.calls.add(params);
       if (_optionalChain$5([mock, 'optionalAccess', _3 => _3.balance, 'optionalAccess', _4 => _4.return]) instanceof Error) {
         return Promise.reject(mock.balance.return)
