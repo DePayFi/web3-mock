@@ -25,6 +25,20 @@ describe('mocks solana block height', ()=> {
 
         expect(blockHeight).toEqual(1)
       })
+
+      it('mocks getSlot', async ()=>{
+
+        let connection = new Connection('https://api.mainnet-beta.solana.com')
+
+        let balanceMock = mock({
+          provider: connection,
+          blockchain
+        })
+
+        let blockHeight = await connection.getSlot()
+
+        expect(blockHeight).toEqual(1)
+      })
     })
   })
 });
