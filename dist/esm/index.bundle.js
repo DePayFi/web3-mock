@@ -64679,7 +64679,7 @@ let getConfirmedTransaction = ({ signature }) => {
       transaction: {},
       meta: {
         err: mock.transaction._failed ? { InstructionError: [0, 'Error'] } : null,
-        logMessages: mock.transaction._failedReason ? [mock.transaction._failedReason] : []
+        logMessages: mock.transaction._failedReason ? [mock.transaction._failedReason] : (mock.transaction.logMessages || [])
       }
     })
   } else {
@@ -64736,7 +64736,8 @@ let mock$3 = ({ blockchain, configuration, window, provider }) => {
     provider.signAndSendTransaction = async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider });
     provider.simulateTransaction = async (transaction)=>simulateTransaction({ blockchain, params: transaction, provider });
     provider.getSignatureStatus = async (signature)=>getSignatureStatus({ blockchain, signature, provider });
-    provider.getConfirmedTransaction = async (signature)=>getConfirmedTransaction({ blockchain, signature, provider });
+    provider.getConfirmedTransaction = async (signature, params)=>getConfirmedTransaction({ blockchain, signature, params, provider });
+    provider.getTransaction = async (signature, params)=>getConfirmedTransaction({ blockchain, signature, params, provider });
   }
 
   window._solana = {
@@ -64757,7 +64758,8 @@ let mock$3 = ({ blockchain, configuration, window, provider }) => {
     signAndSendTransaction: async (transaction)=>signAndSendTransaction({ blockchain, params: transaction, provider }),
     getSignatureStatus: async (signature)=>getSignatureStatus({ blockchain, signature, provider }),
     simulateTransaction: async (transaction)=>simulateTransaction({ blockchain, params: transaction, provider }),
-    getConfirmedTransaction: async (signature)=>getConfirmedTransaction({ blockchain, signature, provider }),
+    getConfirmedTransaction: async (signature, params)=>getConfirmedTransaction({ blockchain, signature, params, provider }),
+    getTransaction: async (signature, params)=>getConfirmedTransaction({ blockchain, signature, params, provider }),
   };
 
   return configuration

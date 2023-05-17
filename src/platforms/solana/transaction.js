@@ -98,7 +98,7 @@ let getConfirmedTransaction = ({ signature }) => {
       transaction: {},
       meta: {
         err: mock.transaction._failed ? { InstructionError: [0, 'Error'] } : null,
-        logMessages: mock.transaction._failedReason ? [mock.transaction._failedReason] : []
+        logMessages: mock.transaction._failedReason ? [mock.transaction._failedReason] : (mock.transaction.logMessages || [])
       }
     })
   } else {
