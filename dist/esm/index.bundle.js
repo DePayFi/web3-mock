@@ -64683,10 +64683,7 @@ let getConfirmedTransaction = ({ signature }) => {
       }
     })
   } else {
-    return({
-      context: {apiVersion: '1.10.31', slot: 143064206},
-      value: null
-    })
+    return(null)
   }
 };
 

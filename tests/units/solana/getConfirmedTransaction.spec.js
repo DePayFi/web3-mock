@@ -13,6 +13,26 @@ describe('mock solana getConfirmedTransaction', ()=> {
       beforeEach(resetMocks)
       beforeEach(()=>mock({ blockchain, accounts: { return: accounts } }))
 
+      it('provides null if transaction has not been confirmed/failed', async ()=> {
+        let mockedTransaction = mock({
+          blockchain,
+          transaction: {
+            from: "2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1",
+            instructions:[{
+              to: '11111111111111111111111111111111',
+              api: struct([
+                u32('instruction'),
+                u64('lamports')
+              ])
+            }]
+          }
+        })
+
+        let confirmedTransaction = await window.solana.getConfirmedTransaction(mockedTransaction.transaction._id)
+
+        expect(confirmedTransaction).toEqual(null)
+      })
+
       it('provides failed confirmed transaction', async ()=> {
         
         let mockedTransaction = mock({
