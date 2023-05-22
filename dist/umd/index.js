@@ -1773,6 +1773,16 @@
             })
           })
 
+      case 'getSignaturesForAddress':
+        return responseData({ blockchain, provider, method, params, raw: true })
+          .then((value)=>{
+            return({
+              jsonrpc: '2.0',
+              id: '1', 
+              result: value
+            })
+          })
+
       default:
         raise('Web3Mock request: Unknown request method ' + method + '!');
     }
