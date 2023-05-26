@@ -1568,7 +1568,6 @@ let balance = function ({ blockchain, params, provider }) {
 const NATIVE = Blockchains.findByName('solana').currency.address;
 
 let marshalValue = (value, blockchain)=>{
-  console.log('VALUE', value);
   if(typeof value == 'number') {
     return value
   } else if (typeof value == 'string' && value == NATIVE) {

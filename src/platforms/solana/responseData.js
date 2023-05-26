@@ -6,7 +6,6 @@ import { PublicKey, Buffer, BN } from '@depay/solana-web3.js'
 const NATIVE = Blockchains.findByName('solana').currency.address
 
 let marshalValue = (value, blockchain)=>{
-  console.log('VALUE', value)
   if(typeof value == 'number') {
     return value
   } else if (typeof value == 'string' && value == NATIVE) {
