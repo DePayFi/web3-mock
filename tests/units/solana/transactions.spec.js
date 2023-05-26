@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { TransactionInstruction, TransactionMessage, VersionedTransaction, SystemProgram, PublicKey, struct, u8, u32, u64, BN } from '@depay/solana-web3.js'
+import { Connection, TransactionInstruction, TransactionMessage, VersionedTransaction, SystemProgram, PublicKey, struct, u8, u32, u64, nu64, BN, seq, offset, publicKey } from '@depay/solana-web3.js'
 import { mock, resetMocks, confirm, anything, replace } from 'src'
 import { Token } from '@depay/web3-tokens'
 import { supported } from "src/blockchains"
@@ -78,6 +78,31 @@ describe('solana mock transactions', ()=> {
         expect(signedTransaction.signature).toEqual(mockedTransaction.transaction._id)
 
         expect(mockedTransaction).toHaveBeenCalled()
+      })
+
+      it('mocks getting a address table lookup', async ()=> {
+
+        const connection = new Connection('https://api.mainnet-beta.solana.com')
+
+        const altLookupMock = mock({
+          provider: connection,
+          blockchain,
+          request: {
+            method: 'getAccountInfo',
+            to: 'EYGgx5fYCZtLN2pvnR4Bhn5KpMffKwyHCms4VhjSvF2K',
+            return: {
+              raw: [
+                'AQAAAP//////////lLGICwAAAAAAAZUI+NweiVYgbeIRBEMNzoLMusq6HgZtEwERcVYj1p/XAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpjJclj04kifG7PRApFI4NgwtaE5na/xCEBI572Nvp+FkGm4hX/quBhPtof2NGGMA12sQ53BrrO1WYoPAAAAAAAQ4DaF+OkJBT5FgSHGb1p2rtx3BqoRyC+KqVKo8reHmpDpoKvwBmYYKpkmwX9Ra2xxeUYGLrb2ybLB8DYx6TbqtYvtHSRjfDO652liD+rV4xFH1onTGdwBEBKgOpjZ0hheYdmw0g/Sz5t99kRCL9onQzwZnnJHNJKmDY+gEjqA7C'
+                ,'base64'
+              ]
+            }
+          }
+        })
+        
+        let addressLookupTable = await connection.getAddressLookupTable(new PublicKey('EYGgx5fYCZtLN2pvnR4Bhn5KpMffKwyHCms4VhjSvF2K')).then((res) => res.value)
+
+        expect(addressLookupTable.key.toString()).toEqual('EYGgx5fYCZtLN2pvnR4Bhn5KpMffKwyHCms4VhjSvF2K')
+        expect(addressLookupTable.state.addresses.length).toEqual(8)
       })
 
       it('mocks a complex transaction with instructions (like token transfers)', async ()=> {

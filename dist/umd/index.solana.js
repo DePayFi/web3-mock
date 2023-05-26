@@ -552,6 +552,7 @@
   const NATIVE = Blockchains__default['default'].findByName('solana').currency.address;
 
   let marshalValue = (value, blockchain)=>{
+    console.log('VALUE', value);
     if(typeof value == 'number') {
       return value
     } else if (typeof value == 'string' && value == NATIVE) {
@@ -593,6 +594,10 @@
       return Promise.resolve(mock.request.return)
     } else if(!mock.request.return) {
       return Promise.resolve(mock.request.return)
+    } else if(mock.request.return && mock.request.return.raw ) {
+
+      return Promise.resolve(mock.request.return.raw)
+
     } else {
       let response = marshalValue(mock.request.return);
 

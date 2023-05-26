@@ -1568,6 +1568,7 @@ let balance = function ({ blockchain, params, provider }) {
 const NATIVE = Blockchains.findByName('solana').currency.address;
 
 let marshalValue = (value, blockchain)=>{
+  console.log('VALUE', value);
   if(typeof value == 'number') {
     return value
   } else if (typeof value == 'string' && value == NATIVE) {
@@ -1609,6 +1610,10 @@ let callMock = ({ blockchain, mock, params, provider, raw })=> {
     return Promise.resolve(mock.request.return)
   } else if(!mock.request.return) {
     return Promise.resolve(mock.request.return)
+  } else if(mock.request.return && mock.request.return.raw ) {
+
+    return Promise.resolve(mock.request.return.raw)
+
   } else {
     let response = marshalValue(mock.request.return);
 

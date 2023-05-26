@@ -23595,6 +23595,7 @@
   if(_global$1.location == undefined) { _global$1.location = {}; }
   if(_global$1.crypto == undefined) { _global$1.crypto = {}; }
   if(_global$1.crypto.getRandomValues == undefined) { _global$1.crypto.getRandomValues = function(abv) { var l = abv.length; while (l--) { abv[l] = parseInt(Math.random().toString().replace('0.', ''), 10); } return abv }; }
+  if(_global$1.crypto.randomBytes == undefined) { _global$1.crypto.randomBytes = function(size) { let array = new Uint8Array(size); _global$1.crypto.getRandomValues(array); return array }; }
   if(_global$1.fetch == undefined) { throw('Please polyfill .fetch | See: https://github.com/DePayFi/solana-web3.js#polyfill-fetch') }
         
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global$2 !== 'undefined' ? global$2 : typeof self !== 'undefined' ? self : {};
@@ -30597,12 +30598,7 @@
     return new SHA384();
   });
 
-  var _polyfillNode_crypto = {};
-
-  var nodeCrypto = /*#__PURE__*/Object.freeze({
-  	__proto__: null,
-  	'default': _polyfillNode_crypto
-  });
+  var nodeCrypto = _global$1.crypto;
 
   var _0n$2 = BigInt(0);
 
@@ -33379,7 +33375,7 @@
   Object.defineProperty(Layout$3, "__esModule", {
     value: true
   });
-  Layout$3.s16 = Layout$3.s8 = Layout$3.nu64be = Layout$3.u48be = Layout$3.u40be = Layout$3.u32be = Layout$3.u24be = Layout$3.u16be = nu64 = Layout$3.nu64 = Layout$3.u48 = Layout$3.u40 = u32 = Layout$3.u32 = Layout$3.u24 = u16 = Layout$3.u16 = u8 = Layout$3.u8 = offset = Layout$3.offset = Layout$3.greedy = Layout$3.Constant = Layout$3.UTF8 = Layout$3.CString = Layout$3.Blob = Layout$3.Boolean = Layout$3.BitField = Layout$3.BitStructure = Layout$3.VariantLayout = Layout$3.Union = Layout$3.UnionLayoutDiscriminator = Layout$3.UnionDiscriminator = Layout$3.Structure = Layout$3.Sequence = Layout$3.DoubleBE = Layout$3.Double = Layout$3.FloatBE = Layout$3.Float = Layout$3.NearInt64BE = Layout$3.NearInt64 = Layout$3.NearUInt64BE = Layout$3.NearUInt64 = Layout$3.IntBE = Layout$3.Int = Layout$3.UIntBE = Layout$3.UInt = Layout$3.OffsetLayout = Layout$3.GreedyCount = Layout$3.ExternalLayout = Layout$3.bindConstructorLayout = Layout$3.nameWithProperty = Layout$3.Layout = Layout$3.uint8ArrayToBuffer = Layout$3.checkUint8Array = void 0;
+  Layout$3.s16 = Layout$3.s8 = Layout$3.nu64be = Layout$3.u48be = Layout$3.u40be = Layout$3.u32be = Layout$3.u24be = Layout$3.u16be = nu64$1 = Layout$3.nu64 = Layout$3.u48 = Layout$3.u40 = u32 = Layout$3.u32 = Layout$3.u24 = u16 = Layout$3.u16 = u8 = Layout$3.u8 = offset$1 = Layout$3.offset = Layout$3.greedy = Layout$3.Constant = Layout$3.UTF8 = Layout$3.CString = Layout$3.Blob = Layout$3.Boolean = Layout$3.BitField = Layout$3.BitStructure = Layout$3.VariantLayout = Layout$3.Union = Layout$3.UnionLayoutDiscriminator = Layout$3.UnionDiscriminator = Layout$3.Structure = Layout$3.Sequence = Layout$3.DoubleBE = Layout$3.Double = Layout$3.FloatBE = Layout$3.Float = Layout$3.NearInt64BE = Layout$3.NearInt64 = Layout$3.NearUInt64BE = Layout$3.NearUInt64 = Layout$3.IntBE = Layout$3.Int = Layout$3.UIntBE = Layout$3.UInt = Layout$3.OffsetLayout = Layout$3.GreedyCount = Layout$3.ExternalLayout = Layout$3.bindConstructorLayout = Layout$3.nameWithProperty = Layout$3.Layout = Layout$3.uint8ArrayToBuffer = Layout$3.checkUint8Array = void 0;
   Layout$3.constant = Layout$3.utf8 = Layout$3.cstr = blob$1 = Layout$3.blob = Layout$3.unionLayoutDiscriminator = Layout$3.union = seq$1 = Layout$3.seq = Layout$3.bits = struct = Layout$3.struct = Layout$3.f64be = Layout$3.f64 = Layout$3.f32be = Layout$3.f32 = Layout$3.ns64be = Layout$3.s48be = Layout$3.s40be = Layout$3.s32be = Layout$3.s24be = Layout$3.s16be = ns64 = Layout$3.ns64 = Layout$3.s48 = Layout$3.s40 = Layout$3.s32 = Layout$3.s24 = void 0;
   var buffer_1 = require$$0$1;
   /* Check if a value is a Uint8Array.
@@ -36500,7 +36496,7 @@
   /** Factory for {@link OffsetLayout}. */
 
 
-  var offset = Layout$3.offset = function (layout, offset, property) {
+  var offset$1 = Layout$3.offset = function (layout, offset, property) {
     return new OffsetLayout$1(layout, offset, property);
   };
   /** Factory for {@link UInt|unsigned int layouts} spanning one
@@ -36549,7 +36545,7 @@
    * layouts} interpreted as Numbers. */
 
 
-  var nu64 = Layout$3.nu64 = function (property) {
+  var nu64$1 = Layout$3.nu64 = function (property) {
     return new NearUInt64$1(property);
   };
   /** Factory for {@link UInt|big-endian unsigned int layouts}
@@ -43084,7 +43080,7 @@
 
   var rustString = function rustString() {
     var property = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'string';
-    var rsl = struct([u32('length'), u32('lengthPadding'), blob$1(offset(u32(), -8), 'chars')], property);
+    var rsl = struct([u32('length'), u32('lengthPadding'), blob$1(offset$1(u32(), -8), 'chars')], property);
 
     var _decode = rsl.decode.bind(rsl);
 
@@ -45351,7 +45347,7 @@
    */
 
 
-  var FeeCalculatorLayout = nu64('lamportsPerSignature');
+  var FeeCalculatorLayout = nu64$1('lamportsPerSignature');
   /**
    * Calculator for transaction fees.
    *
@@ -46266,7 +46262,7 @@
       key: "load",
       value: function () {
         var _load = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(connection, payer, program, programId, data) {
-          var balanceNeeded, programInfo, transaction, dataLayout, chunkSize, offset$1, array, transactions, bytes, _data, _transaction, REQUESTS_PER_SECOND, _dataLayout, _data2, _transaction2;
+          var balanceNeeded, programInfo, transaction, dataLayout, chunkSize, offset, array, transactions, bytes, _data, _transaction, REQUESTS_PER_SECOND, _dataLayout, _data2, _transaction2;
 
           return _regeneratorRuntime().wrap(function _callee5$(_context5) {
             while (1) switch (_context5.prev = _context5.next) {
@@ -46346,9 +46342,9 @@
                 });
 
               case 20:
-                dataLayout = struct([u32('instruction'), u32('offset'), u32('bytesLength'), u32('bytesLengthPadding'), seq$1(u8('byte'), offset(u32(), -8), 'bytes')]);
+                dataLayout = struct([u32('instruction'), u32('offset'), u32('bytesLength'), u32('bytesLengthPadding'), seq$1(u8('byte'), offset$1(u32(), -8), 'bytes')]);
                 chunkSize = Loader.chunkSize;
-                offset$1 = 0;
+                offset = 0;
                 array = data;
                 transactions = [];
 
@@ -46363,7 +46359,7 @@
                 dataLayout.encode({
                   instruction: 0,
                   // Load instruction
-                  offset: offset$1,
+                  offset: offset,
                   bytes: bytes,
                   bytesLength: 0,
                   bytesLengthPadding: 0
@@ -46391,7 +46387,7 @@
                 return sleep(1000 / REQUESTS_PER_SECOND);
 
               case 35:
-                offset$1 += chunkSize;
+                offset += chunkSize;
                 array = array.slice(chunkSize);
                 _context5.next = 25;
                 break;
@@ -46937,8 +46933,8 @@
 
   var LookupTableMetaLayout = {
     index: 1,
-    layout: struct([u32('typeIndex'), u64('deactivationSlot'), nu64('lastExtendedSlot'), u8('lastExtendedStartIndex'), u8(), // option
-    seq$1(publicKey(), offset(u8(), -1), 'authority')])
+    layout: struct([u32('typeIndex'), u64('deactivationSlot'), nu64$1('lastExtendedSlot'), u8('lastExtendedStartIndex'), u8(), // option
+    seq$1(publicKey(), offset$1(u8(), -1), 'authority')])
   };
   var URL_RE = /^[^:]+:\/\/([^:[]+|\[[^\]]+\])(:\d+)?(.*)/i;
 
@@ -54487,7 +54483,7 @@
     },
     ExtendLookupTable: {
       index: 2,
-      layout: struct([u32('instruction'), u64(), seq$1(publicKey(), offset(u32(), -8), 'addresses')])
+      layout: struct([u32('instruction'), u64(), seq$1(publicKey(), offset$1(u32(), -8), 'addresses')])
     },
     DeactivateLookupTable: {
       index: 3,
@@ -56615,10 +56611,10 @@
    * @internal
    */
 
-  var VoteAccountLayout = struct([publicKey('nodePubkey'), publicKey('authorizedWithdrawer'), u8('commission'), nu64(), // votes.length
-  seq$1(struct([nu64('slot'), u32('confirmationCount')]), offset(u32(), -8), 'votes'), u8('rootSlotValid'), nu64('rootSlot'), nu64(), // authorizedVoters.length
-  seq$1(struct([nu64('epoch'), publicKey('authorizedVoter')]), offset(u32(), -8), 'authorizedVoters'), struct([seq$1(struct([publicKey('authorizedPubkey'), nu64('epochOfLastAuthorizedSwitch'), nu64('targetEpoch')]), 32, 'buf'), nu64('idx'), u8('isEmpty')], 'priorVoters'), nu64(), // epochCredits.length
-  seq$1(struct([nu64('epoch'), nu64('credits'), nu64('prevCredits')]), offset(u32(), -8), 'epochCredits'), struct([nu64('slot'), nu64('timestamp')], 'lastTimestamp')]);
+  var VoteAccountLayout = struct([publicKey('nodePubkey'), publicKey('authorizedWithdrawer'), u8('commission'), nu64$1(), // votes.length
+  seq$1(struct([nu64$1('slot'), u32('confirmationCount')]), offset$1(u32(), -8), 'votes'), u8('rootSlotValid'), nu64$1('rootSlot'), nu64$1(), // authorizedVoters.length
+  seq$1(struct([nu64$1('epoch'), publicKey('authorizedVoter')]), offset$1(u32(), -8), 'authorizedVoters'), struct([seq$1(struct([publicKey('authorizedPubkey'), nu64$1('epochOfLastAuthorizedSwitch'), nu64$1('targetEpoch')]), 32, 'buf'), nu64$1('idx'), u8('isEmpty')], 'priorVoters'), nu64$1(), // epochCredits.length
+  seq$1(struct([nu64$1('epoch'), nu64$1('credits'), nu64$1('prevCredits')]), offset$1(u32(), -8), 'epochCredits'), struct([nu64$1('slot'), nu64$1('timestamp')], 'lastTimestamp')]);
   /**
    * VoteAccount class
    */
@@ -64378,6 +64374,7 @@
   const NATIVE = index.findByName('solana').currency.address;
 
   let marshalValue = (value, blockchain)=>{
+    console.log('VALUE', value);
     if(typeof value == 'number') {
       return value
     } else if (typeof value == 'string' && value == NATIVE) {
@@ -64419,6 +64416,10 @@
       return Promise.resolve(mock.request.return)
     } else if(!mock.request.return) {
       return Promise.resolve(mock.request.return)
+    } else if(mock.request.return && mock.request.return.raw ) {
+
+      return Promise.resolve(mock.request.return.raw)
+
     } else {
       let response = marshalValue(mock.request.return);
 

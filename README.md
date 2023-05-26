@@ -541,6 +541,32 @@ expect(accounts.map((account)=>account.pubkey.toString())).toEqual([
 ])
 ```
 
+##### Solana: Return raw mocked data
+
+```javascript
+const connection = new Connection('https://api.mainnet-beta.solana.com')
+
+const altLookupMock = mock({
+  provider: connection,
+  blockchain,
+  request: {
+    method: 'getAccountInfo',
+    to: 'EYGgx5fYCZtLN2pvnR4Bhn5KpMffKwyHCms4VhjSvF2K',
+    return: {
+      raw: [
+        'AQAAAP//////////lLGICwAAAAAAAZUI+NweiVYgbeIRBEMNzoLMusq6HgZtEwERcVYj1p/XAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpjJclj04kifG7PRApFI4NgwtaE5na/xCEBI572Nvp+FkGm4hX/quBhPtof2NGGMA12sQ53BrrO1WYoPAAAAAAAQ4DaF+OkJBT5FgSHGb1p2rtx3BqoRyC+KqVKo8reHmpDpoKvwBmYYKpkmwX9Ra2xxeUYGLrb2ybLB8DYx6TbqtYvtHSRjfDO652liD+rV4xFH1onTGdwBEBKgOpjZ0hheYdmw0g/Sz5t99kRCL9onQzwZnnJHNJKmDY+gEjqA7C'
+        , 'base64'
+      ]
+    }
+  }
+})
+
+let addressLookupTable = await connection.getAddressLookupTable(new PublicKey('EYGgx5fYCZtLN2pvnR4Bhn5KpMffKwyHCms4VhjSvF2K')).then((res) => res.value)
+
+expect(addressLookupTable.key.toString()).toEqual('EYGgx5fYCZtLN2pvnR4Bhn5KpMffKwyHCms4VhjSvF2K')
+expect(addressLookupTable.state.addresses.length).toEqual(8)
+```
+
 #### The "anything" Parameter
 
 ```javascript
