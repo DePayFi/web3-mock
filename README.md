@@ -226,7 +226,10 @@ This library supports the following blockchains:
 - [Polygon](https://polygon.technology)
 - [Solana](https://solana.com)
 - [Fantom](https://fantom.foundation)
-- [Velas](https://velas.com)
+- [Arbitrum](https://arbitrum.io)
+- [Avalanche](https://www.avax.network)
+- [Gnosis](https://gnosis.io)
+- [Optimism](https://www.optimism.io)
 
 This library supports the all crypto wallets that inject window.ethereum or window.solana like:
 
@@ -234,7 +237,7 @@ This library supports the all crypto wallets that inject window.ethereum or wind
 - [Coinbase Wallet](https://wallet.coinbase.com)
 - [Phantom](https://phantom.app/)
 
-100+ different wallets via [WalletConnect](https://walletconnect.org), such as:
+100+ different wallets via [WalletConnect](https://walletconnect.org).
 
 ## Platform specific packaging
 
