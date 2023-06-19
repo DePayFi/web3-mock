@@ -986,20 +986,20 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@depay/solana-web3.js@^1.23.1":
-  version "1.23.1"
-  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.23.1.tgz#d3f09f3e8d9e1235e2f33adab85632c43ba99b14"
-  integrity sha512-MawaOHP41kHysVmM6KXaj+SdprgsFt/IMuR6B2sdRBOg2bQl48HkG6qopvcKhFcDwxeuveMUHaUyeNT97U+ymw==
+"@depay/solana-web3.js@^1.24.0":
+  version "1.24.0"
+  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.24.0.tgz#f51f32042c6ffd573c12b5b0800f8303ae176996"
+  integrity sha512-lPVXkRjeZqVvNtsiV9CVa189bE1/YACQv4U4NMTP6zB9Bvutx93k69gC8pks0P0wCqsO6chLbXCB+Hq/NdASZA==
 
-"@depay/web3-blockchains@^8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-8.0.1.tgz#c61f2308c23ea577bbcea1091bd61e5a9a37b60a"
-  integrity sha512-Y63aVTDfsFgoptAoh2XFbPi08kVITEaDwiM/d8BDoMU3yWgCBJhGpIlyvL4rQcatZPqa8LYNrLVKeE2ETBviow==
+"@depay/web3-blockchains@^8.1.1":
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-8.1.1.tgz#1de5dff71ead45bde57a1d8e0374d24aadde6533"
+  integrity sha512-wrtCFNH726Y+xX1+EtzhILMfhLcPEzuaBV3oCef97eJsht0PYjEWpzqB48LwHpY9adwzjarG1dSJIR2VAWpmUA==
 
-"@depay/web3-client@^10.11.0":
-  version "10.11.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.11.0.tgz#94cf8f26f5d473b0ac5ed7e93d25ea32829eb145"
-  integrity sha512-VQ0XcA3xkxVg9JRqa0YscjPPteMhEbVl2qUma0c+E4cn9BOvgnZwvqFGq6UdtE5V6whaZhr2k61tfLEH2TBe4g==
+"@depay/web3-client@^10.15.0":
+  version "10.15.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.15.0.tgz#5751f8548361a6328abc333111e8b77c98a62081"
+  integrity sha512-JA+duRpwGigfiIm3zqo872UX7mSUpxcmMO4eVfENdeaHN/NotBPSAM17OFpux9Ikmh29MTWQ7El3apUr9BUIXQ==
 
 "@depay/web3-tokens@^9.18.0":
   version "9.18.0"
