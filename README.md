@@ -217,6 +217,37 @@ describe('something', ()=> {
   })
 ```
 
+## Providers
+
+### viem / wagmi
+
+viem makes it's own internal public client inaccesible for external mocks due to their decorator pattern (see: https://github.com/wagmi-dev/viem/blob/main/src/clients/createPublicClient.ts#LL86C8-L86C21).
+
+That's why only the `custom(window.ethereum)` is compatible with `web3-mock`:
+
+```javascript
+import { WagmiConfig, createConfig, mainnet } from 'wagmi'
+import { createPublicClient, custom } from 'viem'
+
+const config = createConfig({
+  autoConnect: true,
+  publicClient: createPublicClient({
+    chain: mainnet,
+    transport: custom(window.ethereum),
+  }),
+})
+
+//...
+
+mock({
+  blockchain: 'ethereum',
+  balance: {
+    for: '0xb0252f13850a4823706607524de0b146820F2240',
+    return: '232111122321'
+  }
+})
+```
+
 ## Support
 
 This library supports the following blockchains:
