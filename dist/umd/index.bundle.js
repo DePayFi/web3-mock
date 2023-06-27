@@ -66408,7 +66408,7 @@
       simulateTransaction: async (transaction)=>simulateTransaction({ blockchain, params: transaction, provider }),
       getConfirmedTransaction: async (signature, params)=>getConfirmedTransaction({ blockchain, signature, params, provider }),
       getTransaction: async (signature, params)=>getConfirmedTransaction({ blockchain, signature, params, provider }),
-      signMessage: (message)=>sign({ blockchain, params: [message], provider }),
+      signMessage: (message)=>sign({ blockchain, params: [message], provider }).then((signature)=>{ return { signature } }),
     };
 
     return configuration
