@@ -2212,6 +2212,7 @@ let mockWallet = ({ blockchain, configuration, window }) => {
     case 'phantom':
       window.solana = window._solana;
       window.solana.isPhantom = true;
+      window.phantom = window.solana;
       break
     case 'walletconnect':
       mock$2({ configuration, window });
