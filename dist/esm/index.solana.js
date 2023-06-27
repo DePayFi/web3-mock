@@ -38,8 +38,8 @@ var raise = (msg)=>{
   throw(msg)
 };
 
-function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let getWindow = (configuration) => {
-  if (_optionalChain$a([configuration, 'optionalAccess', _ => _.window])) return configuration.window
+function _optionalChain$b(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let getWindow = (configuration) => {
+  if (_optionalChain$b([configuration, 'optionalAccess', _ => _.window])) return configuration.window
   if (typeof global == 'object') return global
   if (typeof cy == 'object') return cy.window().specWindow.window
   if (typeof window == 'object') return window
@@ -105,10 +105,10 @@ let supported = ['solana'];
 supported.evm = [];
 supported.solana = ['solana'];
 
-function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$a(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
 var confirm = (mock) => {
-  if (_optionalChain$9([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
+  if (_optionalChain$a([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
     mock.transaction._confirmed = true;
     if(supported.evm.includes(mock.blockchain)) ; else if(supported.solana.includes(mock.blockchain)) {
 
@@ -237,10 +237,10 @@ let fail$1 = (transaction, reason) => {
   return transaction
 };
 
-function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$9(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
 var fail = (mock, reason) => {
-  if (_optionalChain$8([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
+  if (_optionalChain$9([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2._id])) {
     mock.transaction._failed = true;
     mock.transaction._confirmed = false;
     if(supported.evm.includes(mock.blockchain)) ; else if(supported.solana.includes(mock.blockchain)) {
@@ -258,7 +258,7 @@ var fail = (mock, reason) => {
   }
 };
 
-function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let normalize = function (input) {
+function _optionalChain$8(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }let normalize = function (input) {
   if (input instanceof Array) {
     return input.map((element) => normalize(element))
   } else if (typeof input === 'undefined') {
@@ -266,7 +266,7 @@ function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[
   } else if (typeof input === 'object' && input._isBigNumber) {
     return input.toString()
   } else {
-    if (_optionalChain$7([input, 'optionalAccess', _ => _.toString])) {
+    if (_optionalChain$8([input, 'optionalAccess', _ => _.toString])) {
       return input.toString().toLowerCase()
     } else if (typeof input === 'object') {
       return JSON.stringify(input)
@@ -280,7 +280,7 @@ function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[
 
 let anything = '__ANYTHING__';
 
-function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$7(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 let mockIsNotAnObject = (mock) => {
   return typeof mock !== 'object'
 };
@@ -305,7 +305,7 @@ let mockHasWrongProvider = (mock, provider) => {
 };
 
 let mockHasWrongTransactionData = (mock, type, transaction) => {
-  let requiredFrom = _optionalChain$6([transaction, 'optionalAccess', _ => _.message, 'optionalAccess', _2 => _2.staticAccountKeys, 'optionalAccess', _3 => _3.length]) ? transaction.message.staticAccountKeys[0].toString() : undefined;
+  let requiredFrom = _optionalChain$7([transaction, 'optionalAccess', _ => _.message, 'optionalAccess', _2 => _2.staticAccountKeys, 'optionalAccess', _3 => _3.length]) ? transaction.message.staticAccountKeys[0].toString() : undefined;
 
   return (
     (mock[type].from && normalize(requiredFrom) !== normalize(mock[type].from))
@@ -313,7 +313,7 @@ let mockHasWrongTransactionData = (mock, type, transaction) => {
 };
 
 let mockInstructionsMatch = (mockedInstruction, instruction)=>{
-  if(_optionalChain$6([mockedInstruction, 'optionalAccess', _4 => _4.params]) == anything) { return true }
+  if(_optionalChain$7([mockedInstruction, 'optionalAccess', _4 => _4.params]) == anything) { return true }
   if(!mockedInstruction.params) { return true }
   let decodedInstructionData;
   try { decodedInstructionData = mockedInstruction.api.decode(instruction.data); } catch (e) {}
@@ -326,7 +326,7 @@ let mockInstructionsMatch = (mockedInstruction, instruction)=>{
 };
 
 let mockKeysMatch = (mockedInstruction, instruction, transaction)=>{
-  if(_optionalChain$6([mockedInstruction, 'optionalAccess', _5 => _5.keys]) == anything) { return true }
+  if(_optionalChain$7([mockedInstruction, 'optionalAccess', _5 => _5.keys]) == anything) { return true }
   if(!mockedInstruction.keys || mockedInstruction.keys.length === 0) { return true }
   return mockedInstruction.keys.every((mockedKey, index)=>{
     if(mockedKey === anything) { return true }
@@ -338,8 +338,8 @@ let mockKeysMatch = (mockedInstruction, instruction, transaction)=>{
 
 let mockHasWrongTransactionInstructions = (mock, type, transaction) => {
   return (
-    (_optionalChain$6([mock, 'access', _6 => _6[type], 'optionalAccess', _7 => _7.instructions]) && mock[type].instructions.some((mockedInstruction)=>{
-      return !(_optionalChain$6([transaction, 'optionalAccess', _8 => _8.message, 'optionalAccess', _9 => _9.compiledInstructions])).some((instruction)=>{
+    (_optionalChain$7([mock, 'access', _6 => _6[type], 'optionalAccess', _7 => _7.instructions]) && mock[type].instructions.some((mockedInstruction)=>{
+      return !(_optionalChain$7([transaction, 'optionalAccess', _8 => _8.message, 'optionalAccess', _9 => _9.compiledInstructions])).some((instruction)=>{
         let instructionProgramId = transaction.message.staticAccountKeys[instruction.programIdIndex].toString();
         if(normalize(instructionProgramId) != normalize(mockedInstruction.to)) { return false }
         if(!mockedInstruction.params && !mockedInstruction.keys) { return true }
@@ -433,7 +433,7 @@ let findMock = ({ type, blockchain, params, method, block, provider }) => {
 
 let findAnyMockForThisAddress = ({ type, params }) => {
   return mocks.find((mock) => {
-    if (normalize(_optionalChain$6([mock, 'access', _10 => _10[type], 'optionalAccess', _11 => _11.to])) !== normalize(params[0])) {
+    if (normalize(_optionalChain$7([mock, 'access', _10 => _10[type], 'optionalAccess', _11 => _11.to])) !== normalize(params[0])) {
       return
     }
     return mock
@@ -442,8 +442,8 @@ let findAnyMockForThisAddress = ({ type, params }) => {
 
 let findMockByTransactionHash = (hash) => {
   return mocks.find((mock) => {
-    return _optionalChain$6([mock, 'optionalAccess', _12 => _12.transaction, 'optionalAccess', _13 => _13._id]) == hash && (
-      _optionalChain$6([mock, 'optionalAccess', _14 => _14.transaction, 'optionalAccess', _15 => _15._confirmed]) || _optionalChain$6([mock, 'optionalAccess', _16 => _16.transaction, 'optionalAccess', _17 => _17._failed])
+    return _optionalChain$7([mock, 'optionalAccess', _12 => _12.transaction, 'optionalAccess', _13 => _13._id]) == hash && (
+      _optionalChain$7([mock, 'optionalAccess', _14 => _14.transaction, 'optionalAccess', _15 => _15._confirmed]) || _optionalChain$7([mock, 'optionalAccess', _16 => _16.transaction, 'optionalAccess', _17 => _17._failed])
     )
   })
 };
@@ -518,13 +518,13 @@ let removeListener$1 = (eventName, callback) => {
   }
 };
 
-function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+function _optionalChain$6(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 let balance = function ({ blockchain, params, provider }) {
   let mock = findMock({ blockchain, type: 'balance', params, provider });
 
-  if (mock && _optionalChain$5([mock, 'access', _ => _.balance, 'optionalAccess', _2 => _2.return]) != undefined) {
+  if (mock && _optionalChain$6([mock, 'access', _ => _.balance, 'optionalAccess', _2 => _2.return]) != undefined) {
     mock.calls.add(params);
-    if (_optionalChain$5([mock, 'optionalAccess', _3 => _3.balance, 'optionalAccess', _4 => _4.return]) instanceof Error) {
+    if (_optionalChain$6([mock, 'optionalAccess', _3 => _3.balance, 'optionalAccess', _4 => _4.return]) instanceof Error) {
       return Promise.reject(mock.balance.return)
     } else {
       return Promise.resolve(mock.balance.return)
@@ -776,6 +776,44 @@ let request = ({ blockchain, request, provider }) => {
 let setCurrentNetwork = (network)=>{
 };
 
+function _optionalChain$5(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
+let sign = function ({ blockchain, params, provider }) {
+  let mock = findMock({ blockchain, type: 'signature', params, provider });
+
+  if (mock && _optionalChain$5([mock, 'access', _ => _.signature, 'optionalAccess', _2 => _2.return])) {
+    mock.calls.add(params);
+
+    if(mock.signature.delay) {
+      return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+          if (mock.signature.return instanceof Error) {
+            reject(mock.signature.return);
+          } else {
+            resolve(mock.signature.return);
+          }
+        }, mock.signature.delay);
+      })
+    } else {
+      if (mock.signature.return instanceof Error) {
+        return Promise.reject(mock.signature.return)
+      } else {
+        return Promise.resolve(mock.signature.return)
+      }
+    }
+  } else {
+    raise(
+      'Web3Mock: Please mock the sign request: ' +
+      JSON.stringify({
+        blockchain: blockchain,
+        signature: {
+          params: params,
+          return: 'PUT SIGNATURE HERE',
+        },
+      })
+    );
+  }
+};
+
 function _optionalChain$4(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 let signAndSendTransaction = ({ blockchain, params, provider }) => {
   let mock = findMock({ type: 'transaction', params, provider });
@@ -948,6 +986,7 @@ let mock$3 = ({ blockchain, configuration, window, provider }) => {
     simulateTransaction: async (transaction)=>simulateTransaction({ blockchain, params: transaction, provider }),
     getConfirmedTransaction: async (signature, params)=>getConfirmedTransaction({ blockchain, signature, params, provider }),
     getTransaction: async (signature, params)=>getConfirmedTransaction({ blockchain, signature, params, provider }),
+    signMessage: (message)=>sign({ blockchain, params: [message], provider }),
   };
 
   return configuration

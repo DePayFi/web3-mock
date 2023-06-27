@@ -4,6 +4,7 @@ import { on, removeListener } from './events'
 import { request as providerRequest } from './provider'
 import { request as walletRequest } from './wallet'
 import { setCurrentNetwork } from '../../network'
+import { sign } from './sign'
 import { signAndSendTransaction, getSignatureStatus, getConfirmedTransaction } from './transaction'
 import { simulateTransaction } from './simulate'
 
@@ -45,6 +46,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
     simulateTransaction: async (transaction)=>simulateTransaction({ blockchain, params: transaction, provider }),
     getConfirmedTransaction: async (signature, params)=>getConfirmedTransaction({ blockchain, signature, params, provider }),
     getTransaction: async (signature, params)=>getConfirmedTransaction({ blockchain, signature, params, provider }),
+    signMessage: (message)=>sign({ blockchain, params: [message], provider }),
   }
 
   return configuration
