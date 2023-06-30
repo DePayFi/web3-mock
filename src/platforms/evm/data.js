@@ -38,7 +38,11 @@ let encode = ({ result, params, api, provider }) => {
   } else {
     encodedResult = result
   }
-  return contract.interface.encodeFunctionResult(contractFunction.name, encodedResult)
+  let method = contractFunction.name
+  if(contract[method] === undefined) {
+    method = `${contractFunction.name}(${contractFunction.inputs.map((input)=>input.type).join(',')})`
+  }
+  return contract.interface.encodeFunctionResult(method, encodedResult)
 }
 
 export { encode, getContractFunction, getContractArguments }
