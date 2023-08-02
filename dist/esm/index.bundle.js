@@ -66323,7 +66323,12 @@ let getConfirmedTransaction = ({ signature }) => {
     return({
       blockTime: 1658913018,
       slot: 143351809,
-      transaction: {},
+      transaction: {
+        signatures: [mock.transaction._id],
+        message: {
+          compiledInstructions: mock.transaction.compiledInstructions ? mock.transaction.compiledInstructions : []
+        }
+      },
       meta: {
         err: mock.transaction._failed ? { InstructionError: [0, 'Error'] } : null,
         logMessages: mock.transaction._failedReason ? [mock.transaction._failedReason] : (mock.transaction.logMessages || [])

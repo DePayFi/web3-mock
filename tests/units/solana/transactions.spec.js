@@ -856,6 +856,37 @@ describe('solana mock transactions', ()=> {
         expect(status.value.confirmations).toEqual(0)
 
       })
+
+      it('mocks transaction signatures', async ()=> {
+        
+        let mockedTransaction = mock({
+          blockchain,
+          transaction: {
+            from: "2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1",
+          }
+        })
+
+        confirm(mockedTransaction)
+
+        let fullTransactionData = await window.solana.getTransaction(mockedTransaction.transaction._id)
+        expect(fullTransactionData.transaction.signatures[0]).toEqual(mockedTransaction.transaction._id)
+      })
+
+      it('mocks transaction compiled instructions', async ()=> {
+        
+        let mockedTransaction = mock({
+          blockchain,
+          transaction: {
+            from: "2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1",
+            compiledInstructions: ['INSTRUCTION']
+          }
+        })
+
+        confirm(mockedTransaction)
+
+        let fullTransactionData = await window.solana.getTransaction(mockedTransaction.transaction._id)
+        expect(fullTransactionData.transaction.message.compiledInstructions[0]).toEqual('INSTRUCTION')
+      })
     })
   })
 });
