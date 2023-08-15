@@ -48,6 +48,7 @@ let mockDataDoesNotMatchSingleArgument = (mock, type, contractArguments) => {
   return (
     Array.isArray(mock[type].params) == false &&
     contractArguments.length == 1 &&
+    contractArguments[0]?.length === undefined &&
     (
       normalize(mock[type].params) != normalize(contractArguments[0]) && 
       normalize(Object.values(mock[type].params)[0]) != normalize(contractArguments[0])
@@ -65,7 +66,7 @@ let mockDataDoesNotMatchArrayArgument = (mock, type, contractArguments) => {
   )
 }
 
-let mockedArgumentsDoMatch = (mock, type, contractArguments) => {
+let mockedArgumentsDoMatch = (mock, type, contractArguments, parentKey) => {
   if (mock[type].params == undefined) {
     return true
   }
@@ -73,14 +74,22 @@ let mockedArgumentsDoMatch = (mock, type, contractArguments) => {
     return true
   }
 
-  let isDeepAnythingMatch = anythingDeepMatch({ contractArguments, mockParams: mock[type].params })
+  let isDeepAnythingMatch = anythingDeepMatch({ contractArguments, mockParams: parentKey ? mock[type].params[parentKey] : mock[type].params })
 
   return Object.keys(mock[type].params).every((key) => {
     if (mock[type].params && mock[type].params[key]) {
-      return (
-        JSON.stringify(normalize(mock[type].params[key])) ==
-          JSON.stringify(normalize(contractArguments[key])) || isDeepAnythingMatch
-      )
+      let allParamsMatch
+      if(!parentKey && typeof mock[type].params[key] === 'object') {
+        allParamsMatch = mockedArgumentsDoMatch(mock, type, contractArguments[key], key)
+      }
+      if(allParamsMatch){
+        return true
+      } else {
+        return (
+          JSON.stringify(normalize(mock[type].params[key])) ==
+            JSON.stringify(normalize(contractArguments[key])) || isDeepAnythingMatch
+        )
+      }
     } else {
       return true
     }

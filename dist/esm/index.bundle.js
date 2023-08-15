@@ -21983,6 +21983,7 @@ let mockDataDoesNotMatchSingleArgument = (mock, type, contractArguments) => {
   return (
     Array.isArray(mock[type].params) == false &&
     contractArguments.length == 1 &&
+    _optionalChain$l([contractArguments, 'access', _3 => _3[0], 'optionalAccess', _4 => _4.length]) === undefined &&
     (
       normalize$1(mock[type].params) != normalize$1(contractArguments[0]) && 
       normalize$1(Object.values(mock[type].params)[0]) != normalize$1(contractArguments[0])
@@ -22000,7 +22001,7 @@ let mockDataDoesNotMatchArrayArgument = (mock, type, contractArguments) => {
   )
 };
 
-let mockedArgumentsDoMatch = (mock, type, contractArguments) => {
+let mockedArgumentsDoMatch = (mock, type, contractArguments, parentKey) => {
   if (mock[type].params == undefined) {
     return true
   }
@@ -22008,14 +22009,22 @@ let mockedArgumentsDoMatch = (mock, type, contractArguments) => {
     return true
   }
 
-  let isDeepAnythingMatch = anythingDeepMatch({ contractArguments, mockParams: mock[type].params });
+  let isDeepAnythingMatch = anythingDeepMatch({ contractArguments, mockParams: parentKey ? mock[type].params[parentKey] : mock[type].params });
 
   return Object.keys(mock[type].params).every((key) => {
     if (mock[type].params && mock[type].params[key]) {
-      return (
-        JSON.stringify(normalize$1(mock[type].params[key])) ==
-          JSON.stringify(normalize$1(contractArguments[key])) || isDeepAnythingMatch
-      )
+      let allParamsMatch;
+      if(!parentKey && typeof mock[type].params[key] === 'object') {
+        allParamsMatch = mockedArgumentsDoMatch(mock, type, contractArguments[key], key);
+      }
+      if(allParamsMatch){
+        return true
+      } else {
+        return (
+          JSON.stringify(normalize$1(mock[type].params[key])) ==
+            JSON.stringify(normalize$1(contractArguments[key])) || isDeepAnythingMatch
+        )
+      }
     } else {
       return true
     }
@@ -22038,7 +22047,7 @@ let mockHasWrongBlock$1 = (mock, block) => {
 };
 
 let mockHasWrongData = (mock, type, params, provider) => {
-  if (_optionalChain$l([mock, 'access', _3 => _3[type], 'optionalAccess', _4 => _4.api]) == undefined) {
+  if (_optionalChain$l([mock, 'access', _5 => _5[type], 'optionalAccess', _6 => _6.api]) == undefined) {
     return
   }
 
@@ -22117,7 +22126,7 @@ let findAnyMockForThisAddress$1 = ({ type, params }) => {
     if (mock[type] === undefined) {
       return
     }
-    if (normalize$1(_optionalChain$l([mock, 'access', _5 => _5[type], 'optionalAccess', _6 => _6.to])) !== normalize$1(params.to)) {
+    if (normalize$1(_optionalChain$l([mock, 'access', _7 => _7[type], 'optionalAccess', _8 => _8.to])) !== normalize$1(params.to)) {
       return
     }
     return mock
@@ -22126,8 +22135,8 @@ let findAnyMockForThisAddress$1 = ({ type, params }) => {
 
 let findMockByTransactionHash$1 = (hash) => {
   return mocks.find((mock) => {
-    return _optionalChain$l([mock, 'optionalAccess', _7 => _7.transaction, 'optionalAccess', _8 => _8._id]) == hash && (
-      _optionalChain$l([mock, 'optionalAccess', _9 => _9.transaction, 'optionalAccess', _10 => _10._confirmed]) || _optionalChain$l([mock, 'optionalAccess', _11 => _11.transaction, 'optionalAccess', _12 => _12._failed])
+    return _optionalChain$l([mock, 'optionalAccess', _9 => _9.transaction, 'optionalAccess', _10 => _10._id]) == hash && (
+      _optionalChain$l([mock, 'optionalAccess', _11 => _11.transaction, 'optionalAccess', _12 => _12._confirmed]) || _optionalChain$l([mock, 'optionalAccess', _13 => _13.transaction, 'optionalAccess', _14 => _14._failed])
     )
   })
 };
