@@ -1,3 +1,4 @@
+import Blockchains from "@depay/web3-blockchains"
 import { ethers } from 'ethers'
 import { mock, resetMocks, confirm, anything, replace } from 'dist/esm/index.evm'
 import { supported } from "src/blockchains"
