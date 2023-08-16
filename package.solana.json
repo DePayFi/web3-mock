@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-mock-solana",
   "moduleName": "Web3Mock",
-  "version": "14.16.1",
+  "version": "14.16.2",
   "description": "JavaScript library to mock web3 responses either by emulating web3 wallets or web3 RPC requests.",
   "main": "./dist/umd/index.solana.js",
   "module": "./dist/esm/index.solana.js",
@@ -25,7 +25,7 @@
   "homepage": "https://depay.com",
   "private": false,
   "dependencies": {
-    "@depay/solana-web3.js": "^1.24.0",
+    "@depay/solana-web3.js": "^1.25.1",
     "@depay/web3-blockchains": "^8.1.1",
     "ethers": "^5.7.1"
   },
