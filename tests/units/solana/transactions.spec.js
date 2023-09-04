@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { Connection, TransactionInstruction, TransactionMessage, VersionedTransaction, SystemProgram, PublicKey, struct, u8, u32, u64, nu64, BN, seq, offset, publicKey } from '@depay/solana-web3.js'
 import { mock, resetMocks, confirm, anything, replace } from 'src'
-import { Token } from '@depay/web3-tokens'
+import Token from '@depay/web3-tokens'
 import { supported } from "src/blockchains"
 
 describe('solana mock transactions', ()=> {
