@@ -261,6 +261,7 @@ This library supports the following blockchains:
 - [Avalanche](https://www.avax.network)
 - [Gnosis](https://gnosis.io)
 - [Optimism](https://www.optimism.io)
+- [Base](https://base.org)
 
 This library supports the all crypto wallets that inject window.ethereum or window.solana like:
 
