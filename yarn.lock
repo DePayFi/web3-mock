@@ -1028,20 +1028,20 @@
   dependencies:
     bs58 "^5.0.0"
 
-"@depay/web3-blockchains@^8.4.2":
-  version "8.4.2"
-  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-8.4.2.tgz#3f5f072f337acc334e5f0f097627dd85af85848c"
-  integrity sha512-kvzTy0R7zBqL6w2CSRGm3SO1K9QuYpuOCa0BTMt4O7ATqxFg+uXor3uWjS8oWvlQwOdqLl8WT7aaKT8OD63KXw==
+"@depay/web3-blockchains@^9.1.4":
+  version "9.1.4"
+  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-9.1.4.tgz#f006c29c887c433e1824e2bfabf8f39ad13da907"
+  integrity sha512-CQnXCNAt3sA1MphZDMPbrhAPtemzeQ/NKeHcd2aBF61nTjJCRUmSh1Ox8Z6rlSjgDP66842iy6JAoRiFDtlmFw==
 
 "@depay/web3-client@^10.15.0":
   version "10.15.0"
   resolved "https://registry.yarnpkg.com/@depay/web3-client/-/web3-client-10.15.0.tgz#5751f8548361a6328abc333111e8b77c98a62081"
   integrity sha512-JA+duRpwGigfiIm3zqo872UX7mSUpxcmMO4eVfENdeaHN/NotBPSAM17OFpux9Ikmh29MTWQ7El3apUr9BUIXQ==
 
-"@depay/web3-tokens@^9.18.0":
-  version "9.18.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-9.18.0.tgz#225ce35090ba2058a499293bb0b73f6422d3b059"
-  integrity sha512-cKh6SbJqqJCvDtAouJ02N+QRQtUqUWosmF72YwHtM0F/f37ElMA637VTLZXVPXWi71rBOkrnWcWAuZITTReT2Q==
+"@depay/web3-tokens@^10.2.0":
+  version "10.2.0"
+  resolved "https://registry.yarnpkg.com/@depay/web3-tokens/-/web3-tokens-10.2.0.tgz#450a43cfed89ae0854665b2c794fc69f8956f06c"
+  integrity sha512-nPtj+0B+M8AKb/sOJ8sUq4GxHTVgarg82AGWd35IIEyv2Z8YU7gp2g68e4WHLp/EtRuXpWNBS2S2J9fMmAt0wQ==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
