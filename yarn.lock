@@ -1021,10 +1021,10 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@depay/solana-web3.js@^1.25.1":
-  version "1.25.1"
-  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.25.1.tgz#2f4725007ff4cfc14af2606eb3d333e68097e13f"
-  integrity sha512-tKCHHQVoZV85wZ8r3ZuxuQlejBcVolIUf52Bq2Pne3KR1BpxYJF2/9XRTH9qCrLZMQsgsQHikQEH5eglDCKJkA==
+"@depay/solana-web3.js@^1.26.0":
+  version "1.26.0"
+  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.26.0.tgz#6234cd46779924a930d6b6021b66a25c18b38365"
+  integrity sha512-aAhDxfNGraE8VBwM5g/BhHnNCENlLSKDJ3yIh2EZd4mfmKM/4utv0cNUhTEytUAvvFoaMcOXXQ5U5sE1IMXFrQ==
   dependencies:
     bs58 "^5.0.0"
 
