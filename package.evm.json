@@ -1,7 +1,7 @@
 {
   "name": "@depay/web3-mock-evm",
   "moduleName": "Web3Mock",
-  "version": "14.19.0",
+  "version": "14.19.1",
   "description": "JavaScript library to mock web3 responses either by emulating web3 wallets or web3 RPC requests.",
   "main": "./dist/umd/index.evm.js",
   "module": "./dist/esm/index.evm.js",
@@ -25,7 +25,7 @@
   "homepage": "https://depay.com",
   "private": false,
   "dependencies": {
-    "@depay/web3-blockchains": "^9.6.0",
+    "@depay/web3-blockchains": "^9.6.1",
     "ethers": "^5.7.1"
   },
   "peerDependencies": {
