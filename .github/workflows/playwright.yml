@@ -25,7 +25,7 @@ jobs:
     - name: Run Playwright tests
       run: yarn test:playwright
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
         name: playwright-report
