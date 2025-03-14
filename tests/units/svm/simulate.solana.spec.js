@@ -1,5 +1,5 @@
 import { Connection, struct, u8, PublicKey, TransactionInstruction, TransactionMessage, VersionedTransaction } from '@depay/solana-web3.js'
-import { mock, resetMocks, anything } from 'dist/esm/index.solana'
+import { mock, resetMocks, anything } from 'dist/esm/index.svm'
 import { supported } from "src/blockchains"
 
 describe('mocks solana simulations', ()=> {

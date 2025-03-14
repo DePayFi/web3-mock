@@ -2,7 +2,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import globals from './rollup.globals.js'
 import jscc from 'rollup-plugin-jscc'
 import json from '@rollup/plugin-json'
-import pkg from './package.solana.json'
+import pkg from './package.svm.json'
 import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import sucrase from '@rollup/plugin-sucrase'
@@ -14,13 +14,13 @@ export default {
     {
       format: 'es',
       globals: globals,
-      file: 'dist/esm/index.solana.js'
+      file: 'dist/esm/index.svm.js'
     },
     {
       format: 'umd',
       name: pkg.moduleName,
       globals: globals,
-      file: 'dist/umd/index.solana.js'
+      file: 'dist/umd/index.svm.js'
     },
   ],
   external: [
@@ -28,7 +28,7 @@ export default {
     ...Object.keys(pkg.peerDependencies || {}),
   ],
   plugins: [
-    jscc({ values: { _SOLANA: 1 }}),
+    jscc({ values: { _SVM: 1 }}),
     json(),
     sucrase({
       exclude: ['node_modules/**'],

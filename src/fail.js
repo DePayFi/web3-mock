@@ -2,14 +2,14 @@
 
 import { fail as failEvm } from './platforms/evm/fail'
 
-/*#elif _SOLANA
+/*#elif _SVM
 
-import { fail as failSolana } from './platforms/solana/fail'
+import { fail as failSolana } from './platforms/svm/fail'
 
 //#else */
 
 import { fail as failEvm } from './platforms/evm/fail'
-import { fail as failSolana } from './platforms/solana/fail'
+import { fail as failSolana } from './platforms/svm/fail'
 
 //#endif
 
@@ -28,7 +28,7 @@ export default (mock, reason) => {
 
       failEvm(mock.transaction, reason)
       
-      /*#elif _SOLANA
+      /*#elif _SVM
 
       /*#else */
       
@@ -40,7 +40,7 @@ export default (mock, reason) => {
 
       /*#if _EVM
 
-      /*#elif _SOLANA
+      /*#elif _SVM
 
       failSolana(mock.transaction, reason)
 

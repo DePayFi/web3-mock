@@ -1,10 +1,10 @@
 import { Connection, PublicKey, struct, publicKey, i128, u64, u32, u8, bool, str, Buffer } from '@depay/solana-web3.js'
-import { mock, resetMocks, anything } from 'dist/esm/index.solana'
+import { mock, resetMocks, anything } from 'src'
 import { supported } from "src/blockchains"
 
 describe('mocks solana requests', ()=> {
 
-  let rejectsWithMatch = async (method, match)=> {
+let rejectsWithMatch = async (method, match)=> {
     let raisedError
     try {
       await method()
@@ -229,8 +229,8 @@ describe('mocks solana requests', ()=> {
 
         let filters = [
           { dataSize: 165 },
-          { memcmp: { offset: 32, bytes: wallet }},
-          { memcmp: { offset: 0, bytes: mint }}
+          { memcmp: { offset: 32, bytes: wallet, encoding: "base58" }},
+          { memcmp: { offset: 0, bytes: mint, encoding: "base58" }}
         ]
 
         let requestMock = mock({
@@ -282,8 +282,8 @@ describe('mocks solana requests', ()=> {
             params: { 
               filters: [
                 { dataSize: 165 },
-                { memcmp: { offset: 32, bytes: wallet }},
-                { memcmp: { offset: 0, bytes: mint }}
+                { memcmp: { offset: 32, bytes: wallet, encoding: "base58" }},
+                { memcmp: { offset: 0, bytes: mint, encoding: "base58" }}
               ]
             },
             return: [
@@ -305,10 +305,10 @@ describe('mocks solana requests', ()=> {
           connection.getProgramAccounts(new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), { 
             filters: [
               { dataSize: 165 },
-              { memcmp: { offset: 32, bytes: wallet }},
+              { memcmp: { offset: 32, bytes: wallet, encoding: "base58" }},
             ]
           })
-        ).rejects.toEqual("Web3Mock: Please mock the request: {\"blockchain\":\"solana\",\"request\":{\"to\":\"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\"method\":\"getProgramAccounts\",\"return\":\"Your Value\",\"params\":{\"filters\":[{\"dataSize\":165},{\"memcmp\":{\"offset\":32,\"bytes\":\"2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9\"}}]}}}")
+        ).rejects.toEqual("Web3Mock: Please mock the request: {\"blockchain\":\"solana\",\"request\":{\"to\":\"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\",\"method\":\"getProgramAccounts\",\"return\":\"Your Value\",\"params\":{\"filters\":[{\"dataSize\":165},{\"memcmp\":{\"offset\":32,\"bytes\":\"2wmVCSfPxGPjrnMMn7rchp4uaeoTqN39mXFC2zhPdri9\",\"encoding\":\"base58\"}}]}}}")
       })
 
       it('mocks a getTokenAccountBalance request with params', async ()=>{
@@ -368,8 +368,8 @@ describe('mocks solana requests', ()=> {
 
         let filters = [
           { dataSize: 165 },
-          { memcmp: { offset: 32, bytes: wallet }},
-          { memcmp: { offset: 0, bytes: mint }}
+          { memcmp: { offset: 32, bytes: wallet, encoding: "base58" }},
+          { memcmp: { offset: 0, bytes: mint, encoding: "base58" }}
         ]
 
         let requestMock = mock({

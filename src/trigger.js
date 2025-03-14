@@ -2,14 +2,14 @@
 
 import { triggerEvent as triggerEVMEvent } from './platforms/evm/events'
 
-/*#elif _SOLANA
+/*#elif _SVM
 
-import { triggerEvent as triggerSolanaEvent } from './platforms/solana/events'
+import { triggerEvent as triggerSolanaEvent } from './platforms/svm/events'
 
 //#else */
 
 import { triggerEvent as triggerEVMEvent } from './platforms/evm/events'
-import { triggerEvent as triggerSolanaEvent } from './platforms/solana/events'
+import { triggerEvent as triggerSolanaEvent } from './platforms/svm/events'
 
 //#endif
 
@@ -23,7 +23,7 @@ export default (eventName, value) => {
 
   triggerEVMEvent(eventName, value)
 
-  /*#elif _SOLANA
+  /*#elif _SVM
 
   triggerSolanaEvent(eventName, value)
 

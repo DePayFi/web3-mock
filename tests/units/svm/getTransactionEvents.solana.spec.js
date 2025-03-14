@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks, confirm } from 'dist/esm/index.solana'
+import { mock, resetMocks, confirm } from 'dist/esm/index.svm'
 import { resetCache } from '@depay/web3-client'
 import { supported } from "src/blockchains"
 

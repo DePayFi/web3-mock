@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks, trigger } from 'dist/esm/index.solana'
+import { mock, resetMocks, trigger } from 'dist/esm/index.svm'
 import { PublicKey } from '@depay/solana-web3.js'
 import { supported } from "src/blockchains"
 

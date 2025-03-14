@@ -2,14 +2,14 @@
 
 import { confirm as confirmEvm } from './platforms/evm/confirm'
 
-/*#elif _SOLANA
+/*#elif _SVM
 
-import { confirm as confirmSolana } from './platforms/solana/confirm'
+import { confirm as confirmSolana } from './platforms/svm/confirm'
 
 //#else */
 
 import { confirm as confirmEvm } from './platforms/evm/confirm'
-import { confirm as confirmSolana } from './platforms/solana/confirm'
+import { confirm as confirmSolana } from './platforms/svm/confirm'
 
 //#endif
 
@@ -27,7 +27,7 @@ export default (mock) => {
 
       confirmEvm(mock.transaction)
       
-      /*#elif _SOLANA
+      /*#elif _SVM
 
       /*#else */
       
@@ -39,7 +39,7 @@ export default (mock) => {
 
       /*#if _EVM
 
-      /*#elif _SOLANA
+      /*#elif _SVM
 
       confirmSolana(mock.transaction)
 

@@ -1,4 +1,4 @@
-import { mock, resetMocks, anything } from 'dist/esm/index.solana'
+import { mock, resetMocks, anything } from 'dist/esm/index.svm'
 import { supported } from "src/blockchains"
 
 describe('mocks solana wallet accounts', ()=> {

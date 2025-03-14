@@ -34,7 +34,7 @@ describe('something', ()=> {
 })
 ```
 
-#### Solana: Basics
+#### SVM: Basics
 
 Requires explicit provider mocking (see [Providers](#Providers))
 
@@ -135,7 +135,7 @@ describe('something', ()=> {
   })
 ```
 
-#### Solana: Advanced
+#### SVM: Advanced
 
 ```javascript
 import { mock, resetMocks } from '@depay/web3-mock'
@@ -276,16 +276,16 @@ This library supports the all crypto wallets that inject window.ethereum or wind
 
 In case you want to use and package only specific platforms, use platform specific packages:
 
-### EVM platform specific package
+### EVM (Ethereum Virtual Machine) platform specific package
 
 ```javascript
 import { mock } from '@depay/web3-mock-evm'
 ```
 
-### Solana platform specific package
+### SVM (Solana Virtual Machine) platform specific package
 
 ```javascript
-import { mock } from '@depay/web3-mock-solana'
+import { mock } from '@depay/web3-mock-svm'
 ```
 
 ## Functionalities
@@ -305,7 +305,7 @@ await window.ethereum.request({ method: 'eth_blockNumber' }) // '0x5daf3b'
 await window.ethereum.request({ method: 'eth_subscribe' }) // undefined
 ```
 
-#### Solana: Basic Implicit Mocks
+#### SVM: Basic Implicit Mocks
 
 ```javascript
 // requires explicit provider mocking (see #Providers)
@@ -383,7 +383,7 @@ expect(await contract.name()).toEqual('DePay')
 expect(requestMock).toHaveBeenCalled()
 ```
 
-##### Solana: Simple Requests
+##### SVM: Simple Requests
 
 ```javascript
 import { Connection, PublicKey, struct, publicKey, u64, u32, u8 } from '@depay/solana-web3.js'
@@ -530,7 +530,7 @@ expect(
 expect(contractMock).toHaveBeenCalled()
 ```
 
-##### Solana: Complex Requests with Parameters
+##### SVM: Complex Requests with Parameters
 
 ```javascript
 let connection = new Connection('https://api.mainnet-beta.solana.com')
@@ -577,7 +577,7 @@ expect(accounts.map((account)=>account.pubkey.toString())).toEqual([
 ])
 ```
 
-##### Solana: Return raw mocked data
+##### SVM: Return raw mocked data
 
 ```javascript
 const connection = new Connection('https://api.mainnet-beta.solana.com')
@@ -710,7 +710,7 @@ expect(transaction).toBeDefined()
 expect(mockedTransaction).toHaveBeenCalled()
 ````
 
-##### Solana: Simple Transactions
+##### SVM: Simple Transactions
 
 ```javascript
 let mockedTransaction = mock({
@@ -795,7 +795,7 @@ expect(transaction).toBeDefined()
 expect(mockedTransaction).toHaveBeenCalled()
 ````
 
-##### Solana: Mock Complex Contract Transactions
+##### SVM: Mock Complex Contract Transactions
 
 ```javascript
 let mockedTransaction = mock({
@@ -853,7 +853,7 @@ expect(signedTransaction.signature).toEqual(mockedTransaction.transaction._id)
 expect(mockedTransaction).toHaveBeenCalled()
 ````
 
-##### Solana: Mock simulateTransaction
+##### SVM: Mock simulateTransaction
 
 ```javascript
 let connection = new Connection('https://api.mainnet-beta.solana.com')
@@ -949,7 +949,7 @@ await sentTransaction.wait(12).then(function(receipt){
 })
 ```
 
-##### Solana: Confirm mocked transactions
+##### SVM: Confirm mocked transactions
 
 ```javascript
 let mockedTransaction = mock({
@@ -1413,7 +1413,7 @@ let balance = await signer.getBalance()
 // BigNumber<'123'>
 ```
 
-#### Solana: Balance
+#### SVM: Balance
 
 ```javascript
 let connection = new Connection('https://api.mainnet-beta.solana.com')
@@ -1575,7 +1575,7 @@ mock({
 })
 ```
 
-#### Solana: Providers
+#### SVM: Providers
 
 ```javascript
 let connection = new Connection('https://api.mainnet-beta.solana.com')

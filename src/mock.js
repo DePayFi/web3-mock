@@ -2,14 +2,14 @@
 
 import { mock as mockEvm } from './platforms/evm/mock'
 
-/*#elif _SOLANA
+/*#elif _SVM
 
-import { mock as mockSolana } from './platforms/solana/mock'
+import { mock as mockSolana } from './platforms/svm/mock'
 
 //#else */
 
 import { mock as mockEvm } from './platforms/evm/mock'
-import { mock as mockSolana } from './platforms/solana/mock'
+import { mock as mockSolana } from './platforms/svm/mock'
 
 //#endif
 
@@ -166,7 +166,7 @@ let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
 
     return mockEvm({ blockchain, configuration, window, provider })
     
-    /*#elif _SOLANA
+    /*#elif _SVM
 
     /*#else */
     
@@ -178,7 +178,7 @@ let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
 
     /*#if _EVM
 
-    /*#elif _SOLANA
+    /*#elif _SVM
 
     return mockSolana({ blockchain, configuration, window, provider })
 

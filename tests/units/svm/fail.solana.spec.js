@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { mock, resetMocks, fail } from 'dist/esm/index.solana'
+import { mock, resetMocks, fail } from 'dist/esm/index.svm'
 import { supported } from "src/blockchains"
 import { Connection, TransactionInstruction, TransactionMessage, VersionedTransaction, SystemProgram, PublicKey, struct, u32, u64, } from '@depay/solana-web3.js'
 

@@ -4,7 +4,7 @@ let supported = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche'
 supported.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism', 'base', 'worldchain']
 supported.solana = []
 
-/*#elif _SOLANA
+/*#elif _SVM
 
 let supported = ['solana']
 supported.evm = []

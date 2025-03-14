@@ -1021,17 +1021,17 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@depay/solana-web3.js@^1.26.0":
-  version "1.26.0"
-  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.26.0.tgz#6234cd46779924a930d6b6021b66a25c18b38365"
-  integrity sha512-aAhDxfNGraE8VBwM5g/BhHnNCENlLSKDJ3yIh2EZd4mfmKM/4utv0cNUhTEytUAvvFoaMcOXXQ5U5sE1IMXFrQ==
+"@depay/solana-web3.js@^1.98.0":
+  version "1.98.0"
+  resolved "https://registry.yarnpkg.com/@depay/solana-web3.js/-/solana-web3.js-1.98.0.tgz#56eb0ecde34fd4a146377cd6369683acdc4a6957"
+  integrity sha512-4Gi+tjyWNS94D2NyNGtMMnyCf1d5M/Hbsw7WZis21RF0GyFFEu8wsbQHq+4KL6IaaUma0e0mGz8HLwCAGJd47A==
   dependencies:
     bs58 "^5.0.0"
 
-"@depay/web3-blockchains@^9.6.0":
-  version "9.6.0"
-  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-9.6.0.tgz#51bcd4cd6bcc9542b61f7792eabdccbe6385b476"
-  integrity sha512-+REyl5vva1e6t4yvSJKJE2IgidTNDPB7imn4xxAqqeVOFJryLBwaPddyh5C9pnX9GMpLhR6s6Su4AgrdLSZ/JQ==
+"@depay/web3-blockchains@^9.7.9":
+  version "9.7.9"
+  resolved "https://registry.yarnpkg.com/@depay/web3-blockchains/-/web3-blockchains-9.7.9.tgz#3b1024684adfef9fcab7596ffd12a5a8cc4548fc"
+  integrity sha512-nYv04ClJn6aOUrusApIyBtIk3/wHxY2OnQC5mFQ7giJqr0/ZE3FbdDmKHPYYkysedNQdERq/lR+p+AFWVzfEQQ==
 
 "@depay/web3-client@^10.18.16":
   version "10.18.16"

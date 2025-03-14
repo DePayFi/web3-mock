@@ -1,4 +1,4 @@
-import { mock, resetMocks, anything } from 'dist/esm/index.solana'
+import { mock, resetMocks, anything } from 'dist/esm/index.svm'
 import { Connection, PublicKey } from '@depay/solana-web3.js'
 import { supported } from "src/blockchains"
 
