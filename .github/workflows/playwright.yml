@@ -7,7 +7,7 @@ on:
 jobs:
   test:
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: debian-latest
     steps:
     
     - uses: actions/checkout@v2
@@ -15,11 +15,6 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '18.x'
-
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install libgtk2.0-0t64 libgtk-3-0t64 libgbm-dev libnotify-dev libnss3 libxss1 libasound2t64 libxtst6 xauth xvfb
     
     - name: Install dependencies
       run: yarn
