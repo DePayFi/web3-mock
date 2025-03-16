@@ -36,7 +36,7 @@ export default (mock, reason) => {
       
       //#endif
 
-    } else if(supported.solana.includes(mock.blockchain)) {
+    } else if(supported.svm.includes(mock.blockchain)) {
 
       /*#if _EVM
 

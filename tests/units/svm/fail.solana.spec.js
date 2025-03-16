@@ -5,7 +5,7 @@ import { Connection, TransactionInstruction, TransactionMessage, VersionedTransa
 
 describe('mock solana transaction failures/reverts', ()=> {
 
-  supported.solana.forEach((blockchain)=>{
+  supported.svm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

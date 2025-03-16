@@ -12,7 +12,7 @@ let rejectsWithMatch = async (method, match)=> {
     expect(raisedError.message).toMatch(match)
   }
 
-  supported.solana.forEach((blockchain)=>{
+  supported.svm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

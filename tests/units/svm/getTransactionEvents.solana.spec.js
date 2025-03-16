@@ -5,7 +5,7 @@ import { supported } from "src/blockchains"
 
 describe('mock solana getTransaction including events', ()=> {
 
-  supported.solana.forEach((blockchain)=>{
+  supported.svm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

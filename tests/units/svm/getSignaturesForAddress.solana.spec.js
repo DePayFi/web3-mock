@@ -4,7 +4,7 @@ import { supported } from "src/blockchains"
 
 describe('mocks getSignaturesForAddress', ()=> {
 
-  supported.solana.forEach((blockchain)=>{
+  supported.svm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

@@ -41,7 +41,7 @@ let apiIsMissing = (type, configuration) => {
       return false
     }
     return configuration[type] && configuration[type]?.api === undefined
-  } else if (supported.solana.includes(configuration.blockchain)) {
+  } else if (supported.svm.includes(configuration.blockchain)) {
     if(type == 'transaction') {
       return configuration.transaction?.instructions?.every((instruction)=>!instruction.api)
     } else if(type == 'simulate') {
@@ -61,7 +61,7 @@ let apiMissingErrorText = (type, configuration) => {
     suggestedConfiguration = Object.assign(configurationDuplicate, {
       [type]: Object.assign(configurationDuplicate[type], { api: ['PLACE API HERE'] }),
     })
-  } else if (supported.solana.includes(configuration.blockchain)) {
+  } else if (supported.svm.includes(configuration.blockchain)) {
     suggestedConfiguration = configurationDuplicate
     if(type == 'transaction') {
       suggestedConfiguration.transaction.instructions = suggestedConfiguration.transaction.instructions.map((instruction)=>Object.assign(instruction, { api: 'PLACE API HERE' }))
@@ -153,7 +153,7 @@ let mockWallet = ({ blockchain, configuration, window }) => {
     default:
       if(supported.evm.includes(blockchain)) {
         window.ethereum = window._ethereum
-      } else if(supported.solana.includes(blockchain)) {
+      } else if(supported.svm.includes(blockchain)) {
         window.solana = window._solana
       }
   }
@@ -174,7 +174,7 @@ let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
     
     //#endif
 
-  } else if(supported.solana.includes(blockchain)) {
+  } else if(supported.svm.includes(blockchain)) {
 
     /*#if _EVM
 

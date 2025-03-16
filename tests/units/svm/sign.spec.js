@@ -3,7 +3,7 @@ import { supported } from "src/blockchains"
 
 describe('solana mock signatures', ()=> {
 
-  supported.solana.forEach((blockchain)=>{
+  supported.svm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
       const accounts = ['2UgCJaHU5y8NC4uWQcZYeV9a5RyYLF7iKYCybCsdFFD1']

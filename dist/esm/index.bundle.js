@@ -28047,19 +28047,19 @@ let confirm$1 = (transaction) => {
 
 let supported = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism', 'base', 'worldchain']
 supported.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism', 'base', 'worldchain']
-supported.solana = []
+supported.svm = []
 
 /*#elif _SVM
 
 let supported = ['solana']
 supported.evm = []
-supported.solana = ['solana']
+supported.svm = ['solana']
 
 //#else */
 
 let supported = ['ethereum', 'bsc', 'polygon', 'solana', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism', 'base', 'worldchain'];
 supported.evm = ['ethereum', 'bsc', 'polygon', 'fantom', 'arbitrum', 'avalanche', 'gnosis', 'optimism', 'base', 'worldchain'];
-supported.solana = ['solana'];
+supported.svm = ['solana'];
 
 function _optionalChain$k(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }/*#if _EVM
 
@@ -28088,7 +28088,7 @@ var confirm = (mock) => {
       
       //#endif
 
-    } else if(supported.solana.includes(mock.blockchain)) {
+    } else if(supported.svm.includes(mock.blockchain)) {
 
       /*#if _EVM
 
@@ -28147,7 +28147,7 @@ const getRandomTransactionHash = (blockchain) => {
           .map(() => Math.random().toString()[4])
           .join(''),
     )._hex
-  } else if (supported.solana.includes(blockchain)) {
+  } else if (supported.svm.includes(blockchain)) {
     return to_b58(
       Array(32)
         .fill()
@@ -28260,7 +28260,7 @@ var fail = (mock, reason) => {
       
       //#endif
 
-    } else if(supported.solana.includes(mock.blockchain)) {
+    } else if(supported.svm.includes(mock.blockchain)) {
 
       /*#if _EVM
 
@@ -83380,7 +83380,7 @@ let apiIsMissing = (type, configuration) => {
       return false
     }
     return configuration[type] && _optionalChain([configuration, 'access', _ => _[type], 'optionalAccess', _2 => _2.api]) === undefined
-  } else if (supported.solana.includes(configuration.blockchain)) {
+  } else if (supported.svm.includes(configuration.blockchain)) {
     if(type == 'transaction') {
       return _optionalChain([configuration, 'access', _3 => _3.transaction, 'optionalAccess', _4 => _4.instructions, 'optionalAccess', _5 => _5.every, 'call', _6 => _6((instruction)=>!instruction.api)])
     } else if(type == 'simulate') {
@@ -83400,7 +83400,7 @@ let apiMissingErrorText = (type, configuration) => {
     suggestedConfiguration = Object.assign(configurationDuplicate, {
       [type]: Object.assign(configurationDuplicate[type], { api: ['PLACE API HERE'] }),
     });
-  } else if (supported.solana.includes(configuration.blockchain)) {
+  } else if (supported.svm.includes(configuration.blockchain)) {
     suggestedConfiguration = configurationDuplicate;
     if(type == 'transaction') {
       suggestedConfiguration.transaction.instructions = suggestedConfiguration.transaction.instructions.map((instruction)=>Object.assign(instruction, { api: 'PLACE API HERE' }));
@@ -83492,7 +83492,7 @@ let mockWallet = ({ blockchain, configuration, window }) => {
     default:
       if(supported.evm.includes(blockchain)) {
         window.ethereum = window._ethereum;
-      } else if(supported.solana.includes(blockchain)) {
+      } else if(supported.svm.includes(blockchain)) {
         window.solana = window._solana;
       }
   }
@@ -83513,7 +83513,7 @@ let mockBlockchain = ({ blockchain, configuration, window, provider }) => {
     
     //#endif
 
-  } else if(supported.solana.includes(blockchain)) {
+  } else if(supported.svm.includes(blockchain)) {
 
     /*#if _EVM
 

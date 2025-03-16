@@ -3,7 +3,7 @@ import { supported } from "src/blockchains"
 
 describe('solana mock wallet specifics', ()=> {
 
-  supported.solana.forEach((blockchain)=>{
+  supported.svm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

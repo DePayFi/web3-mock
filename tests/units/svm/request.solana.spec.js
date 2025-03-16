@@ -12,7 +12,7 @@ describe('mocks solana requests', ()=> {
     expect(raisedError.message).toMatch(match)
   }
 
-  supported.solana.forEach((blockchain)=>{
+  supported.svm.forEach((blockchain)=>{
 
     describe(blockchain, ()=> {
 

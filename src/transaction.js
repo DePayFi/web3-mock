@@ -37,7 +37,7 @@ const getRandomTransactionHash = (blockchain) => {
           .map(() => Math.random().toString()[4])
           .join(''),
     )._hex
-  } else if (supported.solana.includes(blockchain)) {
+  } else if (supported.svm.includes(blockchain)) {
     return to_b58(
       Array(32)
         .fill()
