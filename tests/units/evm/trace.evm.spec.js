@@ -166,7 +166,7 @@ describe('mock trace transaction', ()=> {
           return: mockedTrace
         }})
                 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
 
         const returnedTrace = await provider.send('debug_traceTransaction', [mockedTransaction.transaction._id, {"tracer": "callTracer"}])
 
@@ -184,7 +184,7 @@ describe('mock trace transaction', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
 
         console.log('expect', `Web3Mock: Please mock the trace request: {\"blockchain\":\"${blockchain}\",\"trace\":{\"params\":[\"${mockedTransaction.transaction._id}\",{\"tracer\":\"callTracer\"}],\"return\":\"YOUR_TRACE_OBJECT\"}}`)
         expect(()=>{

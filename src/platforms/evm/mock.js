@@ -30,7 +30,7 @@ let mock = ({ blockchain, configuration, window, provider }) => {
     request: (payload) => {
       return request({
         request: payload,
-        provider: new ethers.providers.Web3Provider(window._ethereum),
+        provider: new ethers.BrowserProvider(window._ethereum),
       })
     },
   }

@@ -14,7 +14,7 @@ describe('evm getGasPrice (evm)', () => {
         
         let gasPrice = await global.ethereum.request({ method: 'eth_getGasPrice' })
 
-        expect(ethers.BigNumber.from(gasPrice).toString()).toEqual('13370000000')
+        expect(BigInt(gasPrice).toString()).toEqual('13370000000')
       })
     })
   })

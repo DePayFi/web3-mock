@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { ethers, toUtf8Bytes, hexlify } from 'ethers'
 import { mock, resetMocks, confirm, anything } from 'src'
 import { supported } from "src/blockchains"
 
@@ -19,8 +19,8 @@ describe('mock signatures', ()=> {
         mock(blockchain)
 
         let message = "This is a message to be signed\n\nAnd a new line"
-        const messageUtf8 = ethers.utils.toUtf8Bytes(message)
-        const messageHex = ethers.utils.hexlify(messageUtf8).substring(2)
+        const messageUtf8 = toUtf8Bytes(message)
+        const messageHex = hexlify(messageUtf8).substring(2)
 
         await expect(
           WalletConnectStub.instance.signPersonalMessage([`0x${messageHex}`, accounts[0]])
@@ -32,8 +32,8 @@ describe('mock signatures', ()=> {
       it('mocks signature request and returns given signature', async()=> {
         
         let message = "This is a message to be signed\n\nAnd a new line"
-        const messageUtf8 = ethers.utils.toUtf8Bytes(message)
-        const messageHex = ethers.utils.hexlify(messageUtf8).substring(2)
+        const messageUtf8 = toUtf8Bytes(message)
+        const messageHex = hexlify(messageUtf8).substring(2)
 
         mock({
           blockchain,
@@ -51,8 +51,8 @@ describe('mock signatures', ()=> {
       it('allows to delay signature', async()=> {
         
         let message = "This is a message to be signed\n\nAnd a new line"
-        const messageUtf8 = ethers.utils.toUtf8Bytes(message)
-        const messageHex = ethers.utils.hexlify(messageUtf8).substring(2)
+        const messageUtf8 = toUtf8Bytes(message)
+        const messageHex = hexlify(messageUtf8).substring(2)
 
         mock({
           blockchain,

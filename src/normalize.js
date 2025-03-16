@@ -3,7 +3,7 @@ let normalize = function (input) {
     return input.map((element) => normalize(element))
   } else if (typeof input === 'undefined') {
     return input
-  } else if (typeof input === 'object' && input._isBigNumber) {
+  } else if (typeof input === 'object' && input._isBigNumber && typeof mockParams == 'bigint') {
     return input.toString()
   } else {
     if (input?.toString) {

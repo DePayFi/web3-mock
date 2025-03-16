@@ -45,12 +45,12 @@ describe('getLogs', () => {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
 
         const topics = [
-          ethers.utils.id('Payment(address,address,uint256,address)'),
-          ethers.utils.hexZeroPad('0x8f0a62Ff2Ae1FA08B25070B8b5138fb45630456F', 32),
-          ethers.utils.hexZeroPad('0xFcd9C98AAe3229A5984a27dEE7E6C3b77F1622b5', 32)
+          id('Payment(address,address,uint256,address)'),
+          zeroPadValue('0x8f0a62Ff2Ae1FA08B25070B8b5138fb45630456F', 32),
+          zeroPadValue('0xFcd9C98AAe3229A5984a27dEE7E6C3b77F1622b5', 32)
         ]
 
         let logs = await provider.getLogs({
@@ -68,12 +68,12 @@ describe('getLogs', () => {
 
         mock({ blockchain })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
 
         const topics = [
-          ethers.utils.id('Payment(address,address,uint256,address)'),
-          ethers.utils.hexZeroPad('0x8f0a62Ff2Ae1FA08B25070B8b5138fb45630456F', 32),
-          ethers.utils.hexZeroPad('0xFcd9C98AAe3229A5984a27dEE7E6C3b77F1622b5', 32)
+          id('Payment(address,address,uint256,address)'),
+          zeroPadValue('0x8f0a62Ff2Ae1FA08B25070B8b5138fb45630456F', 32),
+          zeroPadValue('0xFcd9C98AAe3229A5984a27dEE7E6C3b77F1622b5', 32)
         ]
 
         await expect(

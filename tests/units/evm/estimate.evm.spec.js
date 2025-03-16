@@ -17,7 +17,7 @@ describe('mock evm estimates (evm)', ()=> {
         
         mock(blockchain)
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
         let signer = provider.getSigner()
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
@@ -33,7 +33,7 @@ describe('mock evm estimates (evm)', ()=> {
         
         mock({ blockchain, require: 'estimate' })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
         let signer = provider.getSigner()
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
@@ -61,7 +61,7 @@ describe('mock evm estimates (evm)', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
         let signer = provider.getSigner()
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
@@ -94,7 +94,7 @@ describe('mock evm estimates (evm)', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -134,7 +134,7 @@ describe('mock evm estimates (evm)', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -175,7 +175,7 @@ describe('mock evm estimates (evm)', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -212,7 +212,7 @@ describe('mock evm estimates (evm)', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
         let signer = provider.getSigner()
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',

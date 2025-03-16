@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { ethers, parseUnits, BrowserProvider, JsonRpcProvider, JsonRpcBatchProvider } from 'ethers'
 import { mock, resetMocks, connect } from 'dist/esm/index.evm'
 
 describe('evm mock for multiple providers across multiple chains (evm)', ()=> {
@@ -9,7 +9,7 @@ describe('evm mock for multiple providers across multiple chains (evm)', ()=> {
 
     let balance
 
-    let balanceEthereum = ethers.utils.parseUnits('100', 18)
+    let balanceEthereum = parseUnits('100', 18)
     let balanceEthereumMock = mock({
       blockchain: 'ethereum',
       balance: {
@@ -18,8 +18,8 @@ describe('evm mock for multiple providers across multiple chains (evm)', ()=> {
       }
     })
     
-    let balanceBsc = ethers.utils.parseUnits('1337', 18)
-    let bscProvider = new ethers.providers.JsonRpcProvider('https://bsc-dataseed.binance.org');
+    let balanceBsc = parseUnits('1337', 18)
+    let bscProvider = new JsonRpcProvider('https://bsc-dataseed.binance.org');
     let balanceBscMock = mock({
       provider: bscProvider,
       blockchain: 'bsc',
@@ -34,12 +34,12 @@ describe('evm mock for multiple providers across multiple chains (evm)', ()=> {
     expect(balance.toString()).toEqual(balanceBsc.toString())
     expect(balanceBscMock).toHaveBeenCalled()
     
-    let ethereumProvider = new ethers.providers.Web3Provider(global.ethereum);
+    let ethereumProvider = new BrowserProvider(global.ethereum);
     balance = await ethereumProvider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
     expect(balance.toString()).toEqual(balanceEthereum.toString())
     expect(balanceEthereumMock).toHaveBeenCalled()
 
-    let bscBatchProvider = new ethers.providers.JsonRpcBatchProvider('https://bsc-dataseed.binance.org');
+    let bscBatchProvider = new JsonRpcBatchProvider('https://bsc-dataseed.binance.org');
     let balanceBscBatchMock = mock({
       provider: bscBatchProvider,
       blockchain: 'bsc',

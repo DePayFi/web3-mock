@@ -1,5 +1,5 @@
 import Blockchains from "@depay/web3-blockchains"
-import { ethers } from 'ethers'
+import { ethers, parseEther } from 'ethers'
 import { mock, resetMocks, confirm, anything, replace } from 'dist/esm/index.evm'
 import { supported } from "src/blockchains"
 
@@ -16,14 +16,14 @@ describe('mock transactions', ()=> {
         
         mock(blockchain)
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let signer = provider.getSigner();
 
         await expect(
           signer.sendTransaction({
             to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-            value: ethers.utils.parseEther("1")
+            value: parseEther("1")
           })
         ).rejects.toEqual(
           "Web3Mock: Please mock the transaction to: 0x5af489c8786a018ec4814194dc8048be1007e390"
@@ -43,13 +43,13 @@ describe('mock transactions', ()=> {
 
         expect(mockedTransaction.transaction._id).toBeDefined()
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let signer = provider.getSigner();
 
         let transaction = await signer.sendTransaction({
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-          value: ethers.utils.parseEther("2")
+          value: parseEther("2")
         })
 
         expect(transaction).toBeDefined()
@@ -86,7 +86,7 @@ describe('mock transactions', ()=> {
         expect(mockedTransaction.transaction._id).toBeDefined()
         confirm(mockedTransaction)
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let receipt = await provider.getTransactionReceipt(mockedTransaction.transaction._id);
         expect(receipt.from).toEqual('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')
@@ -108,7 +108,7 @@ describe('mock transactions', ()=> {
         expect(mockedTransaction.transaction._id).toBeDefined()
         confirm(mockedTransaction)
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let transaction = await provider.getTransaction(mockedTransaction.transaction._id);
         expect(transaction.from).toEqual('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')
@@ -134,7 +134,7 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -171,9 +171,9 @@ describe('mock transactions', ()=> {
             method: 'pay',
             params: {
               payment: {
-                amountIn: ethers.BigNumber.from('1000000'),
+                amountIn: BigInt('1000000'),
                 permit2: false,
-                paymentAmount: ethers.BigNumber.from('1000000'),
+                paymentAmount: BigInt('1000000'),
                 feeAmount: 0,
                 tokenInAddress: Blockchains[blockchain].zero,
                 exchangeAddress: Blockchains[blockchain].zero,
@@ -190,7 +190,7 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -202,9 +202,9 @@ describe('mock transactions', ()=> {
 
         let transaction = await contract.connect(signer)['pay((uint256,bool,uint256,uint256,address,address,address,address,address,uint8,uint8,bytes,bytes,uint256))'](
           {
-            amountIn: ethers.BigNumber.from('1000000'),
+            amountIn: BigInt('1000000'),
             permit2: false,
-            paymentAmount: ethers.BigNumber.from('1000000'),
+            paymentAmount: BigInt('1000000'),
             feeAmount: 0,
             tokenInAddress: Blockchains[blockchain].zero,
             exchangeAddress: Blockchains[blockchain].zero,
@@ -237,12 +237,12 @@ describe('mock transactions', ()=> {
             method: 'route',
             params: {
               path: ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0bed124a09ac2bd941b10349d8d224fe3c955eb"],
-              amounts: [ethers.BigNumber.from("773002376389189"), ethers.BigNumber.from("1000000000000000000"), ethers.BigNumber.from("3623748721")]
+              amounts: [BigInt("773002376389189"), BigInt("1000000000000000000"), BigInt("3623748721")]
             }
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -279,14 +279,14 @@ describe('mock transactions', ()=> {
             method: 'swapTokensForExactTokens',
             params: {
               amountInMax: anything,
-              amountOut: ethers.BigNumber.from('1000000000'),
+              amountOut: BigInt('1000000000'),
               path: ['0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb','0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb'],
               to: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045'
             }
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -297,8 +297,8 @@ describe('mock transactions', ()=> {
         let signer = provider.getSigner();
 
         let transaction = await contract.connect(signer).swapTokensForExactTokens(
-          ethers.BigNumber.from('1000000000'),
-          ethers.BigNumber.from('1000000000'),
+          BigInt('1000000000'),
+          BigInt('1000000000'),
           ['0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb','0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb'],
           '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
           '1625141777',
@@ -320,7 +320,7 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let signer = provider.getSigner();
 
@@ -330,7 +330,7 @@ describe('mock transactions', ()=> {
 
         await signer.sendTransaction({
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-          value: ethers.utils.parseEther("1")
+          value: parseEther("1")
         }).then(async function(transaction){
           sentTransaction = transaction
         })
@@ -352,7 +352,7 @@ describe('mock transactions', ()=> {
         
         mock(blockchain)
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -385,7 +385,7 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -438,14 +438,14 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let signer = provider.getSigner();
 
         await expect(
           signer.sendTransaction({
             to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-            value: ethers.utils.parseEther("1")
+            value: parseEther("1")
           })
         ).rejects.toEqual(
           "Web3Mock: Please mock the transaction to: 0x5af489c8786a018ec4814194dc8048be1007e390"
@@ -464,14 +464,14 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let signer = provider.getSigner();
 
         await expect(
           signer.sendTransaction({
             to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-            value: ethers.utils.parseEther("1")
+            value: parseEther("1")
           })
         ).rejects.toEqual(
           "Web3Mock: Please mock the transaction to: 0x5af489c8786a018ec4814194dc8048be1007e390"
@@ -490,14 +490,14 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let signer = provider.getSigner();
 
         await expect(
           signer.sendTransaction({
             to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-            value: ethers.utils.parseEther("1")
+            value: parseEther("1")
           })
         ).rejects.toEqual(
           "Web3Mock: Please mock the transaction to: 0x5af489c8786a018ec4814194dc8048be1007e390"
@@ -524,7 +524,7 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -563,7 +563,7 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -605,7 +605,7 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -647,7 +647,7 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           "0xae60aC8e69414C2Dc362D0e6a03af643d1D85b92",
@@ -684,14 +684,14 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let signer = provider.getSigner();
 
         await expect(
           signer.sendTransaction({
             to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-            value: ethers.utils.parseEther("2")
+            value: parseEther("2")
           })
         ).rejects.toEqual(new Error('Some issue'))
 
@@ -710,14 +710,14 @@ describe('mock transactions', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let signer = provider.getSigner();
 
         let now = new Date().getTime()
         await signer.sendTransaction({
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-          value: ethers.utils.parseEther("2")
+          value: parseEther("2")
         })
         expect((new Date().getTime() - now) > 1000).toEqual(true)
         
@@ -737,12 +737,12 @@ describe('mock transactions', ()=> {
           transaction
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
         let signer = provider.getSigner();
 
         let sentTransaction = await signer.sendTransaction({
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-          value: ethers.utils.parseEther("2")
+          value: parseEther("2")
         })
 
         let transactionError
@@ -776,12 +776,12 @@ describe('mock transactions', ()=> {
           transaction
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
         let signer = provider.getSigner();
 
         let sentTransaction = await signer.sendTransaction({
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-          value: ethers.utils.parseEther("2")
+          value: parseEther("2")
         })
 
         let transactionError

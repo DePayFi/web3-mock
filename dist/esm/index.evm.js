@@ -6,7 +6,7 @@ function _optionalChain$j(ops) { let lastAccessLHS = undefined; let value = ops[
     return input.map((element) => normalize(element))
   } else if (typeof input === 'undefined') {
     return input
-  } else if (typeof input === 'object' && input._isBigNumber) {
+  } else if (typeof input === 'object' && input._isBigNumber && typeof mockParams == 'bigint') {
     return input.toString()
   } else {
     if (_optionalChain$j([input, 'optionalAccess', _ => _.toString])) {
@@ -24,7 +24,7 @@ function _optionalChain$j(ops) { let lastAccessLHS = undefined; let value = ops[
 let anything = '__ANYTHING__';
 
 let fillMockParamsWithAnything = ({ contractArguments, mockParams }) => {
-  if (typeof mockParams === 'object' && !Array.isArray(mockParams) && !mockParams._isBigNumber) {
+  if (typeof mockParams === 'object' && !Array.isArray(mockParams) && !mockParams._isBigNumber && typeof mockParams != 'bigint') {
     let filledMockParams = {};
     Object.keys(mockParams).forEach((key) => {
       filledMockParams[key] = fillMockParamsWithAnything({
@@ -183,7 +183,7 @@ let increaseTransactionCount = (address) => {
 let getTransactionCount = (address) => {
   address = address.toLowerCase();
   if(count[address] == undefined) { count[address] = 0; }
-  return ethers.BigNumber.from(count[address].toString())._hex
+  return "0x" + BigInt(count[address].toString()).toString(16)
 };
 
 let resetTransactionCount = ()=> {
@@ -242,7 +242,7 @@ let mockHasWrongTransactionData = (mock, type, params) => {
     (mock[type].to && normalize(params.to) !== normalize(mock[type].to)) ||
     (mock[type].from && normalize(params.from) !== normalize(mock[type].from)) ||
     (mock[type].value &&
-      ethers.BigNumber.from(params.value).toString() !== normalize(mock[type].value))
+      BigInt(params.value).toString() !== normalize(mock[type].value))
   )
 };
 
@@ -323,7 +323,7 @@ let mockDataDoesNotMatchObjectArugment = (mock, type, contractArguments) => {
 let mockHasWrongBlock = (mock, block) => {
   if((typeof block == 'undefined' || block == 'latest') && typeof mock.block == 'undefined'){ return false }
   if(typeof mock.block == 'undefined') { return true }
-  return ethers.utils.hexValue(mock.block) != block
+  return ethers.toQuantity(mock.block) != block
 };
 
 let mockHasWrongData = (mock, type, params, provider) => {
@@ -481,13 +481,13 @@ var to_b58 = function(
 
 const getRandomTransactionHash = (blockchain) => {
   if(supported.evm.includes(blockchain)) {
-    return ethers.BigNumber.from(
+    return "0x" + BigInt(
       '1' +
         Array(76)
           .fill()
           .map(() => Math.random().toString()[4])
           .join(''),
-    )._hex
+    ).toString(16)
   } else if (supported.solana.includes(blockchain)) {
     return to_b58(
       Array(32)
@@ -627,21 +627,20 @@ var getTransactionByHash = (hash) => {
     hash: hash,
     input:
       '0x606060405261022e806100136000396000f300606060405260e060020a6000350463201745d5811461003c578063432ced04146100d257806379ce9fac14610141578063d5fa2b00146101a8575b005b61003a6004356024356000828152602081905260409020600101548290600160a060020a039081163391909116141561020857604060009081206001810180548254600160a060020a0319908116909355919091169055600160a060020a038316906803bd913e6c1df40000606082818181858883f1505060405184935060008051602061020e833981519152929150a2505050565b61003a600435600081815260208190526040812060010154600160a060020a031614801561010957506803bd913e6c1df400003410155b1561013e57604060009081206001018054600160a060020a03191633179055819060008051602061020e833981519152906060a25b50565b61003a6004356024356000828152602081905260409020600101548290600160a060020a039081163391909116141561020857604060009081206001018054600160a060020a03191684179055819060008051602061020e833981519152906060a2505050565b61003a6004356024356000828152602081905260409020600101548290600160a060020a039081163391909116141561020857604060009081208054600160a060020a03191684179055819060008051602061020e833981519152906060a25b5050505600a6697e974e6a320f454390be03f74955e8978f1a6971ea6730542e37b66179bc',
-    nonce: ethers.utils.hexlify(getTransactionCount(from)),
+    nonce: ethers.toBeHex(getTransactionCount(from)),
     r: '0xcfb56087c168a48bc69bd2634172fd9defd77bd172387e2137643906ff3606f6',
     s: '0x3474eb47999927f2bed4d4ec27d7e8bb4ad17c61d76761e40fdbd859d84c3bd5',
     to,
     transactionIndex: '0x1',
     type: '0x0',
     v: '0x1c',
-    value: ethers.BigNumber.from(_optionalChain$d([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2.value]) || 0)._hex,
+    value: "0x" + BigInt(_optionalChain$d([mock, 'optionalAccess', _ => _.transaction, 'optionalAccess', _2 => _2.value]) || 0).toString(16),
   };
 
   if (mock) {
     Object.assign(transaction, {
       blockHash: getRandomTransactionHash(mock.blockchain),
-      blockNumber: ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
-        ._hex,
+      blockNumber: "0x" + BigInt(mock.transaction._confirmedAtBlock || getCurrentBlock()).toString(16),
     });
   }
 
@@ -658,7 +657,7 @@ var getTransactionReceipt = (hash) => {
         to: _optionalChain$c([mock, 'optionalAccess', _3 => _3.transaction, 'optionalAccess', _4 => _4.to]),
         transactionHash: hash,
         transactionIndex: '0x1',
-        blockNumber: ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
+        blockNumber: BigInt(mock.transaction._confirmedAtBlock || getCurrentBlock())
           ._hex,
         blockHash: getRandomTransactionHash(mock.blockchain),
         cumulativeGasUsed: '0x33bc',
@@ -682,7 +681,7 @@ let balance = function ({ blockchain, params, provider }) {
     if (_optionalChain$b([mock, 'optionalAccess', _3 => _3.balance, 'optionalAccess', _4 => _4.return]) instanceof Error) {
       return Promise.reject(mock.balance.return)
     } else {
-      return Promise.resolve(ethers.BigNumber.from(mock.balance.return))
+      return Promise.resolve(BigInt(mock.balance.return))
     }
   } else {
     raise(
@@ -835,7 +834,7 @@ let estimate = ({ blockchain, params, provider }) => {
     if (_optionalChain$9([mock, 'optionalAccess', _2 => _2.estimate, 'optionalAccess', _3 => _3.return]) instanceof Error) {
       return Promise.reject(mock.estimate.return)
     } else if (_optionalChain$9([mock, 'access', _4 => _4.estimate, 'optionalAccess', _5 => _5.return])) {
-      return Promise.resolve(ethers.BigNumber.from(mock.estimate.return))
+      return Promise.resolve(BigInt(mock.estimate.return))
     } else {
       return defaultEstimate
     }
@@ -1183,14 +1182,14 @@ let request = ({ blockchain, request, provider }) => {
 
     case 'eth_blockNumber':
     case 'eth_getBlockNumber':
-      return Promise.resolve(ethers.BigNumber.from(getCurrentBlock())._hex)
+      return Promise.resolve("0x" + BigInt(getCurrentBlock()).toString(16))
 
     case 'eth_getBlockByNumber':
       let blockNumber;
       if(request.params[0] == 'latest'){
         blockNumber = getCurrentBlock();
       } else {
-        blockNumber = ethers.BigNumber.from(request.params[0].toString());
+        blockNumber = BigInt(request.params[0].toString());
       }
       return Promise.resolve(getBlockData(parseInt(blockNumber.toString())))
 
@@ -1241,7 +1240,7 @@ let request = ({ blockchain, request, provider }) => {
       return code({ blockchain, params: request.params, provider })
 
     case 'eth_getGasPrice':
-      return Promise.resolve(ethers.utils.hexlify(13370000000))
+      return Promise.resolve(ethers.toBeHex(13370000000))
 
     case 'eth_getLogs':
       params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined;
@@ -1282,7 +1281,7 @@ let mock$3 = ({ blockchain, configuration, window, provider }) => {
     request: (payload) => {
       return request({
         request: payload,
-        provider: new ethers.providers.Web3Provider(window._ethereum),
+        provider: new ethers.BrowserProvider(window._ethereum),
       })
     },
   };

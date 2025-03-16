@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { ethers, toUtf8Bytes, hexlify } from 'ethers'
 import { mock, resetMocks } from 'src'
 import { supported } from "src/blockchains"
 
@@ -15,7 +15,7 @@ describe('evm mock signatures', ()=> {
         
         mock(blockchain)
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         let signer = provider.getSigner();
         let message = "This is a message to be signed\n\nAnd a new line"
@@ -30,8 +30,8 @@ describe('evm mock signatures', ()=> {
       it('mocks signature request and returns given signature', async()=> {
         
         let message = "This is a message to be signed\n\nAnd a new line"
-        const messageUtf8 = ethers.utils.toUtf8Bytes(message)
-        const messageHex = ethers.utils.hexlify(messageUtf8).substring(2)
+        const messageUtf8 = toUtf8Bytes(message)
+        const messageHex = hexlify(messageUtf8).substring(2)
 
         mock({
           blockchain,
@@ -41,7 +41,7 @@ describe('evm mock signatures', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
         let signer = provider.getSigner();
 
         let signature = await signer.signMessage(message)
@@ -51,8 +51,8 @@ describe('evm mock signatures', ()=> {
 
       it('mocks signature request and returns given signature for typed data', async()=> {
         let message = "This is a message to be signed\n\nAnd a new line"
-        const messageUtf8 = ethers.utils.toUtf8Bytes(message)
-        const messageHex = ethers.utils.hexlify(messageUtf8).substring(2)
+        const messageUtf8 = toUtf8Bytes(message)
+        const messageHex = hexlify(messageUtf8).substring(2)
         mock({
           blockchain,
           signature: {
@@ -60,7 +60,7 @@ describe('evm mock signatures', ()=> {
             return: "0x123456"
           }
         })
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
         const signature = await provider.send('eth_signTypedData_v4',
             [accounts[0], `0x${messageHex}`])
 
@@ -70,8 +70,8 @@ describe('evm mock signatures', ()=> {
       it('allows to delay signature', async()=> {
         
         let message = "This is a message to be signed\n\nAnd a new line"
-        const messageUtf8 = ethers.utils.toUtf8Bytes(message)
-        const messageHex = ethers.utils.hexlify(messageUtf8).substring(2)
+        const messageUtf8 = toUtf8Bytes(message)
+        const messageHex = hexlify(messageUtf8).substring(2)
 
         mock({
           blockchain,
@@ -83,7 +83,7 @@ describe('evm mock signatures', ()=> {
         })
 
         let now = new Date().getTime()
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
         let signer = provider.getSigner();
         let signature = await signer.signMessage(message)
         expect((new Date().getTime() - now) >= 1000).toEqual(true)

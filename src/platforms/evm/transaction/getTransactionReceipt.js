@@ -12,7 +12,7 @@ export default (hash) => {
         to: mock?.transaction?.to,
         transactionHash: hash,
         transactionIndex: '0x1',
-        blockNumber: ethers.BigNumber.from(mock.transaction._confirmedAtBlock || getCurrentBlock())
+        blockNumber: BigInt(mock.transaction._confirmedAtBlock || getCurrentBlock())
           ._hex,
         blockHash: getRandomTransactionHash(mock.blockchain),
         cumulativeGasUsed: '0x33bc',

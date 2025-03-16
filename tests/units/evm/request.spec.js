@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { ethers, solidityPacked } from 'ethers'
 import { mock, resetMocks, anything } from 'src'
 import { supported } from "src/blockchains"
 
@@ -32,7 +32,7 @@ describe('mocks evm requests', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
@@ -47,7 +47,7 @@ describe('mocks evm requests', ()=> {
       it('throws an error if the contract was not mocked at all', async ()=>{
         mock(blockchain)
         
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
@@ -70,7 +70,7 @@ describe('mocks evm requests', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
@@ -109,7 +109,7 @@ describe('mocks evm requests', ()=> {
           }
         })
         
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
@@ -135,7 +135,7 @@ describe('mocks evm requests', ()=> {
           }
         })
         
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
@@ -159,7 +159,7 @@ describe('mocks evm requests', ()=> {
           }
         })
         
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
@@ -186,7 +186,7 @@ describe('mocks evm requests', ()=> {
           }
         })
         
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bed124a09ac2bd941b10349d8d224fe3c955eb',
@@ -214,7 +214,7 @@ describe('mocks evm requests', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
@@ -245,7 +245,7 @@ describe('mocks evm requests', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
@@ -279,7 +279,7 @@ describe('mocks evm requests', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
@@ -309,7 +309,7 @@ describe('mocks evm requests', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
@@ -337,7 +337,7 @@ describe('mocks evm requests', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
@@ -366,7 +366,7 @@ describe('mocks evm requests', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
@@ -392,7 +392,7 @@ describe('mocks evm requests', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum)
+        provider = new ethers.BrowserProvider(global.ethereum)
 
         let contract = new ethers.Contract(
           '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f',
@@ -405,7 +405,7 @@ describe('mocks evm requests', ()=> {
 
       it('mocks a staticCall', async ()=> {
         const api = [{"inputs":[{"internalType":"address","name":"_factory","type":"address"},{"internalType":"address","name":"_WETH9","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"WETH9","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"factory","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes","name":"path","type":"bytes"},{"internalType":"uint256","name":"amountIn","type":"uint256"}],"name":"quoteExactInput","outputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint160[]","name":"sqrtPriceX96AfterList","type":"uint160[]"},{"internalType":"uint32[]","name":"initializedTicksCrossedList","type":"uint32[]"},{"internalType":"uint256","name":"gasEstimate","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"components":[{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"address","name":"tokenOut","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint24","name":"fee","type":"uint24"},{"internalType":"uint160","name":"sqrtPriceLimitX96","type":"uint160"}],"internalType":"struct IQuoterV2.QuoteExactInputSingleParams","name":"params","type":"tuple"}],"name":"quoteExactInputSingle","outputs":[{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint160","name":"sqrtPriceX96After","type":"uint160"},{"internalType":"uint32","name":"initializedTicksCrossed","type":"uint32"},{"internalType":"uint256","name":"gasEstimate","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes","name":"path","type":"bytes"},{"internalType":"uint256","name":"amountOut","type":"uint256"}],"name":"quoteExactOutput","outputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint160[]","name":"sqrtPriceX96AfterList","type":"uint160[]"},{"internalType":"uint32[]","name":"initializedTicksCrossedList","type":"uint32[]"},{"internalType":"uint256","name":"gasEstimate","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"components":[{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"address","name":"tokenOut","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint24","name":"fee","type":"uint24"},{"internalType":"uint160","name":"sqrtPriceLimitX96","type":"uint160"}],"internalType":"struct IQuoterV2.QuoteExactOutputSingleParams","name":"params","type":"tuple"}],"name":"quoteExactOutputSingle","outputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint160","name":"sqrtPriceX96After","type":"uint160"},{"internalType":"uint32","name":"initializedTicksCrossed","type":"uint32"},{"internalType":"uint256","name":"gasEstimate","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"int256","name":"amount0Delta","type":"int256"},{"internalType":"int256","name":"amount1Delta","type":"int256"},{"internalType":"bytes","name":"path","type":"bytes"}],"name":"uniswapV3SwapCallback","outputs":[],"stateMutability":"view","type":"function"}]
-        const bytes = ethers.utils.solidityPack(["address","uint24","address"],['0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',3000,'0x6b175474e89094c44da98b954eedeac495271d0f'])
+        const bytes = solidityPacked(["address","uint24","address"],['0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',3000,'0x6b175474e89094c44da98b954eedeac495271d0f'])
 
         let requestMock = mock({
           blockchain,
@@ -418,7 +418,7 @@ describe('mocks evm requests', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum)
+        provider = new ethers.BrowserProvider(global.ethereum)
 
         const contract = new ethers.Contract('0x61fFE014bA17989E743c5F6cB21bF9697530B21e', api, provider)
 
@@ -444,7 +444,7 @@ describe('mocks evm requests', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5',

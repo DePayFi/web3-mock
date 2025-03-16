@@ -72,7 +72,7 @@
   let getTransactionCount = (address) => {
     address = address.toLowerCase();
     if(count[address] == undefined) { count[address] = 0; }
-    return ethers.ethers.BigNumber.from(count[address].toString())._hex
+    return "0x" + BigInt(count[address].toString()).toString(16)
   };
 
   let resetTransactionCount = ()=> {
@@ -160,13 +160,13 @@
 
   const getRandomTransactionHash = (blockchain) => {
     if(supported.evm.includes(blockchain)) {
-      return ethers.ethers.BigNumber.from(
+      return "0x" + BigInt(
         '1' +
           Array(76)
             .fill()
             .map(() => Math.random().toString()[4])
             .join(''),
-      )._hex
+      ).toString(16)
     } else if (supported.solana.includes(blockchain)) {
       return to_b58(
         Array(32)
@@ -269,7 +269,7 @@
       return input.map((element) => normalize(element))
     } else if (typeof input === 'undefined') {
       return input
-    } else if (typeof input === 'object' && input._isBigNumber) {
+    } else if (typeof input === 'object' && input._isBigNumber && typeof mockParams == 'bigint') {
       return input.toString()
     } else {
       if (_optionalChain$8([input, 'optionalAccess', _ => _.toString])) {
@@ -367,7 +367,7 @@
   let mockHasWrongBlock = (mock, block) => {
     if((typeof block == 'undefined' || block == 'latest') && typeof mock.block == 'undefined'){ return false }
     if(typeof mock.block == 'undefined') { return true }
-    return ethers.ethers.utils.hexValue(mock.block) != block
+    return ethers.ethers.toQuantity(mock.block) != block
   };
 
   let mockHasWrongParams = (mock, type, params, provider) => {

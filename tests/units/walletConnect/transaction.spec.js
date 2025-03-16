@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { ethers, parseEther } from 'ethers'
 import { mock, resetMocks, confirm, anything } from 'src'
 import { supported } from "src/blockchains"
 
@@ -22,7 +22,7 @@ describe('mock transactions', ()=> {
         await expect(
           WalletConnectStub.instance.sendTransaction({
             to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-            value: ethers.utils.parseEther("1")
+            value: parseEther("1")
           })
         ).rejects.toEqual(
           "Web3Mock: Please mock the transaction to: 0x5Af489c8786A018EC4814194dC8048be1007e390"
@@ -43,7 +43,7 @@ describe('mock transactions', ()=> {
         let transaction = await WalletConnectStub.instance.sendTransaction({
           from: accounts[0],
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-          value: ethers.utils.parseEther("2")
+          value: parseEther("2")
         })
 
         expect(transaction).toBeDefined()

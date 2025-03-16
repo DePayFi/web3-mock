@@ -11,7 +11,7 @@ let increaseTransactionCount = (address) => {
 let getTransactionCount = (address) => {
   address = address.toLowerCase()
   if(count[address] == undefined) { count[address] = 0 }
-  return ethers.BigNumber.from(count[address].toString())._hex
+  return "0x" + BigInt(count[address].toString()).toString(16)
 }
 
 let resetTransactionCount = ()=> {

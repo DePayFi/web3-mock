@@ -23,7 +23,7 @@ describe('mocks evm wallet balances (evm)', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
         let balance = await provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
 
         expect(balance.toString()).toEqual('232111122321')
@@ -40,7 +40,7 @@ describe('mocks evm wallet balances (evm)', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
         let signer = provider.getSigner();
         let balance = await signer.getBalance()
 
@@ -52,7 +52,7 @@ describe('mocks evm wallet balances (evm)', ()=> {
 
         mock('ethereum')
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         await expect(
           provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
@@ -71,7 +71,7 @@ describe('mocks evm wallet balances (evm)', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         await expect(
           provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')
@@ -90,7 +90,7 @@ describe('mocks evm wallet balances (evm)', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum);
+        let provider = new ethers.BrowserProvider(global.ethereum);
 
         await expect(
           provider.getBalance('0xb0252f13850a4823706607524de0b146820F2240')

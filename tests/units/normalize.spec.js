@@ -11,7 +11,7 @@ describe('normalize', () => {
 
   it('normalizes BigNumbers to compare them easily', () => {
     expect(
-      normalize(ethers.BigNumber.from('1000'))
+      normalize(BigInt('1000'))
     ).toEqual('1000')
   });
 

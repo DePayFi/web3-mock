@@ -3,7 +3,7 @@ import normalize from './normalize'
 let anything = '__ANYTHING__'
 
 let fillMockParamsWithAnything = ({ contractArguments, mockParams }) => {
-  if (typeof mockParams === 'object' && !Array.isArray(mockParams) && !mockParams._isBigNumber) {
+  if (typeof mockParams === 'object' && !Array.isArray(mockParams) && !mockParams._isBigNumber && typeof mockParams != 'bigint') {
     let filledMockParams = {}
     Object.keys(mockParams).forEach((key) => {
       filledMockParams[key] = fillMockParamsWithAnything({

@@ -27,7 +27,7 @@ let mockHasWrongTransactionData = (mock, type, params) => {
     (mock[type].to && normalize(params.to) !== normalize(mock[type].to)) ||
     (mock[type].from && normalize(params.from) !== normalize(mock[type].from)) ||
     (mock[type].value &&
-      ethers.BigNumber.from(params.value).toString() !== normalize(mock[type].value))
+      BigInt(params.value).toString() !== normalize(mock[type].value))
   )
 }
 
@@ -108,7 +108,7 @@ let mockDataDoesNotMatchObjectArugment = (mock, type, contractArguments) => {
 let mockHasWrongBlock = (mock, block) => {
   if((typeof block == 'undefined' || block == 'latest') && typeof mock.block == 'undefined'){ return false }
   if(typeof mock.block == 'undefined') { return true }
-  return ethers.utils.hexValue(mock.block) != block
+  return ethers.toQuantity(mock.block) != block
 }
 
 let mockHasWrongData = (mock, type, params, provider) => {

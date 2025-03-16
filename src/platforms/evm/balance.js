@@ -11,7 +11,7 @@ let balance = function ({ blockchain, params, provider }) {
     if (mock?.balance?.return instanceof Error) {
       return Promise.reject(mock.balance.return)
     } else {
-      return Promise.resolve(ethers.BigNumber.from(mock.balance.return))
+      return Promise.resolve(BigInt(mock.balance.return))
     }
   } else {
     raise(

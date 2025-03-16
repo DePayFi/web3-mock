@@ -34,7 +34,7 @@ describe('evm mocks request for a specific given block', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
@@ -59,7 +59,7 @@ describe('evm mocks request for a specific given block', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',
@@ -85,7 +85,7 @@ describe('evm mocks request for a specific given block', ()=> {
           }
         })
 
-        provider = new ethers.providers.Web3Provider(global.ethereum);
+        provider = new ethers.BrowserProvider(global.ethereum);
 
         let contract = new ethers.Contract(
           '0xa0bEd124a09ac2Bd941b10349d8d224fe3c955eb',

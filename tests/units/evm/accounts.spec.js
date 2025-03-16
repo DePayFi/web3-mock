@@ -13,7 +13,7 @@ describe('mocks evm wallet accounts', ()=> {
       it('fails suggesting to mock accounts if they havent', async ()=>{
         mock(blockchain)
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
         await expect(()=>
           provider.listAccounts()
         ).toThrow(
@@ -23,7 +23,7 @@ describe('mocks evm wallet accounts', ()=> {
 
       it('mocks accounts', async ()=>{
         let accountsMock = mock({ blockchain, accounts: { return: ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'] } })
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
         let accounts = await provider.listAccounts()
 
         expect(accounts).toEqual(['0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'])
@@ -34,7 +34,7 @@ describe('mocks evm wallet accounts', ()=> {
       it('mocks a delay when requesting accounts', async ()=>{
 
         let accountsMock = mock({ blockchain, accounts: { delay: 1100, return: ['0xd8da6bf26964af9d7eed9e03e53415d37aa96045'] } })
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
 
         let now = new Date().getTime()
         let accounts = await provider.listAccounts()
@@ -46,7 +46,7 @@ describe('mocks evm wallet accounts', ()=> {
       it('mocks an error in retrieving accounts', async ()=>{
 
         let accountsMock = mock({ blockchain, accounts: { return: Error('User rejected the request.') } })
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
 
         await expect(
           provider.listAccounts()

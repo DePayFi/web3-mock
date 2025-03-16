@@ -27,7 +27,7 @@ let estimate = ({ blockchain, params, provider }) => {
     if (mock?.estimate?.return instanceof Error) {
       return Promise.reject(mock.estimate.return)
     } else if (mock.estimate?.return) {
-      return Promise.resolve(ethers.BigNumber.from(mock.estimate.return))
+      return Promise.resolve(BigInt(mock.estimate.return))
     } else {
       return defaultEstimate
     }

@@ -56,7 +56,7 @@ let request = ({ blockchain, request, provider }) => {
 
     case 'eth_blockNumber':
     case 'eth_getBlockNumber':
-      return Promise.resolve(ethers.BigNumber.from(getCurrentBlock())._hex)
+      return Promise.resolve("0x" + BigInt(getCurrentBlock()).toString(16))
       break
 
     case 'eth_getBlockByNumber':
@@ -64,7 +64,7 @@ let request = ({ blockchain, request, provider }) => {
       if(request.params[0] == 'latest'){
         blockNumber = getCurrentBlock()
       } else {
-        blockNumber = ethers.BigNumber.from(request.params[0].toString())
+        blockNumber = BigInt(request.params[0].toString())
       }
       return Promise.resolve(getBlockData(parseInt(blockNumber.toString())))
       break
@@ -126,7 +126,7 @@ let request = ({ blockchain, request, provider }) => {
       break
 
     case 'eth_getGasPrice':
-      return Promise.resolve(ethers.utils.hexlify(13370000000))
+      return Promise.resolve(ethers.toBeHex(13370000000))
 
     case 'eth_getLogs':
       params = request.params ? ((request.params instanceof Array) ? request.params[0] : request.params) : undefined

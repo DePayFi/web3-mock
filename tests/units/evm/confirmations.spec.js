@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { ethers, parseEther } from 'ethers'
 import { mock, resetMocks, confirm, increaseBlock } from 'src'
 import { supported } from "src/blockchains"
 
@@ -23,7 +23,7 @@ describe('mock evm transaction confirmations', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
 
         let signer = provider.getSigner()
 
@@ -33,7 +33,7 @@ describe('mock evm transaction confirmations', ()=> {
 
         await signer.sendTransaction({
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-          value: ethers.utils.parseEther("1")
+          value: parseEther("1")
         }).then(async function(transaction){
           sentTransaction = transaction
         })
@@ -72,7 +72,7 @@ describe('mock evm transaction confirmations', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
 
         let signer = provider.getSigner()
 
@@ -82,7 +82,7 @@ describe('mock evm transaction confirmations', ()=> {
 
         await signer.sendTransaction({
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-          value: ethers.utils.parseEther("1")
+          value: parseEther("1")
         }).then(async function(transaction){
           sentTransaction = transaction
         })
@@ -102,7 +102,7 @@ describe('mock evm transaction confirmations', ()=> {
           }
         })
 
-        let provider = new ethers.providers.Web3Provider(global.ethereum)
+        let provider = new ethers.BrowserProvider(global.ethereum)
 
         let signer = provider.getSigner()
 
@@ -110,7 +110,7 @@ describe('mock evm transaction confirmations', ()=> {
 
         await signer.sendTransaction({
           to: "0x5Af489c8786A018EC4814194dC8048be1007e390",
-          value: ethers.utils.parseEther("1")
+          value: parseEther("1")
         }).then(async function(transaction){
           sentTransaction = transaction
         })

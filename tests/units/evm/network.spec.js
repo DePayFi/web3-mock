@@ -15,7 +15,7 @@ describe('evm network', ()=> {
       }
     })
 
-    let provider = new ethers.providers.Web3Provider(global.ethereum)
+    let provider = new ethers.BrowserProvider(global.ethereum)
     let blockchain = Blockchains.findByName('bsc')
 
     await global.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: blockchain.id }] })

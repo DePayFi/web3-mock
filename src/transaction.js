@@ -30,13 +30,13 @@ var to_b58 = function(
 
 const getRandomTransactionHash = (blockchain) => {
   if(supported.evm.includes(blockchain)) {
-    return ethers.BigNumber.from(
+    return "0x" + BigInt(
       '1' +
         Array(76)
           .fill()
           .map(() => Math.random().toString()[4])
           .join(''),
-    )._hex
+    ).toString(16)
   } else if (supported.solana.includes(blockchain)) {
     return to_b58(
       Array(32)
