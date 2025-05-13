@@ -1636,7 +1636,15 @@
       let response = marshalValue(mock.request.return);
 
       if(mock.request.api) {
-        let buffer = solanaWeb3_js.Buffer.alloc(mock.request.api.span < 0 ? 1000 : mock.request.api.span);
+        let size;
+        if(mock.request.responseSize) {
+          size = mock.request.responseSize;
+        } else if(mock.request.api.span > 0) {
+          size = mock.request.api.span;
+        } else {
+          size = 1000;
+        }
+        let buffer = solanaWeb3_js.Buffer.alloc(size);
         mock.request.api.encode(response, buffer);
 
         return Promise.resolve(
